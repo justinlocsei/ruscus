@@ -34,10 +34,16 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "node bin/ruscus build",
-    "check": "node bin/ruscus check",
-    "format": "node bin/ruscus format code",
-    "test": "node bin/ruscus test all"
+    "build": "tsdown",
+    "check": "npm run check:code && npm run check:formatting && npm run check:types",
+    "check:code": "biome lint . --error-on-warnings",
+    "check:formatting": "biome ci --linter-enabled=false . && dprint check",
+    "check:types": "tsc --noEmit",
+    "format": "biome check --write --linter-enabled=false . && dprint fmt",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage --coverage.reporter text",
+    "test:property": "vitest run --project properties",
+    "test:unit": "vitest run --project unit"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.9",
@@ -46,7 +52,6 @@
     "@vitest/coverage-v8": "^5.0.0",
     "dprint": "^0.57.0",
     "fast-check": "^4.9.0",
-    "larkspur": "^0.1.0",
     "tsdown": "^0.23.0",
     "typescript": "^6.0.3",
     "vitest": "^5.0.0"
