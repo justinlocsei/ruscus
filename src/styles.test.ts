@@ -7,7 +7,7 @@ describe('mergeStyles', () => {
   it('merges styles on top of a base', () => {
     assert.deepEqual(
       mergeStyles({ color: 'red' }, { background: 'blue' }),
-      { background: 'blue', color: 'red' },
+      { background: 'blue', color: 'red' }
     );
   });
 
@@ -21,14 +21,14 @@ describe('mergeStyles', () => {
   it('gracefully handles empty styles', () => {
     assert.deepEqual(
       mergeStyles({}, { color: 'red' }, {}, { background: 'blue' }),
-      { background: 'blue', color: 'red' },
+      { background: 'blue', color: 'red' }
     );
-  })
+  });
 
   it('deletes base styles that are undefined', () => {
     assert.deepEqual(
       mergeStyles({ color: 'red' }, { color: undefined }),
-      {},
+      {}
     );
-  })
+  });
 });

@@ -3,14 +3,19 @@
  */
 export type ElementSpec<
   E extends NamedElements = never
->= {
+> = {
   children?: E;
-}
+};
 
 /**
- * A collection of named elements
+ * A collection of named element specs
  */
 export type NamedElements<T extends string = string> = Record<T, ElementSpec>;
+
+/**
+ * A component with no registered elements
+ */
+export type NoElements = Record<string, never>;
 
 /**
  * A specification for a component
