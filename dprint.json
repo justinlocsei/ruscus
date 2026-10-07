@@ -1,0 +1,24 @@
+{
+  "typescript": {
+    "importDeclaration.sortNamedImports": "maintain",
+    "lineWidth": 80,
+    "module.sortImportDeclarations": "maintain",
+    "quoteStyle": "preferSingle",
+    "semiColons": "prefer",
+    "trailingCommas": "never"
+  },
+  "json": {
+    "trailingCommas": "never"
+  },
+  "includes": [
+    "**/*.{json,mjs,ts}"
+  ],
+  "excludes": [
+    "dist",
+    "node_modules"
+  ],
+  "plugins": [
+    "npm:@dprint/json@0.23.0",
+    "npm:@dprint/typescript@0.96.1"
+  ]
+}
