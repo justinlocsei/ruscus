@@ -17,8 +17,6 @@ npm run check
 npm run test
 ```
 
-Coverage: `npm run test:coverage` (100% thresholds on `src/`; see `vitest.config.ts`).
-
 ## Testing
 
 Tests live beside source as `src/**/*.test.ts`. After editing a source file, run its matching test file when one exists.

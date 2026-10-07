@@ -19,7 +19,6 @@ Ruscus is being built in the open and is not yet usable.  The repository current
 ```sh
 npm run check          # Lint, formatting, and type checks
 npm run test           # Tests (src/**/*.test.ts)
-npm run test:coverage  # Tests with coverage (100% on src/)
 npm run build          # Build the package to dist/
 npm run format         # Format the codebase
 ```

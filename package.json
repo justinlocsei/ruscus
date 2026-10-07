@@ -40,13 +40,11 @@
     "check:formatting": "biome ci --linter-enabled=false . && dprint check",
     "check:types": "tsc --noEmit",
     "format": "biome check --write --linter-enabled=false . && dprint fmt",
-    "test": "vitest run --reporter verbose",
-    "test:coverage": "vitest run --coverage --coverage.reporter text"
+    "test": "vitest run --reporter verbose"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.9",
     "@types/node": "^24.0.0",
-    "@vitest/coverage-v8": "^5.0.0",
     "dprint": "^0.57.0",
     "tsdown": "^0.23.0",
     "typescript": "^6.0.3",
