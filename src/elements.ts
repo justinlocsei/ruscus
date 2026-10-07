@@ -1,5 +1,5 @@
 import { mergeStyles } from './styles.ts';
-import type { ElementSpec, Styles } from './types.ts';
+import type { ElementSpec, NamedElements, Styles } from './types.ts';
 
 /**
  * An eager or lazy element definition
@@ -58,7 +58,16 @@ type ElementState = {
   styles: Styles;
 };
 
-export class Element<S extends ElementSpec = ElementSpec> {
+/**
+ * Apply child constraints to an element
+ */
+type WithChildren<T extends ElementProviders> = Element<
+  ElementSpec<ProvidersToSpecs<T>>
+>;
+
+export class Element<
+  S extends ElementSpec<NamedElements> = ElementSpec
+> {
   current: ElementState;
 
   /**
@@ -69,6 +78,17 @@ export class Element<S extends ElementSpec = ElementSpec> {
       children: {},
       styles: {}
     };
+  }
+
+  /**
+   * Define child elements
+   */
+  children<T extends ElementProviders>(
+    provider: (e: typeof createElement) => T
+  ): WithChildren<T> {
+    this.current.children = resolveElements(provider(createElement));
+
+    return this as WithChildren<T>;
   }
 
   /**
