@@ -22,6 +22,13 @@ type ComponentState = {
   styles: Styles;
 };
 
+/**
+ * Apply element constraints to a component
+ */
+type WithElements<T extends ElementProviders> = Component<
+  ComponentSpec<ProvidersToSpecs<T>>
+>;
+
 export class Component<
   S extends ComponentSpec<NamedElements> = ComponentSpec
 > {
@@ -63,11 +70,9 @@ export class Component<
    */
   elements<T extends ElementProviders>(
     provider: (e: typeof createElement) => T
-  ): Component<ComponentSpec<ProvidersToSpecs<T>>> {
+  ): WithElements<T> {
     this.current.elements = resolveElements(provider(createElement));
 
-    return this as Component<
-      ComponentSpec<ProvidersToSpecs<T>>
-    >;
+    return this as WithElements<T>;
   }
 }
