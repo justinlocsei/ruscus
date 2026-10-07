@@ -16,12 +16,12 @@ Ruscus is being built in the open and is not yet usable.  The repository current
 
 ## Development
 
-Development tasks are run through a [Larkspur](https://github.com/justinlocsei/larkspur) CLI at `./bin/ruscus`.  Run `./bin/ruscus explore` to see every available task and flag.
-
 ```sh
-./bin/ruscus check       # Lint, formatting, and type checks
-./bin/ruscus test all    # Unit and property tests
-./bin/ruscus build       # Build the package to dist/
+npm run check          # Lint, formatting, and type checks
+npm run test           # Tests (src/**/*.test.ts)
+npm run test:coverage  # Tests with coverage (100% on src/)
+npm run build          # Build the package to dist/
+npm run format         # Format the codebase
 ```
 
 ## Why the Name?
