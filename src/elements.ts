@@ -4,7 +4,7 @@ import type { ElementSpec, Styles } from './types.ts';
 /**
  * An eager or lazy element definition
  */
-type ElementProvider =
+export type ElementProvider =
   | Element
   | (() => Element);
 
@@ -16,7 +16,7 @@ export type ElementProviders = Record<string, ElementProvider>;
 /**
  * Infer an element spec from a provider
  */
-type SpecFromProvider<P extends ElementProvider> = P extends
+export type SpecFromProvider<P extends ElementProvider> = P extends
   () => Element<infer S> ? S : P extends Element<infer S> ? S : never;
 
 /**
