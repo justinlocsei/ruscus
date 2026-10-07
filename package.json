@@ -40,7 +40,7 @@
     "check:formatting": "biome ci --linter-enabled=false . && dprint check",
     "check:types": "tsc --noEmit",
     "format": "biome check --write --linter-enabled=false . && dprint fmt",
-    "test": "vitest run",
+    "test": "vitest run --reporter verbose",
     "test:coverage": "vitest run --coverage --coverage.reporter text"
   },
   "devDependencies": {
