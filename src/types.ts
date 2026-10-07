@@ -9,7 +9,7 @@ export type BareElements = Record<string, never>;
 export type PatchSpec<
   S extends object,
   U extends object
-> = Omit<S, keyof U> & U;
+> = keyof U extends keyof S ? Omit<S, keyof U> & U : never;
 
 /**
  * A specification for an element
