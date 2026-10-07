@@ -1,0 +1,58 @@
+{
+  "name": "ruscus",
+  "version": "0.0.0",
+  "description": "Typed component styles",
+  "keywords": [
+    "css",
+    "components",
+    "styles",
+    "typescript"
+  ],
+  "homepage": "https://github.com/justinlocsei/ruscus#readme",
+  "bugs": {
+    "url": "https://github.com/justinlocsei/ruscus/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justinlocsei/ruscus.git"
+  },
+  "author": "Justin Locsei",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./dist/index.mjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
+    }
+  },
+  "files": [
+    "dist/index.d.mts",
+    "dist/index.mjs"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "node bin/ruscus build",
+    "check": "node bin/ruscus check",
+    "format": "node bin/ruscus format code",
+    "test": "node bin/ruscus test all"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.9",
+    "@fast-check/vitest": "^0.5.0",
+    "@types/node": "^24.0.0",
+    "@vitest/coverage-v8": "^5.0.0",
+    "dprint": "^0.57.0",
+    "fast-check": "^4.9.0",
+    "larkspur": "^0.1.0",
+    "tsdown": "^0.23.0",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.0"
+  },
+  "allowScripts": {
+    "fsevents@2.3.3": true,
+    "dprint@0.57.4": true
+  }
+}
