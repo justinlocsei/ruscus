@@ -4,6 +4,14 @@
 export type BareElements = Record<string, never>;
 
 /**
+ * Replace selected fields in a spec
+ */
+export type PatchSpec<
+  S extends object,
+  U extends object
+> = Omit<S, keyof U> & U;
+
+/**
  * A specification for an element
  */
 export type ElementSpec<
