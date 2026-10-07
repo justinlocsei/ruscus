@@ -1,0 +1,19 @@
+name: Install Node.js
+
+description: Set up Node.js and install npm dependencies
+
+inputs:
+  node-version:
+    description: The Node.js version to use
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+      with:
+        cache: npm
+        node-version: ${{ inputs.node-version }}
+
+    - run: npm ci
+      shell: bash
