@@ -36,9 +36,9 @@ export function createElement(
 }
 
 /**
- * Resolve a mapping of providers to element instances
+ * Resolve element providers to a tree of elements
  */
-export function resolveElementProviders(
+export function resolveElements(
   providers: ElementProviders
 ): Record<string, Element> {
   const els: Record<string, Element> = {};
