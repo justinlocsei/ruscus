@@ -20,5 +20,5 @@
     "types": ["node"],
     "verbatimModuleSyntax": true
   },
-  "include": ["bin", "src", "tasks", "test"]
+  "include": ["src", "test"]
 }
