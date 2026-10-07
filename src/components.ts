@@ -1,13 +1,32 @@
+import type {
+  Element,
+  ElementProviders,
+  ElementProvidersToSpecs
+} from './elements.ts';
+import { createElement, resolveElementProviders } from './elements.ts';
 import { mergeStyles } from './styles.ts';
-import type { ComponentSpec, Styles } from './types.ts';
+import type { ComponentSpec, NamedElements, Styles } from './types.ts';
 
+/**
+ * Options for creating a component
+ */
 type ComponentOptions = {
   namespace?: string;
-}
+};
 
-export class Component<S extends ComponentSpec> {
-  id: string;
+/**
+ * The current state of a component
+ */
+type ComponentState = {
+  elements: Record<string, Element>;
   styles: Styles;
+};
+
+export class Component<
+  S extends ComponentSpec<NamedElements> = ComponentSpec
+> {
+  current: ComponentState;
+  id: string;
 
   private name: string;
   private options: ComponentOptions;
@@ -18,7 +37,11 @@ export class Component<S extends ComponentSpec> {
   constructor(name: string, options: ComponentOptions = {}) {
     this.name = name;
     this.options = options;
-    this.styles = {};
+
+    this.current = {
+      elements: {},
+      styles: {}
+    };
 
     this.id = [this.options.namespace, this.name]
       .filter(Boolean)
@@ -26,10 +49,25 @@ export class Component<S extends ComponentSpec> {
   }
 
   /**
-   * Apply styles to the component
+   * Apply styles to the component root
    */
   css(styles: Styles): Component<S> {
-    this.styles = mergeStyles(this.styles, styles);
+    const { current } = this;
+    current.styles = mergeStyles(current.styles, styles);
+
     return this;
+  }
+
+  /**
+   * Define the component's elements
+   */
+  elements<T extends ElementProviders>(
+    provider: (e: typeof createElement) => T
+  ): Component<ComponentSpec<ElementProvidersToSpecs<T>>> {
+    this.current.elements = resolveElementProviders(provider(createElement));
+
+    return this as Component<
+      ComponentSpec<ElementProvidersToSpecs<T>>
+    >;
   }
 }

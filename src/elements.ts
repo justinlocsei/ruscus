@@ -1,7 +1,55 @@
 import { mergeStyles } from './styles.ts';
 import type { ElementSpec, Styles } from './types.ts';
 
-export class Element<S extends ElementSpec> {
+/**
+ * An eager or lazy element definition
+ */
+type ElementProvider =
+  | Element
+  | (() => Element);
+
+/**
+ * A mapping of element names to providers
+ */
+export type ElementProviders = Record<string, ElementProvider>;
+
+/**
+ * Infer an element spec from a provider
+ */
+type SpecFromProvider<P extends ElementProvider> = P extends
+  () => Element<infer S> ? S : P extends Element<infer S> ? S : never;
+
+/**
+ * Convert element providers to a tree of specs
+ */
+export type ElementProvidersToSpecs<T extends ElementProviders> = {
+  [P in keyof T]: SpecFromProvider<T[P]>;
+};
+
+/**
+ * Create an element
+ */
+export function createElement(
+  styles: Styles = {}
+): Element {
+  return new Element().css(styles);
+}
+
+/**
+ * Resolve a mapping of providers to element instances
+ */
+export function resolveElementProviders(
+  providers: ElementProviders
+): Record<string, Element> {
+  const els: Record<string, Element> = {};
+
+  for (const [name, provider] of Object.entries(providers)) {
+    els[name] = typeof provider === 'function' ? provider() : provider;
+  }
+
+  return els;
+}
+
 /**
  * The current state of an element
  */
