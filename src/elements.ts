@@ -22,7 +22,7 @@ export type SpecFromProvider<P extends ElementProvider> = P extends
 /**
  * Convert element providers to a tree of specs
  */
-export type ElementProvidersToSpecs<T extends ElementProviders> = {
+export type ProvidersToSpecs<T extends ElementProviders> = {
   [P in keyof T]: SpecFromProvider<T[P]>;
 };
 

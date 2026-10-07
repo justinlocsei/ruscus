@@ -1,7 +1,7 @@
 import type {
   Element,
   ElementProviders,
-  ElementProvidersToSpecs
+  ProvidersToSpecs
 } from './elements.ts';
 import { createElement, resolveElements } from './elements.ts';
 import { mergeStyles } from './styles.ts';
@@ -63,11 +63,11 @@ export class Component<
    */
   elements<T extends ElementProviders>(
     provider: (e: typeof createElement) => T
-  ): Component<ComponentSpec<ElementProvidersToSpecs<T>>> {
+  ): Component<ComponentSpec<ProvidersToSpecs<T>>> {
     this.current.elements = resolveElements(provider(createElement));
 
     return this as Component<
-      ComponentSpec<ElementProvidersToSpecs<T>>
+      ComponentSpec<ProvidersToSpecs<T>>
     >;
   }
 }
