@@ -1,6 +1,6 @@
 # Ruscus
 
-Zero-runtime TypeScript library for orchestrating component styles: a component's elements and variants are defined as a typed tree that projects into class names, while the CSS itself is bring-your-own. Library source is `src/`; the dev task CLI is `tasks/`, invoked as `./bin/ruscus` and built with [Larkspur](https://github.com/justinlocsei/larkspur).
+Zero-runtime TypeScript library for orchestrating component styles: a component's elements and variants are defined as a typed tree that projects into class names, while the CSS itself is bring-your-own. Library source is `src/`.
 
 Public API: `src/index.ts`.  It is intentionally empty while the source tree is being scaffolded.
 
@@ -10,25 +10,18 @@ Be conservative about what gets exported. Only export a type or function when an
 
 ## Dev commands
 
-Run `./bin/ruscus explore` to list tasks and flags. Prefer `./bin/ruscus` over npm scripts in docs and CI.
-
 Before finishing work:
 
 ```sh
-./bin/ruscus check
-./bin/ruscus test all
+npm run check
+npm run test
 ```
 
-Filter tests with `--file` (Vitest file pattern) or `--name` (test name pattern). Coverage: `./bin/ruscus test coverage` (100% thresholds on `src/`; see `vitest.config.ts`).
+Coverage: `npm run test:coverage` (100% thresholds on `src/`; see `vitest.config.ts`).
 
 ## Testing
 
-| Suite | Location | Notes |
-|-------|----------|-------|
-| Unit | `src/**/*.test.ts` beside source | |
-| Property | `src/**/*.prop.test.ts` | Vitest project `properties`; `./bin/ruscus test property` |
-
-After editing a source file, run its matching test file when one exists.
+Tests live beside source as `src/**/*.test.ts`. After editing a source file, run its matching test file when one exists.
 
 ## Code style
 
