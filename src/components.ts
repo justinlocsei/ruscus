@@ -5,7 +5,12 @@ import type {
 } from './elements.ts';
 import { createElement, resolveElements } from './elements.ts';
 import { mergeStyles } from './styles.ts';
-import type { ComponentSpec, NamedElements, Styles } from './types.ts';
+import type {
+  ComponentSpec,
+  NamedElements,
+  PatchSpec,
+  Styles
+} from './types.ts';
 
 /**
  * Options for creating a component
@@ -25,8 +30,11 @@ type ComponentState = {
 /**
  * Apply element constraints to a component
  */
-type WithElements<T extends ElementProviders> = Component<
-  ComponentSpec<ProvidersToSpecs<T>>
+type WithElements<
+  S extends ComponentSpec<NamedElements>,
+  T extends ElementProviders
+> = Component<
+  PatchSpec<S, { els: ProvidersToSpecs<T> }>
 >;
 
 export class Component<
@@ -70,9 +78,9 @@ export class Component<
    */
   elements<T extends ElementProviders>(
     provider: (e: typeof createElement) => T
-  ): WithElements<T> {
+  ): WithElements<S, T> {
     this.current.elements = resolveElements(provider(createElement));
 
-    return this as WithElements<T>;
+    return this as WithElements<S, T>;
   }
 }
