@@ -16,12 +16,11 @@ describe('Element', () => {
     });
 
     it('merges styles', () => {
-      const element = new Element()
-        .css({ color: 'red' })
-        .css({ background: 'blue' });
-
       assert.deepEqual(
-        element.styles,
+        new Element()
+          .css({ color: 'red' })
+          .css({ background: 'blue' })
+          .styles,
         { color: 'red', background: 'blue' }
       );
     });
