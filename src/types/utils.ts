@@ -1,4 +1,9 @@
 /**
+ * An eager value or a function that produces one
+ */
+export type Thunkable<T> = T | (() => T);
+
+/**
  * Replace selected fields in an object
  */
 export type Patch<
