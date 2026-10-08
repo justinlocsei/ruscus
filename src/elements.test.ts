@@ -45,44 +45,6 @@ describe('Element', () => {
     assert.deepEqual(new Element().current.variants, {});
   });
 
-  describe('variants', () => {
-    it('registers styles for each variant name', () => {
-      assert.deepEqual(
-        createElement()
-          .variants({
-            bold: { fontWeight: '700' },
-            spacer: { marginTop: '1rem' }
-          })
-          .current
-          .variants,
-        {
-          bold: { fontWeight: '700' },
-          spacer: { marginTop: '1rem' }
-        }
-      );
-    });
-
-    it('allows chaining after variants', () => {
-      assert.deepEqual(
-        createElement()
-          .variants({ bold: { fontWeight: '700' } })
-          .css({ color: 'black' })
-          .current
-          .styles,
-        { color: 'black' }
-      );
-    });
-
-    it('throws when variants are defined more than once', () => {
-      const element = createElement().variants({ bold: { fontWeight: '700' } });
-
-      assert.throws(
-        () => element.variants({ spacer: { marginTop: '1rem' } }),
-        'variants may only be set once'
-      );
-    });
-  });
-
   describe('children', () => {
     it('registers child element instances for each name', () => {
       const { current: { children } } = createElement().children(e => ({
@@ -156,6 +118,44 @@ describe('Element', () => {
           .current
           .styles,
         { color: 'red', background: 'blue' }
+      );
+    });
+  });
+
+  describe('variants', () => {
+    it('registers styles for each variant name', () => {
+      assert.deepEqual(
+        createElement()
+          .variants({
+            bold: { fontWeight: '700' },
+            spacer: { marginTop: '1rem' }
+          })
+          .current
+          .variants,
+        {
+          bold: { fontWeight: '700' },
+          spacer: { marginTop: '1rem' }
+        }
+      );
+    });
+
+    it('allows chaining after variants', () => {
+      assert.deepEqual(
+        createElement()
+          .variants({ bold: { fontWeight: '700' } })
+          .css({ color: 'black' })
+          .current
+          .styles,
+        { color: 'black' }
+      );
+    });
+
+    it('throws when variants are defined more than once', () => {
+      const element = createElement().variants({ bold: { fontWeight: '700' } });
+
+      assert.throws(
+        () => element.variants({ spacer: { marginTop: '1rem' } }),
+        'variants may only be set once'
       );
     });
   });
