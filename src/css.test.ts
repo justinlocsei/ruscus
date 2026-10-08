@@ -2,6 +2,7 @@ import { assert, describe, it } from 'vitest';
 
 import { Component } from './components.ts';
 import { styleComponent } from './css.ts';
+import { css } from './tests.ts';
 
 describe('styleComponent', () => {
   it('returns empty CSS for a component with no styles', () => {
@@ -9,38 +10,38 @@ describe('styleComponent', () => {
   });
 
   it('emits root styles', () => {
-    const css = styleComponent(
+    const output = styleComponent(
       new Component('card').css({ color: 'black', display: 'block' })
     );
 
     assert.equal(
-      css,
-      [
-        '.card {',
-        '  color: black;',
-        '  display: block;',
-        '}'
-      ].join('\n')
+      output,
+      css`
+        .card {
+          color: black;
+          display: block;
+        }
+      `
     );
   });
 
   it('skips undefined properties', () => {
-    const css = styleComponent(
+    const output = styleComponent(
       new Component('card').css({ color: 'black', display: undefined })
     );
 
     assert.equal(
-      css,
-      [
-        '.card {',
-        '  color: black;',
-        '}'
-      ].join('\n')
+      output,
+      css`
+        .card {
+          color: black;
+        }
+      `
     );
   });
 
   it('emits element styles with BEM-style selectors', () => {
-    const css = styleComponent(
+    const output = styleComponent(
       new Component('card')
         .css({ color: 'black' })
         .elements(e => ({
@@ -50,25 +51,25 @@ describe('styleComponent', () => {
     );
 
     assert.equal(
-      css,
-      [
-        '.card {',
-        '  color: black;',
-        '}',
-        '',
-        '.card__body {',
-        '  margin: 0;',
-        '}',
-        '',
-        '.card__title {',
-        '  color: red;',
-        '}'
-      ].join('\n')
+      output,
+      css`
+        .card {
+          color: black;
+        }
+
+        .card__body {
+          margin: 0;
+        }
+
+        .card__title {
+          color: red;
+        }
+      `
     );
   });
 
   it('emits styles for variants', () => {
-    const css = styleComponent(
+    const output = styleComponent(
       new Component('card').elements(e => ({
         line: e({ marginTop: '0' }).variants({
           bold: { fontWeight: '700' },
@@ -78,25 +79,25 @@ describe('styleComponent', () => {
     );
 
     assert.equal(
-      css,
-      [
-        '.card__line {',
-        '  margin-top: 0;',
-        '}',
-        '',
-        '.card__line.is-bold {',
-        '  font-weight: 700;',
-        '}',
-        '',
-        '.card__line.is-spacer {',
-        '  margin-top: 1rem;',
-        '}'
-      ].join('\n')
+      output,
+      css`
+        .card__line {
+          margin-top: 0;
+        }
+
+        .card__line.is-bold {
+          font-weight: 700;
+        }
+
+        .card__line.is-spacer {
+          margin-top: 1rem;
+        }
+      `
     );
   });
 
   it('emits nested element styles', () => {
-    const css = styleComponent(
+    const output = styleComponent(
       new Component('hero').elements(e => ({
         title: e().children(n => ({
           text: n({ color: 'red' })
@@ -105,33 +106,33 @@ describe('styleComponent', () => {
     );
 
     assert.equal(
-      css,
-      [
-        '.hero__title__text {',
-        '  color: red;',
-        '}'
-      ].join('\n')
+      output,
+      css`
+        .hero__title__text {
+          color: red;
+        }
+      `
     );
   });
 
   it('respects custom indentation', () => {
-    const css = styleComponent(
+    const output = styleComponent(
       new Component('card').css({ color: 'black' }),
       { indentation: 4 }
     );
 
     assert.equal(
-      css,
-      [
-        '.card {',
-        '    color: black;',
-        '}'
-      ].join('\n')
+      output,
+      css`
+        .card {
+            color: black;
+        }
+      `
     );
   });
 
   it('projects camelCase properties to kebab-case', () => {
-    const css = styleComponent(
+    const output = styleComponent(
       new Component('card').css({
         backgroundColor: 'white',
         fontSize: '1rem'
@@ -139,28 +140,28 @@ describe('styleComponent', () => {
     );
 
     assert.equal(
-      css,
-      [
-        '.card {',
-        '  background-color: white;',
-        '  font-size: 1rem;',
-        '}'
-      ].join('\n')
+      output,
+      css`
+        .card {
+          background-color: white;
+          font-size: 1rem;
+        }
+      `
     );
   });
 
   it('uses the full component ID', () => {
-    const css = styleComponent(
+    const output = styleComponent(
       new Component('card', { namespace: 'ui' }).css({ color: 'black' })
     );
 
     assert.equal(
-      css,
-      [
-        '.ui--card {',
-        '  color: black;',
-        '}'
-      ].join('\n')
+      output,
+      css`
+        .ui--card {
+          color: black;
+        }
+      `
     );
   });
 });
