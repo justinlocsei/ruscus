@@ -6,9 +6,9 @@ import type {
 import { createElement, resolveElements } from './elements.ts';
 import { mergeStyles } from './styles.ts';
 import type {
+  AnyComponentSpec,
   ComponentSpec,
-  NamedElements,
-  PatchSpec,
+  PatchComponentSpec,
   Styles
 } from './types.ts';
 
@@ -31,14 +31,14 @@ type ComponentState = {
  * Apply element constraints to a component
  */
 type WithElements<
-  S extends ComponentSpec<NamedElements>,
+  S extends AnyComponentSpec,
   T extends ElementProviders
 > = Component<
-  PatchSpec<S, { els: ProvidersToSpecs<T> }>
+  PatchComponentSpec<S, { els: ProvidersToSpecs<T> }>
 >;
 
 export class Component<
-  S extends ComponentSpec<NamedElements> = ComponentSpec
+  S extends AnyComponentSpec = ComponentSpec
 > {
   current: ComponentState;
   id: string;
