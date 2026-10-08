@@ -13,6 +13,10 @@ describe('Component', () => {
     assert.deepEqual(component().current.elements, {});
   });
 
+  it('has no variants by default', () => {
+    assert.deepEqual(component().current.variants, {});
+  });
+
   it('has an ID', () => {
     assert.equal(new Component('alfa').id, 'alfa');
     assert.equal(new Component('bravo').id, 'bravo');
@@ -79,6 +83,44 @@ describe('Component', () => {
           .current
           .styles,
         { color: 'black' }
+      );
+    });
+  });
+
+  describe('variants', () => {
+    it('registers styles for each variant name', () => {
+      assert.deepEqual(
+        component()
+          .variants({
+            compact: { padding: '0.5rem' },
+            large: { padding: '2rem' }
+          })
+          .current
+          .variants,
+        {
+          compact: { padding: '0.5rem' },
+          large: { padding: '2rem' }
+        }
+      );
+    });
+
+    it('allows chaining after variants', () => {
+      assert.deepEqual(
+        component()
+          .variants({ compact: { padding: '0.5rem' } })
+          .css({ color: 'black' })
+          .current
+          .styles,
+        { color: 'black' }
+      );
+    });
+
+    it('throws when variants are defined more than once', () => {
+      const instance = component().variants({ compact: { padding: '0.5rem' } });
+
+      assert.throws(
+        () => instance.variants({ large: { padding: '2rem' } }),
+        'variants may only be set once'
       );
     });
   });

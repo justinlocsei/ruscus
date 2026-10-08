@@ -9,7 +9,8 @@ import type {
   AnyComponentSpec,
   ComponentSpec,
   PatchComponentSpec,
-  Styles
+  Styles,
+  VariantStyles
 } from './types.ts';
 
 /**
@@ -25,6 +26,7 @@ type ComponentOptions = {
 type ComponentState = {
   elements: Record<string, Element>;
   styles: Styles;
+  variants: Record<string, Styles>;
 };
 
 /**
@@ -35,6 +37,16 @@ type WithElements<
   T extends ElementProviders
 > = Component<
   PatchComponentSpec<S, { els: ProvidersToSpecs<T> }>
+>;
+
+/**
+ * Apply variant constraints to a component
+ */
+type WithVariants<
+  S extends AnyComponentSpec,
+  V extends VariantStyles
+> = Component<
+  PatchComponentSpec<S, { variants: Extract<keyof V, string> }>
 >;
 
 export class Component<
@@ -55,7 +67,8 @@ export class Component<
 
     this.current = {
       elements: {},
-      styles: {}
+      styles: {},
+      variants: {}
     };
 
     this.id = [this.options.namespace, this.name]
@@ -82,5 +95,30 @@ export class Component<
     this.current.elements = resolveElements(provider(createElement));
 
     return this as WithElements<S, T>;
+  }
+
+  /**
+   * Define variants for the component root
+   */
+  variants<T extends VariantStyles>(styles: T): WithVariants<S, T> {
+    this.updateState('variants', styles);
+
+    return this as WithVariants<S, T>;
+  }
+
+  /**
+   * Update a field in the current state
+   *
+   * @throws if the field already has a value
+   */
+  private updateState<T extends keyof ComponentState>(
+    field: T,
+    value: ComponentState[T]
+  ): void {
+    if (Object.keys(this.current[field]).length) {
+      throw new Error(`${field} may only be set once`);
+    }
+
+    this.current[field] = value;
   }
 }
