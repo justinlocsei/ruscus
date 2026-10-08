@@ -3,7 +3,7 @@ import { assert, describe, it } from 'vitest';
 import type { ProvidersToSpecs, SpecFromProvider } from './elements.ts';
 import { createElement, Element, resolveElements } from './elements.ts';
 import { T } from './tests.ts';
-import type { ElementSpec } from './types.ts';
+import type { BareElements, ElementSpec } from './types.ts';
 
 describe('createElement', () => {
   it('creates an element with empty styles by default', () => {
@@ -39,6 +39,39 @@ describe('Element', () => {
 
   it('has no children by default', () => {
     assert.deepEqual(new Element().current.children, {});
+  });
+
+  it('has no variants by default', () => {
+    assert.deepEqual(new Element().current.variants, {});
+  });
+
+  describe('variants', () => {
+    it('registers styles for each variant name', () => {
+      assert.deepEqual(
+        createElement()
+          .variants({
+            bold: { fontWeight: '700' },
+            spacer: { marginTop: '1rem' }
+          })
+          .current
+          .variants,
+        {
+          bold: { fontWeight: '700' },
+          spacer: { marginTop: '1rem' }
+        }
+      );
+    });
+
+    it('allows chaining after variants', () => {
+      assert.deepEqual(
+        createElement()
+          .variants({ bold: { fontWeight: '700' } })
+          .css({ color: 'black' })
+          .current
+          .styles,
+        { color: 'black' }
+      );
+    });
   });
 
   describe('children', () => {
@@ -138,6 +171,20 @@ describe('SpecFromProvider', () => {
       >
     >(true);
   });
+
+  it('infers variant names from an element with variants', () => {
+    type WithVariants = Element<
+      ElementSpec<BareElements, 'spacer'>
+    >;
+
+    T.assert<
+      T.Equivalent<
+        SpecFromProvider<WithVariants>,
+        ElementSpec<BareElements, 'spacer'>
+      >
+    >(true);
+  });
+
   it('infers a spec from an eager provider', () => {
     T.assert<
       T.Equivalent<

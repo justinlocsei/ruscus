@@ -1,5 +1,11 @@
 import { mergeStyles } from './styles.ts';
-import type { ElementSpec, NamedElements, PatchSpec, Styles } from './types.ts';
+import type {
+  AnyElementSpec,
+  ElementSpec,
+  PatchElementSpec,
+  Styles,
+  VariantStyles
+} from './types.ts';
 
 /**
  * An eager or lazy element definition
@@ -56,20 +62,31 @@ export function resolveElements(
 type ElementState = {
   children: Record<string, Element>;
   styles: Styles;
+  variants: Record<string, Styles>;
 };
 
 /**
  * Apply child constraints to an element
  */
 type WithChildren<
-  S extends ElementSpec<NamedElements>,
+  S extends AnyElementSpec,
   T extends ElementProviders
 > = Element<
-  PatchSpec<S, { children: ProvidersToSpecs<T> }>
+  PatchElementSpec<S, { children: ProvidersToSpecs<T> }>
+>;
+
+/**
+ * Apply variant constraints to an element
+ */
+type WithVariants<
+  S extends AnyElementSpec,
+  V extends VariantStyles
+> = Element<
+  PatchElementSpec<S, { variants: Extract<keyof V, string> }>
 >;
 
 export class Element<
-  S extends ElementSpec<NamedElements> = ElementSpec
+  S extends AnyElementSpec = ElementSpec
 > {
   current: ElementState;
 
@@ -79,7 +96,8 @@ export class Element<
   constructor() {
     this.current = {
       children: {},
-      styles: {}
+      styles: {},
+      variants: {}
     };
   }
 
@@ -102,5 +120,16 @@ export class Element<
     current.styles = mergeStyles(current.styles, styles);
 
     return this;
+  }
+
+  /**
+   * Define variants for the element
+   */
+  variants<T extends VariantStyles>(
+    definitions: T
+  ): WithVariants<S, T> {
+    this.current.variants = definitions;
+
+    return this as WithVariants<S, T>;
   }
 }
