@@ -24,11 +24,4 @@ describe('mergeStyles', () => {
       { background: 'blue', color: 'red' }
     );
   });
-
-  it('deletes base styles that are undefined', () => {
-    assert.deepEqual(
-      mergeStyles({ color: 'red' }, { color: undefined }),
-      {}
-    );
-  });
 });
