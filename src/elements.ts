@@ -129,9 +129,9 @@ export class Element<
    * Define variants for the element
    */
   variants<T extends VariantStyles>(
-    definitions: Thunkable<T>
+    provider: Thunkable<T>
   ): WithVariants<S, T> {
-    this.updateState('variants', resolveVariants(definitions));
+    this.updateState('variants', resolveVariants(provider));
 
     return this as WithVariants<S, T>;
   }
