@@ -72,6 +72,15 @@ describe('Element', () => {
         { color: 'black' }
       );
     });
+
+    it('throws when variants are defined more than once', () => {
+      const element = createElement().variants({ bold: { fontWeight: '700' } });
+
+      assert.throws(
+        () => element.variants({ spacer: { marginTop: '1rem' } }),
+        'variants may only be set once'
+      );
+    });
   });
 
   describe('children', () => {
@@ -116,6 +125,17 @@ describe('Element', () => {
           .current
           .styles,
         { color: 'black' }
+      );
+    });
+
+    it('throws when children are defined more than once', () => {
+      const element = createElement().children(e => ({
+        alfa: e({ display: 'block' })
+      }));
+
+      assert.throws(
+        () => element.children(e => ({ bravo: e({ color: 'red' }) })),
+        'children may only be set once'
       );
     });
   });

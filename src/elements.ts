@@ -107,7 +107,10 @@ export class Element<
   children<T extends ElementProviders>(
     provider: (e: typeof createElement) => T
   ): WithChildren<S, T> {
-    this.current.children = resolveElements(provider(createElement));
+    this.updateState(
+      'children',
+      resolveElements(provider(createElement))
+    );
 
     return this as WithChildren<S, T>;
   }
@@ -128,8 +131,24 @@ export class Element<
   variants<T extends VariantStyles>(
     definitions: T
   ): WithVariants<S, T> {
-    this.current.variants = definitions;
+    this.updateState('variants', definitions);
 
     return this as WithVariants<S, T>;
+  }
+
+  /**
+   * Update a field in the current state
+   *
+   * @throws if the field already has a value
+   */
+  private updateState<T extends keyof ElementState>(
+    field: T,
+    value: ElementState[T]
+  ): void {
+    if (Object.keys(this.current[field]).length) {
+      throw new Error(`${field} may only be set once`);
+    }
+
+    this.current[field] = value;
   }
 }
