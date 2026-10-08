@@ -31,6 +31,7 @@ describe('PatchComponentSpec', () => {
         {
           els: { root: ElementSpec };
           meta: string;
+          variants: never;
         }
       >
     >(true);

@@ -38,15 +38,17 @@ export type NamedElements<T extends string = string> = Record<T, ElementSpec>;
  * A specification for a component
  */
 export type ComponentSpec<
-  E extends NamedElements = BareElements
+  E extends NamedElements = BareElements,
+  V extends string = never
 > = {
   els: E;
+  variants: V;
 };
 
 /**
  * The most inclusive form of a component spec
  */
-export type AnyComponentSpec = ComponentSpec<NamedElements>;
+export type AnyComponentSpec = ComponentSpec<NamedElements, string>;
 
 /**
  * Replace selected fields in a component spec
