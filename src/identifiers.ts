@@ -7,3 +7,10 @@ export function asProperty(camelCase: string): string {
     letter => `-${letter.toLowerCase()}`
   );
 }
+
+/**
+ * Build a BEM class selector from namespace levels
+ */
+export function buildSelector(levels: readonly string[]): string {
+  return `.${levels.join('__')}`;
+}
