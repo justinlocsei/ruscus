@@ -128,10 +128,8 @@ export class Element<
   /**
    * Define variants for the element
    */
-  variants<T extends VariantStyles>(
-    definitions: T
-  ): WithVariants<S, T> {
-    this.updateState('variants', definitions);
+  variants<T extends VariantStyles>(styles: T): WithVariants<S, T> {
+    this.updateState('variants', styles);
 
     return this as WithVariants<S, T>;
   }
