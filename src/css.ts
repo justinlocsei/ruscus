@@ -41,10 +41,13 @@ class ComponentCompiler {
   compile(): string {
     const { current } = this.component;
 
-    this.addRule(
-      `.${this.component.id}`,
-      current.styles
-    );
+    const root = `.${this.component.id}`;
+
+    this.addRule(root, current.styles);
+
+    for (const [name, styles] of Object.entries(current.variants)) {
+      this.addRule(`${root}.is-${name}`, styles);
+    }
 
     for (
       const [name, element] of Object.entries(current.elements)

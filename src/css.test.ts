@@ -115,6 +115,34 @@ describe('styleComponent', () => {
     );
   });
 
+  it('emits styles for root variants', () => {
+    const output = styleComponent(
+      new Component('card')
+        .css({ padding: '1rem' })
+        .variants({
+          compact: { padding: '0.5rem' },
+          large: { padding: '2rem' }
+        })
+    );
+
+    assert.equal(
+      output,
+      css`
+        .card {
+          padding: 1rem;
+        }
+
+        .card.is-compact {
+          padding: 0.5rem;
+        }
+
+        .card.is-large {
+          padding: 2rem;
+        }
+      `
+    );
+  });
+
   it('respects custom indentation', () => {
     const output = styleComponent(
       new Component('card').css({ color: 'black' }),
