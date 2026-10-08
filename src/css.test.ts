@@ -24,6 +24,21 @@ describe('styleComponent', () => {
     );
   });
 
+  it('skips undefined properties', () => {
+    const css = styleComponent(
+      new Component('card').css({ color: 'black', display: undefined })
+    );
+
+    assert.equal(
+      css,
+      [
+        '.card {',
+        '  color: black;',
+        '}'
+      ].join('\n')
+    );
+  });
+
   it('emits element styles with BEM-style selectors', () => {
     const css = styleComponent(
       new Component('card')
