@@ -79,7 +79,7 @@ describe('Element', () => {
       );
     });
 
-    it('allows chaining after children', () => {
+    it('allows chaining', () => {
       assert.deepEqual(
         createElement()
           .children(e => ({ root: e({ display: 'block' }) }))
@@ -139,7 +139,7 @@ describe('Element', () => {
       );
     });
 
-    it('allows chaining after variants', () => {
+    it('allows chaining', () => {
       assert.deepEqual(
         createElement()
           .variants({ bold: { fontWeight: '700' } })
