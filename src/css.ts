@@ -94,10 +94,7 @@ class ComponentCompiler {
     selector: string,
     styles: Styles
   ): string | undefined {
-    const properties = Object
-      .entries(styles)
-      .filter(([, v]) => v !== undefined)
-      .map(([k]) => k);
+    const properties = Object.keys(styles);
 
     if (properties.length === 0) {
       return undefined;
