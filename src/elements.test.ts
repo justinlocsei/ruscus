@@ -174,6 +174,54 @@ describe('Element', () => {
       );
     });
   });
+
+  describe('nested', () => {
+    it('registers nested rules on the element', () => {
+      assert.deepEqual(
+        createElement()
+          .nested({ '&:hover': { opacity: '0.5' } })
+          .current
+          .nested,
+        { '&:hover': { opacity: '0.5' } }
+      );
+    });
+
+    it('stores contextual definitions for compile-time resolution', () => {
+      const element = createElement()
+        .children(e => ({ title: e() }))
+        .nested(({ els }) => {
+          const title = els.title;
+
+          if (title === undefined) {
+            throw new Error('expected title slot');
+          }
+
+          return { [title]: { color: 'red' } };
+        });
+
+      assert.equal(typeof element.current.nested, 'function');
+    });
+
+    it('allows chaining', () => {
+      assert.deepEqual(
+        createElement()
+          .nested({ '&:hover': { opacity: '0.5' } })
+          .css({ color: 'black' })
+          .current
+          .styles,
+        { color: 'black' }
+      );
+    });
+
+    it('throws when nested rules are defined more than once', () => {
+      const element = createElement().nested({ '&:hover': { opacity: '0.5' } });
+
+      assert.throws(
+        () => element.nested({ title: { color: 'red' } }),
+        'nested may only be set once'
+      );
+    });
+  });
 });
 
 describe('ProvidersToSpecs', () => {

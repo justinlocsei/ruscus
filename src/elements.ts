@@ -1,3 +1,4 @@
+import type { NestedProvider } from './blocks.ts';
 import { mergeStyles } from './styles.ts';
 import type { Thunkable } from './types/utils.ts';
 import type {
@@ -61,6 +62,7 @@ export function resolveElements(
  */
 type ElementState = {
   children: Record<string, Element>;
+  nested: NestedProvider;
   styles: Styles;
   variants: Record<string, Styles>;
 };
@@ -96,6 +98,7 @@ export class Element<
   constructor() {
     this.current = {
       children: {},
+      nested: {},
       styles: {},
       variants: {}
     };
@@ -121,6 +124,15 @@ export class Element<
   css(styles: Styles): Element<S> {
     const { current } = this;
     current.styles = mergeStyles(current.styles, styles);
+
+    return this;
+  }
+
+  /**
+   * Define nested styles for the element
+   */
+  nested(definitions: NestedProvider): Element<S> {
+    this.updateState('nested', definitions);
 
     return this;
   }
