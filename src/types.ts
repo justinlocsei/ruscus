@@ -1,3 +1,5 @@
+import type { Patch } from './types/utils.ts';
+
 /**
  * An empty set of named elements
  */
@@ -7,10 +9,25 @@ export type BareElements = Record<string, never>;
  * A specification for an element
  */
 export type ElementSpec<
-  E extends NamedElements = BareElements
+  E extends NamedElements = BareElements,
+  V extends string = never
 > = {
   children: E;
+  variants: V;
 };
+
+/**
+ * The most inclusive form of an element spec
+ */
+export type AnyElementSpec = ElementSpec<NamedElements, string>;
+
+/**
+ * Replace selected fields in an element spec
+ */
+export type PatchElementSpec<
+  S extends AnyElementSpec,
+  U extends Partial<AnyElementSpec>
+> = Patch<AnyElementSpec, S, U>;
 
 /**
  * A collection of named element specs
@@ -25,6 +42,19 @@ export type ComponentSpec<
 > = {
   els: E;
 };
+
+/**
+ * The most inclusive form of a component spec
+ */
+export type AnyComponentSpec = ComponentSpec<NamedElements>;
+
+/**
+ * Replace selected fields in a component spec
+ */
+export type PatchComponentSpec<
+  S extends AnyComponentSpec,
+  U extends Partial<AnyComponentSpec>
+> = Patch<AnyComponentSpec, S, U>;
 
 /**
  * A mapping of CSS properties to values
