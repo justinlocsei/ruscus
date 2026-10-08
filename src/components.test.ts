@@ -115,6 +115,24 @@ describe('Component', () => {
       );
     });
 
+    it('resolves lazy variant definitions', () => {
+      const padding = '0.5rem';
+
+      assert.deepEqual(
+        component()
+          .variants(() => ({
+            compact: { padding },
+            large: { padding: '2rem' }
+          }))
+          .current
+          .variants,
+        {
+          compact: { padding: '0.5rem' },
+          large: { padding: '2rem' }
+        }
+      );
+    });
+
     it('throws when variants are defined more than once', () => {
       const instance = component().variants({ compact: { padding: '0.5rem' } });
 

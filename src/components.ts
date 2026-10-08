@@ -5,6 +5,7 @@ import type {
 } from './elements.ts';
 import { createElement, resolveElements } from './elements.ts';
 import { mergeStyles } from './styles.ts';
+import type { Thunkable } from './types/utils.ts';
 import type {
   AnyComponentSpec,
   ComponentSpec,
@@ -12,6 +13,7 @@ import type {
   Styles,
   VariantStyles
 } from './types.ts';
+import { resolveVariants } from './variants.ts';
 
 /**
  * Options for creating a component
@@ -100,8 +102,10 @@ export class Component<
   /**
    * Define variants for the component root
    */
-  variants<T extends VariantStyles>(styles: T): WithVariants<S, T> {
-    this.updateState('variants', styles);
+  variants<T extends VariantStyles>(
+    definitions: Thunkable<T>
+  ): WithVariants<S, T> {
+    this.updateState('variants', resolveVariants(definitions));
 
     return this as WithVariants<S, T>;
   }

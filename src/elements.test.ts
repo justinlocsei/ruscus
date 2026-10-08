@@ -150,6 +150,24 @@ describe('Element', () => {
       );
     });
 
+    it('resolves lazy variant definitions', () => {
+      const weight = '700';
+
+      assert.deepEqual(
+        createElement()
+          .variants(() => ({
+            bold: { fontWeight: weight },
+            spacer: { marginTop: '1rem' }
+          }))
+          .current
+          .variants,
+        {
+          bold: { fontWeight: '700' },
+          spacer: { marginTop: '1rem' }
+        }
+      );
+    });
+
     it('throws when variants are defined more than once', () => {
       const element = createElement().variants({ bold: { fontWeight: '700' } });
 

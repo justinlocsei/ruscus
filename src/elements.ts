@@ -1,4 +1,5 @@
 import { mergeStyles } from './styles.ts';
+import type { Thunkable } from './types/utils.ts';
 import type {
   AnyElementSpec,
   ElementSpec,
@@ -6,13 +7,12 @@ import type {
   Styles,
   VariantStyles
 } from './types.ts';
+import { resolveVariants } from './variants.ts';
 
 /**
  * An eager or lazy element definition
  */
-export type ElementProvider =
-  | Element
-  | (() => Element);
+export type ElementProvider = Thunkable<Element>;
 
 /**
  * A mapping of element names to providers
@@ -128,8 +128,10 @@ export class Element<
   /**
    * Define variants for the element
    */
-  variants<T extends VariantStyles>(styles: T): WithVariants<S, T> {
-    this.updateState('variants', styles);
+  variants<T extends VariantStyles>(
+    definitions: Thunkable<T>
+  ): WithVariants<S, T> {
+    this.updateState('variants', resolveVariants(definitions));
 
     return this as WithVariants<S, T>;
   }
