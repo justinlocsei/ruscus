@@ -60,11 +60,13 @@ class ComponentCompiler {
    */
   private addElementRules(path: string[], element: Element): void {
     const { current } = element;
+    const selector = `.${[this.component.id, ...path].join('__')}`;
 
-    this.addRule(
-      `.${[this.component.id, ...path].join('__')}`,
-      current.styles
-    );
+    this.addRule(selector, current.styles);
+
+    for (const [name, styles] of Object.entries(current.variants)) {
+      this.addRule(`${selector}.is-${name}`, styles);
+    }
 
     for (const [name, child] of Object.entries(current.children)) {
       this.addElementRules([...path, name], child);

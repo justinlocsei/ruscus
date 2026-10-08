@@ -67,6 +67,34 @@ describe('styleComponent', () => {
     );
   });
 
+  it('emits styles for variants', () => {
+    const css = styleComponent(
+      new Component('card').elements(e => ({
+        line: e({ marginTop: '0' }).variants({
+          bold: { fontWeight: '700' },
+          spacer: { marginTop: '1rem' }
+        })
+      }))
+    );
+
+    assert.equal(
+      css,
+      [
+        '.card__line {',
+        '  margin-top: 0;',
+        '}',
+        '',
+        '.card__line.is-bold {',
+        '  font-weight: 700;',
+        '}',
+        '',
+        '.card__line.is-spacer {',
+        '  margin-top: 1rem;',
+        '}'
+      ].join('\n')
+    );
+  });
+
   it('emits nested element styles', () => {
     const css = styleComponent(
       new Component('hero').elements(e => ({
