@@ -23,6 +23,11 @@ export type Equivalent<Left, Right> = Exclude<Left, Right> extends
   : never;
 
 /**
+ * Report whether a given type is invalid
+ */
+export type Invalid<T> = T extends true ? never : T;
+
+/**
  * Assert that a type matches the given boolean value
  */
 export function assert<T extends boolean>(
