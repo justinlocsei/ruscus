@@ -40,7 +40,7 @@ describe('styleComponent', () => {
     );
   });
 
-  it('emits element styles with BEM-style selectors', () => {
+  it('emits element styles', () => {
     const output = styleComponent(
       new Component('card')
         .css({ color: 'black' })
@@ -68,7 +68,7 @@ describe('styleComponent', () => {
     );
   });
 
-  it('emits styles for variants', () => {
+  it('emits styles for element variants', () => {
     const output = styleComponent(
       new Component('card').elements(e => ({
         line: e({ marginTop: '0' }).variants({
