@@ -26,9 +26,13 @@ Tests live beside source as `src/**/*.test.ts`. After editing a source file, run
 - Strict TypeScript; `.ts` import extensions
 - **Biome** (lint + import organize) and **dprint** (format)
 - `import type` for type-only imports
-- Sort keys alphabetically in plain object literals
+- **Alphabetical order** when adding new code: keys in plain object literals, members in specs and typed maps, and top-level functions or methods in a module (unless a different order is intentional, e.g. a fluent chain)
 - Comments only for non-obvious logic; minimize scope; match existing patterns
 - Do not reword existing code comments — leave their wording unchanged unless the underlying behavior changed and the comment is no longer accurate
+
+## Testing conventions
+
+- Use **NATO phonetic** names for sequential test data (`alfa`, `bravo`, `charlie`, …) instead of `foo` / `test1` / `a`, `b`
 
 ## Library internals
 
