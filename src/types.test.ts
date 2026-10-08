@@ -2,11 +2,21 @@ import { describe, it } from 'vitest';
 
 import { T } from './tests.ts';
 import type {
+  Block,
   ComponentSpec,
   ElementSpec,
   PatchComponentSpec,
   PatchElementSpec
 } from './types.ts';
+
+describe('Block', () => {
+  it('rejects mixed declarations and nested rules', () => {
+    type AssertBlock<T extends Block> = T;
+
+    // @ts-expect-error mixed declaration and rule block
+    type _Invalid = AssertBlock<{ color: 'red'; title: { color: 'blue' } }>;
+  });
+});
 
 describe('PatchComponentSpec', () => {
   it('rejects invalid field types', () => {

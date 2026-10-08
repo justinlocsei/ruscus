@@ -59,9 +59,26 @@ export type PatchComponentSpec<
 > = Patch<AnyComponentSpec, S, U>;
 
 /**
+ * A CSS value
+ */
+export type Value = number | string;
+
+/**
+ * A block containing either styles or a deeper block
+ */
+export type Block = RuleBlock | Styles;
+
+/**
  * A mapping of CSS properties to values
  */
-export type Styles<T extends string = string> = Record<T, string | undefined>;
+export type Styles<T extends string = string> = Record<T, Value>;
+
+/**
+ * A mapping of selectors to nested blocks
+ */
+export type RuleBlock = {
+  [selector: string]: Block;
+};
 
 /**
  * Styles for named variants
