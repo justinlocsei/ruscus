@@ -1,13 +1,13 @@
 import { assert, describe, it } from 'vitest';
 
-import { projectProperty } from './properties.ts';
+import { asProperty } from './properties.ts';
 import { checkConversion } from './tests.ts';
 
-describe('projectProperty', () => {
+describe('asProperty', () => {
   it('projects camelCase properties as CSS properties', () => {
     checkConversion<string, string>(
       (input, output, message) => {
-        assert.equal(output, projectProperty(input), message);
+        assert.equal(output, asProperty(input), message);
       },
       [
         ['color', 'color'],

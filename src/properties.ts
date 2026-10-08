@@ -1,8 +1,8 @@
 /**
- * Project a camelCase style property to a CSS declaration name
+ * Project a camelCase style property to a CSS property name
  */
-export function projectProperty(property: string): string {
-  return property.replace(
+export function asProperty(camelCase: string): string {
+  return camelCase.replace(
     /[A-Z]/g,
     letter => `-${letter.toLowerCase()}`
   );
