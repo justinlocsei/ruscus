@@ -33,16 +33,13 @@ describe('resolveElements', () => {
 });
 
 describe('Element', () => {
-  it('has empty styles by default', () => {
-    assert.deepEqual(new Element().current.styles, {});
-  });
-
-  it('has no children by default', () => {
-    assert.deepEqual(new Element().current.children, {});
-  });
-
-  it('has no variants by default', () => {
-    assert.deepEqual(new Element().current.variants, {});
+  it('starts with an empty state', () => {
+    assert.deepEqual(new Element().current, {
+      children: {},
+      nested: {},
+      styles: {},
+      variants: {}
+    });
   });
 
   describe('children', () => {
