@@ -1,3 +1,4 @@
+export { css } from './tests/css.ts';
 export * as T from './tests/types.ts';
 
 /**
