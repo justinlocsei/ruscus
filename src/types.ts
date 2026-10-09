@@ -1,20 +1,9 @@
 import type { Patch } from './types/utils.ts';
 
 /**
- * An empty set of named elements
+ * The most inclusive form of a component spec
  */
-export type BareElements = { [K in never]: never };
-
-/**
- * A specification for an element
- */
-export type ElementSpec<
-  E extends NamedElements = BareElements,
-  V extends string = never
-> = {
-  children: E;
-  variants: V;
-};
+export type AnyComponentSpec = ComponentSpec<NamedElements, string>;
 
 /**
  * The most inclusive form of an element spec
@@ -22,19 +11,14 @@ export type ElementSpec<
 export type AnyElementSpec = ElementSpec<NamedElements, string>;
 
 /**
- * Replace selected fields in an element spec
+ * An empty set of named elements
  */
-export type PatchElementSpec<
-  S extends AnyElementSpec,
-  U extends Partial<AnyElementSpec>
-> = Patch<AnyElementSpec, S, U>;
+export type BareElements = { [K in never]: never };
 
 /**
- * A collection of named element specs
+ * A block containing either styles or a deeper block
  */
-export type NamedElements<T extends string = string> = {
-  [K in T]: ElementSpec<NamedElements | BareElements, string>;
-};
+export type Block = RuleBlock | Styles;
 
 /**
  * A specification for a component
@@ -48,9 +32,29 @@ export type ComponentSpec<
 };
 
 /**
- * The most inclusive form of a component spec
+ * CSS declarations in a nested rule block
  */
-export type AnyComponentSpec = ComponentSpec<NamedElements, string>;
+export type Declarations = {
+  [property: string]: Value | undefined;
+};
+
+/**
+ * A specification for an element
+ */
+export type ElementSpec<
+  E extends NamedElements = BareElements,
+  V extends string = never
+> = {
+  children: E;
+  variants: V;
+};
+
+/**
+ * A collection of named element specs
+ */
+export type NamedElements<T extends string = string> = {
+  [K in T]: ElementSpec<NamedElements | BareElements, string>;
+};
 
 /**
  * Replace selected fields in a component spec
@@ -61,26 +65,12 @@ export type PatchComponentSpec<
 > = Patch<AnyComponentSpec, S, U>;
 
 /**
- * A CSS value
+ * Replace selected fields in an element spec
  */
-export type Value = number | string;
-
-/**
- * A block containing either styles or a deeper block
- */
-export type Block = RuleBlock | Styles;
-
-/**
- * A mapping of CSS properties to values
- */
-export type Styles<T extends string = string> = Record<T, Value>;
-
-/**
- * CSS declarations in a nested rule block
- */
-export type Declarations = {
-  [property: string]: Value | undefined;
-};
+export type PatchElementSpec<
+  S extends AnyElementSpec,
+  U extends Partial<AnyElementSpec>
+> = Patch<AnyElementSpec, S, U>;
 
 /**
  * A mapping of selectors to nested blocks
@@ -88,6 +78,16 @@ export type Declarations = {
 type RuleBlock = {
   [selector: string]: RuleBlock | Declarations;
 };
+
+/**
+ * A mapping of CSS properties to values
+ */
+export type Styles<T extends string = string> = Record<T, Value>;
+
+/**
+ * A CSS value
+ */
+export type Value = number | string;
 
 /**
  * Styles for named variants
