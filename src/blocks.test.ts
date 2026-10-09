@@ -2,7 +2,7 @@ import { assert, describe, it } from 'vitest';
 
 import {
   buildNestedContext,
-  isStyles,
+  isDeclarations,
   resolveNestedProvider
 } from './blocks.ts';
 import { createElement } from './elements.ts';
@@ -45,13 +45,17 @@ describe('buildNestedContext', () => {
   });
 });
 
-describe('isStyles', () => {
+describe('isDeclarations', () => {
   it('accepts declaration blocks', () => {
-    assert.equal(isStyles({ color: 'red', opacity: 1 }), true);
+    assert.equal(isDeclarations({ color: 'red', opacity: 1 }), true);
+  });
+
+  it('accepts undefined declaration values', () => {
+    assert.equal(isDeclarations({ color: 'red', margin: undefined }), true);
   });
 
   it('rejects nested selector blocks', () => {
-    assert.equal(isStyles({ title: { color: 'red' } }), false);
+    assert.equal(isDeclarations({ title: { color: 'red' } }), false);
   });
 });
 

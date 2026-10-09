@@ -3,11 +3,11 @@ import { buildSelector, ELEMENT_ROOT } from './identifiers.ts';
 import type {
   AnySelectors,
   Block,
+  Declarations,
   NestedContext,
   NestedProvider,
   RuleBlock,
-  Selectors,
-  Styles
+  Selectors
 } from './types.ts';
 
 /**
@@ -53,11 +53,15 @@ function buildSelectors(
 }
 
 /**
- * Report whether a block contains only style declarations
+ * Report whether a block contains only declarations
  */
-export function isStyles(block: Block): block is Styles {
+export function isDeclarations(block: Block): block is Declarations {
   for (const value of Object.values(block)) {
-    if (typeof value !== 'number' && typeof value !== 'string') {
+    if (
+      value !== undefined
+      && typeof value !== 'number'
+      && typeof value !== 'string'
+    ) {
       return false;
     }
   }
