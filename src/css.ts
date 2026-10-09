@@ -1,7 +1,12 @@
+import {
+  buildNestedContext,
+  isStyles,
+  resolveNestedProvider
+} from './blocks.ts';
 import type { Component } from './components.ts';
 import type { Element } from './elements.ts';
-import { asProperty } from './properties.ts';
-import type { Styles } from './types.ts';
+import { asProperty, buildSelector } from './identifiers.ts';
+import type { Block, Styles } from './types.ts';
 
 /**
  * Options for compiling a component's CSS
@@ -40,8 +45,7 @@ class ComponentCompiler {
    */
   compile(): string {
     const { current } = this.component;
-
-    const root = `.${this.component.id}`;
+    const root = this.buildSelector();
 
     this.addRule(root, current.styles);
 
@@ -63,7 +67,7 @@ class ComponentCompiler {
    */
   private addElementRules(path: string[], element: Element): void {
     const { current } = element;
-    const selector = `.${[this.component.id, ...path].join('__')}`;
+    const selector = this.buildSelector(...path);
 
     this.addRule(selector, current.styles);
 
@@ -85,6 +89,13 @@ class ComponentCompiler {
     if (rule) {
       this.blocks.push(rule);
     }
+  }
+
+  /**
+   * Build a selector for a component element
+   */
+  private buildSelector(...parts: string[]): string {
+    return buildSelector([this.component.id, ...parts]);
   }
 
   /**
