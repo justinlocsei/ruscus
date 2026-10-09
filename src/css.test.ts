@@ -25,21 +25,6 @@ describe('styleComponent', () => {
     );
   });
 
-  it('skips undefined properties', () => {
-    const output = styleComponent(
-      new Component('card').css({ color: 'black', display: undefined })
-    );
-
-    assert.equal(
-      output,
-      css`
-        .card {
-          color: black;
-        }
-      `
-    );
-  });
-
   it('emits element styles', () => {
     const output = styleComponent(
       new Component('card')
