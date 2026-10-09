@@ -22,6 +22,11 @@ export type ElementProvider = Thunkable<Element>;
 export type ElementProviders = Record<string, ElementProvider>;
 
 /**
+ * A mapping of element names to elements
+ */
+export type NamedElements = Record<string, Element>;
+
+/**
  * Infer an element spec from a provider
  */
 export type SpecFromProvider<P extends ElementProvider> = P extends
@@ -48,8 +53,8 @@ export function createElement(
  */
 export function resolveElements(
   providers: ElementProviders
-): Record<string, Element> {
-  const els: Record<string, Element> = {};
+): NamedElements {
+  const els: NamedElements = {};
 
   for (const [name, provider] of Object.entries(providers)) {
     els[name] = typeof provider === 'function' ? provider() : provider;
@@ -62,7 +67,7 @@ export function resolveElements(
  * The current state of an element
  */
 type ElementState = {
-  children: Record<string, Element>;
+  children: NamedElements;
   nested: NestedProvider<ElementSpecs>;
   styles: Styles;
   variants: Record<string, Styles>;
