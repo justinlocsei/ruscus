@@ -9,6 +9,11 @@ export function asProperty(camelCase: string): string {
 }
 
 /**
+ * Reserved slot name for the root of an element with children
+ */
+export const ELEMENT_ROOT = 'root';
+
+/**
  * Build a BEM class selector from namespace levels
  */
 export function buildSelector(levels: readonly string[]): string {
