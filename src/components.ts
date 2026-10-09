@@ -1,6 +1,6 @@
 import type {
-  Element,
   ElementProviders,
+  NamedElements,
   ProvidersToSpecs
 } from './elements.ts';
 import { createElement, resolveElements } from './elements.ts';
@@ -26,7 +26,7 @@ type ComponentOptions = {
  * The current state of a component
  */
 type ComponentState = {
-  elements: Record<string, Element>;
+  elements: NamedElements;
   styles: Styles;
   variants: Record<string, Styles>;
 };
