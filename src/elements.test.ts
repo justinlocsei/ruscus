@@ -217,7 +217,7 @@ describe('Element', () => {
       const element = createElement().nested({ '&:hover': { opacity: '0.5' } });
 
       assert.throws(
-        () => element.nested({ title: { color: 'red' } }),
+        () => element.nested({ '&:focus': { outline: 'none' } }),
         'nested may only be set once'
       );
     });
