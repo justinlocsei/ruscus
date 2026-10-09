@@ -8,9 +8,11 @@ import {
 import { createElement } from './elements.ts';
 import type { ElementSpec, ElementSpecs, NestedProvider } from './types.ts';
 
+const e = createElement;
+
 describe('buildNestedContext', () => {
   it('includes selectors for child elements', () => {
-    const body = createElement().children(e => ({ title: e() }));
+    const body = createElement().children({ title: e() });
 
     assert.deepEqual(
       buildNestedContext(['card', 'body'], body.current.children),
@@ -19,12 +21,12 @@ describe('buildNestedContext', () => {
   });
 
   it('exposes deeply nested selectors', () => {
-    const card = createElement().children(e => ({
+    const card = createElement().children({
       header: () =>
         e().children(() => ({
           title: e().children(() => ({ text: e() }))
         }))
-    }));
+    });
 
     assert.deepEqual(
       buildNestedContext(['card'], card.current.children),
@@ -73,7 +75,7 @@ describe('resolveNestedProvider', () => {
   });
 
   it('resolves contextual definitions', () => {
-    const body = createElement().children(e => ({ title: e() }));
+    const body = createElement().children({ title: e() });
     const ctx = buildNestedContext(['card', 'body'], body.current.children);
 
     const provider: NestedProvider<{ title: ElementSpec }> = ({ els }) => ({

@@ -114,11 +114,13 @@ export class Element<
    * Define child elements
    */
   children<T extends ElementProviders>(
-    provider: (e: typeof createElement) => T
+    definitions: Thunkable<T>
   ): WithChildren<S, T> {
     this.updateState(
       'children',
-      resolveElements(provider(createElement))
+      resolveElements(
+        typeof definitions === 'function' ? definitions() : definitions
+      )
     );
 
     return this as WithChildren<S, T>;

@@ -5,6 +5,8 @@ import { createElement, Element, resolveElements } from './elements.ts';
 import { T } from './tests.ts';
 import type { ElementSpec, EmptyElementSpecs } from './types.ts';
 
+const e = createElement;
+
 describe('createElement', () => {
   it('creates an element with empty styles by default', () => {
     assert.deepEqual(createElement().current.styles, {});
@@ -44,18 +46,28 @@ describe('Element', () => {
 
   describe('children', () => {
     it('registers child element instances for each name', () => {
-      const { current: { children } } = createElement().children(e => ({
+      const { current: { children } } = createElement().children({
         body: e({ margin: '0' }),
         title: e().css({ color: 'red' })
-      }));
+      });
 
       assert.deepEqual(children.body?.current.styles, { margin: '0' });
       assert.deepEqual(children.title?.current.styles, { color: 'red' });
     });
 
     it('supports lazy child providers', () => {
-      const result = createElement().children(e => ({
+      const result = createElement().children({
         title: () => e().css({ fontWeight: '700' })
+      });
+
+      assert.deepEqual(result.current.children.title?.current.styles, {
+        fontWeight: '700'
+      });
+    });
+
+    it('supports lazy child maps', () => {
+      const result = createElement().children(() => ({
+        title: e().css({ fontWeight: '700' })
       }));
 
       assert.deepEqual(result.current.children.title?.current.styles, {
@@ -64,11 +76,11 @@ describe('Element', () => {
     });
 
     it('allows nested children', () => {
-      const parent = createElement().children(e => ({
-        content: e().children(n => ({
-          text: n({ color: 'red' })
-        }))
-      }));
+      const parent = createElement().children({
+        content: e().children({
+          text: e({ color: 'red' })
+        })
+      });
 
       assert.deepEqual(
         parent.current.children.content?.current.children.text?.current.styles,
@@ -79,7 +91,7 @@ describe('Element', () => {
     it('allows chaining', () => {
       assert.deepEqual(
         createElement()
-          .children(e => ({ root: e({ display: 'block' }) }))
+          .children({ root: e({ display: 'block' }) })
           .css({ color: 'black' })
           .current
           .styles,
@@ -88,12 +100,12 @@ describe('Element', () => {
     });
 
     it('throws when children are defined more than once', () => {
-      const element = createElement().children(e => ({
+      const element = createElement().children({
         alfa: e({ display: 'block' })
-      }));
+      });
 
       assert.throws(
-        () => element.children(e => ({ bravo: e({ color: 'red' }) })),
+        () => element.children({ bravo: e({ color: 'red' }) }),
         'children may only be set once'
       );
     });
@@ -188,7 +200,7 @@ describe('Element', () => {
 
     it('stores contextual definitions for compile-time resolution', () => {
       const element = createElement()
-        .children(e => ({ title: e() }))
+        .children({ title: e() })
         .nested(({ els }) => ({ [els.title]: { color: 'red' } }));
 
       assert.equal(typeof element.current.nested, 'function');
@@ -196,7 +208,7 @@ describe('Element', () => {
 
     it('types els from children', () => {
       createElement()
-        .children(e => ({ title: e() }))
+        .children({ title: e() })
         .nested(({ els }) => {
           T.assert<
             T.Equivalent<
@@ -209,7 +221,7 @@ describe('Element', () => {
         });
 
       createElement()
-        .children(e => ({ title: e() }))
+        .children({ title: e() })
         .nested(({ els }) => {
           T.assert<
             T.Equivalent<
@@ -225,12 +237,12 @@ describe('Element', () => {
         });
 
       createElement()
-        .children(e => ({
+        .children({
           header: () =>
-            e().children(h => ({
-              title: h().children(n => ({ text: n() }))
+            e().children(() => ({
+              title: e().children(() => ({ text: e() }))
             }))
-        }))
+        })
         .nested(({ els }) => {
           T.assert<
             T.Equivalent<
