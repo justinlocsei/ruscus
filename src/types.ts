@@ -75,7 +75,7 @@ export type PatchElementSpec<
 /**
  * A mapping of selectors to nested blocks
  */
-type RuleBlock = {
+export type RuleBlock = {
   [selector: string]: RuleBlock | Declarations;
 };
 
