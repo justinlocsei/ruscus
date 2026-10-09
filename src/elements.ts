@@ -1,10 +1,10 @@
-import type { NestedProvider } from './blocks.ts';
 import { mergeStyles } from './styles.ts';
 import type { Thunkable } from './types/utils.ts';
 import type {
   AnyElementSpec,
   ElementSpec,
   ElementSpecs,
+  NestedProvider,
   PatchElementSpec,
   Styles,
   VariantStyles
