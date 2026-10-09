@@ -76,10 +76,17 @@ export type Block = RuleBlock | Styles;
 export type Styles<T extends string = string> = Record<T, Value>;
 
 /**
+ * CSS declarations in a nested rule block
+ */
+export type Declarations = {
+  [property: string]: Value | undefined;
+};
+
+/**
  * A mapping of selectors to nested blocks
  */
-export type RuleBlock = {
-  [selector: string]: Block;
+type RuleBlock = {
+  [selector: string]: RuleBlock | Declarations;
 };
 
 /**
