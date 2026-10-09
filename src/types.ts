@@ -25,9 +25,9 @@ export type AnySelectors = {
 };
 
 /**
- * A block containing either styles or a deeper block
+ * A block containing either declarations or nested rules
  */
-export type Block = RuleBlock | Styles;
+export type Block = Declarations | RuleBlock;
 
 /**
  * A specification for a component
@@ -104,7 +104,7 @@ export type PatchElementSpec<
  * A mapping of selectors to nested blocks
  */
 export type RuleBlock = {
-  [selector: string]: RuleBlock | Declarations;
+  [selector: string]: Block;
 };
 
 /**
