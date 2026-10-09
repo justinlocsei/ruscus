@@ -1,5 +1,7 @@
 import type { Patch, Thunkable } from './types/utils.ts';
 
+export const ELEMENT_ROOT = 'root';
+
 /**
  * The most inclusive form of a component spec
  */
@@ -105,7 +107,7 @@ type SelectorForSpec<S extends AnyElementSpec> = [
   keyof S['children']
 ] extends [never] ? string
   : S['children'] extends AnyElementSpecs<S['children']>
-    ? { root: string } & Selectors<S['children']>
+    ? { [ELEMENT_ROOT]: string } & Selectors<S['children']>
   : never;
 
 /**
