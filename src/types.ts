@@ -113,7 +113,7 @@ type SelectorForSpec<S extends AnyElementSpec> = [
 /**
  * Class selectors for a set of nested elements
  */
-type Selectors<E extends AnyElementSpecs<E>> = {
+export type Selectors<E extends AnyElementSpecs<E> = EmptyElementSpecs> = {
   [K in keyof E]: SelectorForSpec<E[K]>;
 };
 
