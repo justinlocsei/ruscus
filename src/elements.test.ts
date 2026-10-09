@@ -3,7 +3,7 @@ import { assert, describe, it } from 'vitest';
 import type { ProvidersToSpecs, SpecFromProvider } from './elements.ts';
 import { createElement, Element, resolveElements } from './elements.ts';
 import { T } from './tests.ts';
-import type { BareElements, ElementSpec } from './types.ts';
+import type { ElementSpec, EmptyElementSpecs } from './types.ts';
 
 describe('createElement', () => {
   it('creates an element with empty styles by default', () => {
@@ -298,13 +298,13 @@ describe('SpecFromProvider', () => {
 
   it('infers variant names from an element with variants', () => {
     type WithVariants = Element<
-      ElementSpec<BareElements, 'spacer'>
+      ElementSpec<EmptyElementSpecs, 'spacer'>
     >;
 
     T.assert<
       T.Equivalent<
         SpecFromProvider<WithVariants>,
-        ElementSpec<BareElements, 'spacer'>
+        ElementSpec<EmptyElementSpecs, 'spacer'>
       >
     >(true);
   });

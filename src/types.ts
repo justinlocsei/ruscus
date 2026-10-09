@@ -11,11 +11,6 @@ export type AnyComponentSpec = ComponentSpec<ElementSpecs, string>;
 export type AnyElementSpec = ElementSpec<ElementSpecs, string>;
 
 /**
- * An empty set of named elements
- */
-export type BareElements = { [K in never]: never };
-
-/**
  * A block containing either styles or a deeper block
  */
 export type Block = RuleBlock | Styles;
@@ -24,7 +19,7 @@ export type Block = RuleBlock | Styles;
  * A specification for a component
  */
 export type ComponentSpec<
-  E extends ElementSpecs = BareElements,
+  E extends ElementSpecs = EmptyElementSpecs,
   V extends string = never
 > = {
   els: E;
@@ -42,7 +37,7 @@ export type Declarations = {
  * A specification for an element
  */
 export type ElementSpec<
-  E extends ElementSpecs = BareElements,
+  E extends ElementSpecs = EmptyElementSpecs,
   V extends string = never
 > = {
   children: E;
@@ -53,8 +48,13 @@ export type ElementSpec<
  * A collection of named element specs
  */
 export type ElementSpecs<T extends string = string> = {
-  [K in T]: ElementSpec<ElementSpecs | BareElements, string>;
+  [K in T]: ElementSpec<ElementSpecs | EmptyElementSpecs, string>;
 };
+
+/**
+ * An empty set of element specs
+ */
+export type EmptyElementSpecs = { [K in never]: never };
 
 /**
  * Replace selected fields in a component spec
