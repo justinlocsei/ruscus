@@ -189,17 +189,58 @@ describe('Element', () => {
     it('stores contextual definitions for compile-time resolution', () => {
       const element = createElement()
         .children(e => ({ title: e() }))
-        .nested(({ els }) => {
-          const title = els.title;
-
-          if (title === undefined) {
-            throw new Error('expected title slot');
-          }
-
-          return { [title]: { color: 'red' } };
-        });
+        .nested(({ els }) => ({ [els.title]: { color: 'red' } }));
 
       assert.equal(typeof element.current.nested, 'function');
+    });
+
+    it('types els from children', () => {
+      createElement()
+        .children(e => ({ title: e() }))
+        .nested(({ els }) => {
+          T.assert<
+            T.Equivalent<
+              typeof els,
+              { title: string }
+            >
+          >(true);
+
+          return { [els.title]: { color: 'red' } };
+        });
+
+      createElement()
+        .children(e => ({ title: e() }))
+        .nested(({ els }) => {
+          T.assert<
+            T.Equivalent<
+              typeof els,
+              { title: string }
+            >
+          >(true);
+
+          return {
+            '&:hover': { opacity: '0.9' },
+            [els.title]: { color: 'red' }
+          };
+        });
+
+      createElement()
+        .children(e => ({
+          header: () =>
+            e().children(h => ({
+              title: h().children(n => ({ text: n() }))
+            }))
+        }))
+        .nested(({ els }) => {
+          T.assert<
+            T.Equivalent<
+              typeof els,
+              { header: { title: { text: string } } }
+            >
+          >(true);
+
+          return { [els.header.title.text]: { color: 'red' } };
+        });
     });
 
     it('allows chaining', () => {
