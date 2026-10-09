@@ -1,6 +1,13 @@
 import { buildSelector } from './identifiers.ts';
 import type { Thunkable } from './types/utils.ts';
-import type { Block, Styles } from './types.ts';
+import type {
+  AnyElementSpec,
+  BareElements,
+  Block,
+  NamedElements,
+  RuleBlock,
+  Styles
+} from './types.ts';
 
 /**
  * The context available to nested rule definitions
