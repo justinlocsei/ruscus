@@ -18,6 +18,13 @@ export type AnyElementSpec = ElementSpec<ElementSpecs, string>;
 type AnyElementSpecs<E> = { [K in keyof E]: AnyElementSpec };
 
 /**
+ * The generic shape for element-specific class selectors
+ */
+export type AnySelectors = {
+  [name: string]: AnySelectors | string;
+};
+
+/**
  * A block containing either styles or a deeper block
  */
 export type Block = RuleBlock | Styles;
