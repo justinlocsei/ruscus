@@ -35,9 +35,11 @@ export function buildNestedContext(
 /**
  * A provider of nested styles
  */
-export type NestedProvider =
-  | Thunkable<Block>
-  | ((ctx: NestedContext) => Block);
+export type NestedProvider<
+  E extends { [K in keyof E]: AnyElementSpec } = BareElements
+> =
+  | Thunkable<RuleBlock>
+  | ((ctx: NestedContext<E>) => RuleBlock);
 
 /**
  * Report whether a block contains only style declarations
