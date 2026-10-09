@@ -81,6 +81,15 @@ class ComponentCompiler {
   }
 
   /**
+   * Build a selector for a nested rule key
+   */
+  private buildNestedSelector(anchor: string, key: string): string {
+    return key.startsWith('&')
+      ? `${anchor}${key.slice(1)}`
+      : `${anchor} ${key}`;
+  }
+
+  /**
    * Add a CSS rule
    */
   private addRule(selector: string, styles: Styles): void {
