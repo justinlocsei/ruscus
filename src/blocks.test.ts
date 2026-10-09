@@ -5,12 +5,40 @@ import {
   isStyles,
   resolveNestedProvider
 } from './blocks.ts';
+import { createElement } from './elements.ts';
+import type { ElementSpec, ElementSpecs, NestedProvider } from './types.ts';
 
 describe('buildNestedContext', () => {
-  it('maps child slots to class selectors', () => {
+  it('includes selectors for child elements', () => {
+    const body = createElement().children(e => ({ title: e() }));
+
     assert.deepEqual(
-      buildNestedContext(['card', 'body'], ['title']),
+      buildNestedContext(['card', 'body'], body.current.children),
       { els: { title: '.card__body__title' } }
+    );
+  });
+
+  it('exposes deeply nested selectors', () => {
+    const card = createElement().children(e => ({
+      header: () =>
+        e().children(() => ({
+          title: e().children(() => ({ text: e() }))
+        }))
+    }));
+
+    assert.deepEqual(
+      buildNestedContext(['card'], card.current.children),
+      {
+        els: {
+          header: {
+            root: '.card__header',
+            title: {
+              root: '.card__header__title',
+              text: '.card__header__title__text'
+            }
+          }
+        }
+      }
     );
   });
 });
@@ -35,29 +63,26 @@ describe('resolveNestedProvider', () => {
     );
   });
 
-  it('resolves contextual definitions', () => {
-    const ctx = buildNestedContext(['card', 'body'], ['title']);
-
-    assert.deepEqual(
-      resolveNestedProvider(({ els }) => {
-        const title = els.title;
-
-        if (title === undefined) {
-          throw new Error('expected a title');
-        }
-
-        return { [title]: { color: 'red' } };
-      }, ctx),
-      { '.card__body__title': { color: 'red' } }
-    );
-  });
-
   it('resolves lazy definitions', () => {
     assert.deepEqual(
       resolveNestedProvider(() => ({ '&:hover': { opacity: '0.5' } }), {
         els: {}
       }),
       { '&:hover': { opacity: '0.5' } }
+    );
+  });
+
+  it('resolves contextual definitions', () => {
+    const body = createElement().children(e => ({ title: e() }));
+    const ctx = buildNestedContext(['card', 'body'], body.current.children);
+
+    const provider: NestedProvider<{ title: ElementSpec }> = ({ els }) => ({
+      [els.title]: { color: 'red' }
+    });
+
+    assert.deepEqual(
+      resolveNestedProvider(provider as NestedProvider<ElementSpecs>, ctx),
+      { '.card__body__title': { color: 'red' } }
     );
   });
 });

@@ -1,45 +1,56 @@
-import { buildSelector } from './identifiers.ts';
-import type { Thunkable } from './types/utils.ts';
+import type { NamedElements } from './elements.ts';
+import { buildSelector, ELEMENT_ROOT } from './identifiers.ts';
 import type {
-  AnyElementSpec,
-  BareElements,
+  AnySelectors,
   Block,
-  NamedElements,
+  NestedContext,
+  NestedProvider,
   RuleBlock,
+  Selectors,
   Styles
 } from './types.ts';
 
 /**
- * The context available to nested rule definitions
- */
-export type NestedContext = {
-  els: Record<string, string>;
-};
-
-/**
- * Build a nested context for an element within a component
+ * Build a context for defining nested rules
  */
 export function buildNestedContext(
   namespace: string[],
-  children: string[]
+  children: NamedElements
 ): NestedContext {
-  const els: Record<string, string> = {};
-
-  for (const child of children) {
-    els[child] = buildSelector([...namespace, child]);
-  }
-
-  return { els };
+  return {
+    els: buildSelectors(namespace, children)
+  };
 }
 
 /**
- * A provider of nested styles
+ * Build a selector for each item in an element tree
  */
-export type NestedProvider<
-  E extends { [K in keyof E]: AnyElementSpec } = BareElements
-> =
-  | Thunkable<RuleBlock>
-  | ((ctx: NestedContext<E>) => RuleBlock);
+function buildSelectors(
+  namespace: string[],
+  elements: NamedElements
+): Selectors {
+  const els: AnySelectors = {};
+
+  for (const name of Object.keys(elements)) {
+    const element = elements[name];
+
+    if (element === undefined) {
+      continue;
+    }
+
+    const path = [...namespace, name];
+    const { children } = element.current;
+
+    els[name] = Object.keys(children).length === 0
+      ? buildSelector(path)
+      : {
+        [ELEMENT_ROOT]: buildSelector(path),
+        ...buildSelectors(path, children)
+      };
+  }
+
+  return els;
+}
 
 /**
  * Report whether a block contains only style declarations
