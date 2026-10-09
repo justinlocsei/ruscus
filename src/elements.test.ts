@@ -235,7 +235,12 @@ describe('Element', () => {
           T.assert<
             T.Equivalent<
               typeof els,
-              { header: { title: { text: string } } }
+              {
+                header: {
+                  root: string;
+                  title: { root: string; text: string };
+                };
+              }
             >
           >(true);
 
