@@ -81,12 +81,42 @@ describe('styleComponent', () => {
     );
   });
 
+  it('emits nested rules for an element', () => {
+    const output = styleComponent(
+      new Component('card').elements(e => ({
+        body: e({ display: 'block' })
+          .children({ title: e() })
+          .nested(({ els }) => ({
+            '&:hover': { opacity: '0.9' },
+            [els.title]: { color: 'red' }
+          }))
+      }))
+    );
+
+    assert.equal(
+      output,
+      css`
+        .card__body {
+          display: block;
+        }
+
+        .card__body:hover {
+          opacity: 0.9;
+        }
+
+        .card__body .card__body__title {
+          color: red;
+        }
+      `
+    );
+  });
+
   it('emits nested element styles', () => {
     const output = styleComponent(
       new Component('hero').elements(e => ({
-        title: e().children(n => ({
-          text: n({ color: 'red' })
-        }))
+        title: e().children({
+          text: e({ color: 'red' })
+        })
       }))
     );
 

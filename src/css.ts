@@ -1,12 +1,12 @@
 import {
   buildNestedContext,
-  isStyles,
+  isDeclarations,
   resolveNestedProvider
 } from './blocks.ts';
 import type { Component } from './components.ts';
 import type { Element } from './elements.ts';
 import { asProperty, buildSelector } from './identifiers.ts';
-import type { Declarations, RuleBlock } from './types.ts';
+import type { Block, Declarations } from './types.ts';
 
 /**
  * Options for compiling a component's CSS
@@ -75,8 +75,35 @@ class ComponentCompiler {
       this.addRule(`${selector}.is-${name}`, styles);
     }
 
+    this.addNestedRules(
+      selector,
+      resolveNestedProvider(
+        current.nested,
+        buildNestedContext(
+          [this.component.id, ...path],
+          current.children
+        )
+      )
+    );
+
     for (const [name, child] of Object.entries(current.children)) {
       this.addElementRules([...path, name], child);
+    }
+  }
+
+  /**
+   * Add nested rules anchored to a selector
+   */
+  private addNestedRules(root: string, block: Block): void {
+    if (isDeclarations(block)) {
+      this.addRule(root, block);
+    } else {
+      for (const [key, value] of Object.entries(block)) {
+        this.addNestedRules(
+          this.buildNestedSelector(root, key),
+          value
+        );
+      }
     }
   }
 
