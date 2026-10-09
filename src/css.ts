@@ -6,7 +6,7 @@ import {
 import type { Component } from './components.ts';
 import type { Element } from './elements.ts';
 import { asProperty, buildSelector } from './identifiers.ts';
-import type { Block, Styles } from './types.ts';
+import type { Declarations, RuleBlock } from './types.ts';
 
 /**
  * Options for compiling a component's CSS
@@ -92,8 +92,8 @@ class ComponentCompiler {
   /**
    * Add a CSS rule
    */
-  private addRule(selector: string, styles: Styles): void {
-    const rule = this.formatRule(selector, styles);
+  private addRule(selector: string, declarations: Declarations): void {
+    const rule = this.formatRule(selector, declarations);
 
     if (rule) {
       this.blocks.push(rule);
@@ -112,9 +112,12 @@ class ComponentCompiler {
    */
   private formatRule(
     selector: string,
-    styles: Styles
+    styles: Declarations
   ): string | undefined {
-    const properties = Object.keys(styles);
+    const properties = Object
+      .entries(styles)
+      .filter(([_, v]) => v !== undefined)
+      .map(([k]) => k);
 
     if (properties.length === 0) {
       return undefined;
