@@ -9,6 +9,7 @@ import type {
   Styles,
   VariantStyles
 } from './types.ts';
+import { resolve } from './utils.ts';
 import { resolveVariants } from './variants.ts';
 
 /**
@@ -57,7 +58,7 @@ export function resolveElements(
   const els: NamedElements = {};
 
   for (const [name, provider] of Object.entries(providers)) {
-    els[name] = typeof provider === 'function' ? provider() : provider;
+    els[name] = resolve(provider);
   }
 
   return els;
@@ -118,9 +119,7 @@ export class Element<
   ): WithChildren<S, T> {
     this.updateState(
       'children',
-      resolveElements(
-        typeof definitions === 'function' ? definitions() : definitions
-      )
+      resolveElements(resolve(definitions))
     );
 
     return this as WithChildren<S, T>;
