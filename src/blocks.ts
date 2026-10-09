@@ -60,6 +60,8 @@ export function isStyles(block: Block): block is Styles {
 export function resolveNestedProvider(
   provider: NestedProvider,
   ctx: NestedContext
-): Block {
-  return typeof provider === 'function' ? provider(ctx) : provider;
+): RuleBlock {
+  return typeof provider === 'function'
+    ? provider(ctx)
+    : provider;
 }
