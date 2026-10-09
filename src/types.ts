@@ -32,7 +32,9 @@ export type PatchElementSpec<
 /**
  * A collection of named element specs
  */
-export type NamedElements<T extends string = string> = Record<T, ElementSpec>;
+export type NamedElements<T extends string = string> = {
+  [K in T]: ElementSpec<NamedElements | BareElements, string>;
+};
 
 /**
  * A specification for a component
