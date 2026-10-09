@@ -3,7 +3,7 @@ import type { Patch } from './types/utils.ts';
 /**
  * An empty set of named elements
  */
-export type BareElements = Record<string, never>;
+export type BareElements = { [K in never]: never };
 
 /**
  * A specification for an element
