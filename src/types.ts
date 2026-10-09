@@ -1,4 +1,4 @@
-import type { Patch } from './types/utils.ts';
+import type { Patch, Thunkable } from './types/utils.ts';
 
 /**
  * The most inclusive form of a component spec
@@ -9,6 +9,11 @@ export type AnyComponentSpec = ComponentSpec<ElementSpecs, string>;
  * The most inclusive form of an element spec
  */
 export type AnyElementSpec = ElementSpec<ElementSpecs, string>;
+
+/**
+ * A constraint on element specs that preserves each element's type
+ */
+type AnyElementSpecs<E> = { [K in keyof E]: AnyElementSpec };
 
 /**
  * A block containing either styles or a deeper block
@@ -57,6 +62,20 @@ export type ElementSpecs<T extends string = string> = {
 export type EmptyElementSpecs = { [K in never]: never };
 
 /**
+ * The context available to nested rule definitions
+ */
+export type NestedContext<E extends AnyElementSpecs<E> = EmptyElementSpecs> = {
+  els: Selectors<E>;
+};
+
+/**
+ * A provider of nested styles
+ */
+export type NestedProvider<E extends AnyElementSpecs<E> = EmptyElementSpecs> =
+  | Thunkable<RuleBlock>
+  | ((ctx: NestedContext<E>) => RuleBlock);
+
+/**
  * Replace selected fields in a component spec
  */
 export type PatchComponentSpec<
@@ -77,6 +96,23 @@ export type PatchElementSpec<
  */
 export type RuleBlock = {
   [selector: string]: RuleBlock | Declarations;
+};
+
+/**
+ * Resolve the selector type for an element spec
+ */
+type SelectorForSpec<S extends AnyElementSpec> = [
+  keyof S['children']
+] extends [never] ? string
+  : S['children'] extends AnyElementSpecs<S['children']>
+    ? { root: string } & Selectors<S['children']>
+  : never;
+
+/**
+ * Class selectors for a set of nested elements
+ */
+type Selectors<E extends AnyElementSpecs<E>> = {
+  [K in keyof E]: SelectorForSpec<E[K]>;
 };
 
 /**
