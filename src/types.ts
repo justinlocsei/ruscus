@@ -3,12 +3,12 @@ import type { Patch } from './types/utils.ts';
 /**
  * The most inclusive form of a component spec
  */
-export type AnyComponentSpec = ComponentSpec<NamedElements, string>;
+export type AnyComponentSpec = ComponentSpec<ElementSpecs, string>;
 
 /**
  * The most inclusive form of an element spec
  */
-export type AnyElementSpec = ElementSpec<NamedElements, string>;
+export type AnyElementSpec = ElementSpec<ElementSpecs, string>;
 
 /**
  * An empty set of named elements
@@ -24,7 +24,7 @@ export type Block = RuleBlock | Styles;
  * A specification for a component
  */
 export type ComponentSpec<
-  E extends NamedElements = BareElements,
+  E extends ElementSpecs = BareElements,
   V extends string = never
 > = {
   els: E;
@@ -42,7 +42,7 @@ export type Declarations = {
  * A specification for an element
  */
 export type ElementSpec<
-  E extends NamedElements = BareElements,
+  E extends ElementSpecs = BareElements,
   V extends string = never
 > = {
   children: E;
@@ -52,8 +52,8 @@ export type ElementSpec<
 /**
  * A collection of named element specs
  */
-export type NamedElements<T extends string = string> = {
-  [K in T]: ElementSpec<NamedElements | BareElements, string>;
+export type ElementSpecs<T extends string = string> = {
+  [K in T]: ElementSpec<ElementSpecs | BareElements, string>;
 };
 
 /**

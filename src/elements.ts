@@ -4,7 +4,7 @@ import type { Thunkable } from './types/utils.ts';
 import type {
   AnyElementSpec,
   ElementSpec,
-  NamedElements,
+  ElementSpecs,
   PatchElementSpec,
   Styles,
   VariantStyles
@@ -63,7 +63,7 @@ export function resolveElements(
  */
 type ElementState = {
   children: Record<string, Element>;
-  nested: NestedProvider<NamedElements>;
+  nested: NestedProvider<ElementSpecs>;
   styles: Styles;
   variants: Record<string, Styles>;
 };
