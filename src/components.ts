@@ -9,6 +9,8 @@ import type { Thunkable } from './types/utils.ts';
 import type {
   AnyComponentSpec,
   ComponentSpec,
+  NestedContext,
+  NestedProvider,
   PatchComponentSpec,
   Styles,
   VariantStyles
@@ -27,6 +29,7 @@ type ComponentOptions = {
  */
 type ComponentState = {
   elements: NamedElements;
+  nested: NestedProvider;
   styles: Styles;
   variants: Record<string, Styles>;
 };
@@ -69,6 +72,7 @@ export class Component<
 
     this.current = {
       elements: {},
+      nested: {},
       styles: {},
       variants: {}
     };

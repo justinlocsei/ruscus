@@ -5,16 +5,13 @@ import { Component } from './components.ts';
 describe('Component', () => {
   const component = () => new Component('testing');
 
-  it('has empty styles by default', () => {
-    assert.deepEqual(component().current.styles, {});
-  });
-
-  it('has no elements by default', () => {
-    assert.deepEqual(component().current.elements, {});
-  });
-
-  it('has no variants by default', () => {
-    assert.deepEqual(component().current.variants, {});
+  it('starts with an empty state', () => {
+    assert.deepEqual(component().current, {
+      elements: {},
+      nested: {},
+      styles: {},
+      variants: {}
+    });
   });
 
   it('has an ID', () => {
