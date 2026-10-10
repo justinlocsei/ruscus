@@ -80,9 +80,9 @@ export type NestedContext<E extends AnyElementSpecs<E> = EmptyElementSpecs> = {
 /**
  * A provider of nested styles
  */
-export type NestedProvider<E extends AnyElementSpecs<E> = EmptyElementSpecs> =
+export type NestedProvider<C extends NestedContext = NestedContext> =
   | Thunkable<RuleBlock>
-  | ((ctx: NestedContext<E>) => RuleBlock);
+  | ((ctx: C) => RuleBlock);
 
 /**
  * Replace selected fields in a component spec
