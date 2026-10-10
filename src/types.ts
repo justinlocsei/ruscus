@@ -141,7 +141,9 @@ export type Value = number | string;
 /**
  * Build a selector for one or more variants
  */
-type VariantSelector<V extends string> = <T extends V>(...names: T[]) => string;
+export type VariantSelector<V extends string> = <T extends V>(
+  ...names: T[]
+) => string;
 
 /**
  * Styles for named variants
