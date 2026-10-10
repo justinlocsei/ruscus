@@ -81,6 +81,47 @@ describe('styleComponent', () => {
     );
   });
 
+  it('emits nested rules for variant combinations', () => {
+    const output = styleComponent(
+      new Component('card').elements(e => ({
+        body: e({ display: 'block' })
+          .variants({
+            compact: { padding: '0.5rem' },
+            large: { padding: '2rem' }
+          })
+          .nested(({ variant: v }) => ({
+            [v('compact')]: { gap: '0.25rem' },
+            [v('compact', 'large')]: { gap: '1rem' }
+          }))
+      }))
+    );
+
+    assert.equal(
+      output,
+      css`
+        .card__body {
+          display: block;
+        }
+
+        .card__body.is-compact {
+          padding: 0.5rem;
+        }
+
+        .card__body.is-large {
+          padding: 2rem;
+        }
+
+        .card__body.is-compact {
+          gap: 0.25rem;
+        }
+
+        .card__body.is-compact.is-large {
+          gap: 1rem;
+        }
+      `
+    );
+  });
+
   it('emits nested rules for an element', () => {
     const output = styleComponent(
       new Component('card').elements(e => ({
