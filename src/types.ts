@@ -73,8 +73,12 @@ export type EmptyElementSpecs = { [K in never]: never };
 /**
  * The context available to nested rule definitions
  */
-export type NestedContext<E extends AnyElementSpecs<E> = EmptyElementSpecs> = {
+export type NestedContext<
+  E extends AnyElementSpecs<E> = EmptyElementSpecs,
+  V extends string = never
+> = {
   els: Selectors<E>;
+  variant: VariantSelector<V>;
 };
 
 /**
@@ -133,6 +137,11 @@ export type Styles<T extends string = string> = Record<T, Value>;
  * A CSS value
  */
 export type Value = number | string;
+
+/**
+ * Build a selector for one or more variants
+ */
+type VariantSelector<V extends string> = <T extends V>(...names: T[]) => string;
 
 /**
  * Styles for named variants
