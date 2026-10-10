@@ -260,6 +260,27 @@ describe('Element', () => {
         });
     });
 
+    it('exposes variants to nested rules', () => {
+      createElement()
+        .variants({
+          bold: { fontWeight: '700' },
+          spacer: { marginTop: '1rem' }
+        })
+        .nested(({ variant }) => {
+          T.assert<
+            T.Equivalent<
+              typeof variant,
+              <T extends 'bold' | 'spacer'>(...names: T[]) => string
+            >
+          >(true);
+
+          return {
+            [variant('bold')]: { color: 'blue' },
+            [variant('bold', 'spacer')]: { color: 'red' }
+          };
+        });
+    });
+
     it('allows chaining', () => {
       assert.deepEqual(
         createElement()
