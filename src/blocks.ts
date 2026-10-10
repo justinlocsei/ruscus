@@ -18,7 +18,8 @@ export function buildNestedContext(
   children: NamedElements
 ): NestedContext {
   return {
-    els: buildSelectors(namespace, children)
+    els: buildSelectors(namespace, children),
+    variant: (...ns) => `&${ns.map(n => `.is-${n}`).join('')}`
   };
 }
 

@@ -6,7 +6,12 @@ import {
   resolveNestedProvider
 } from './blocks.ts';
 import { createElement } from './elements.ts';
-import type { ElementSpec, NestedContext, NestedProvider } from './types.ts';
+import type {
+  ElementSpec,
+  NestedContext,
+  NestedProvider,
+  VariantSelector
+} from './types.ts';
 
 const e = createElement;
 
@@ -39,6 +44,22 @@ describe('buildNestedContext', () => {
           }
         }
       }
+    );
+  });
+
+  it('builds anchor-relative variant selectors', () => {
+    const { variant } = buildNestedContext([], {});
+
+    assert.equal(variant(), '&');
+
+    assert.equal(
+      (variant as VariantSelector<string>)('compact'),
+      '&.is-compact'
+    );
+
+    assert.equal(
+      (variant as VariantSelector<string>)('mobile', 'active'),
+      '&.is-mobile.is-active'
     );
   });
 });
