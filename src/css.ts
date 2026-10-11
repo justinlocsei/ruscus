@@ -10,13 +10,7 @@ import {
   buildIdentifiersContext,
   buildSelector
 } from './identifiers.ts';
-import type {
-  AnyComponentSpec,
-  Block,
-  Declarations,
-  IdentifiersContext,
-  NestedContext
-} from './types.ts';
+import type { AnyComponentSpec, Block, Declarations } from './types.ts';
 
 /**
  * Options for compiling a component's CSS
@@ -24,13 +18,6 @@ import type {
 export type CompileConfig = {
   indentation?: number;
 };
-
-/**
- * The context available in a component's nested definition
- */
-type NestedComponentContext<S extends AnyComponentSpec> =
-  & NestedContext<S['els'], S['variants']>
-  & IdentifiersContext<S['ids']>;
 
 /**
  * Generate CSS for a component's styles
