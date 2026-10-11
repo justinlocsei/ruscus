@@ -1,6 +1,7 @@
 import { assert, describe, it } from 'vitest';
 
 import {
+  buildGlobalContext,
   buildNestedContext,
   isDeclarations,
   resolveNestedProvider
@@ -21,7 +22,10 @@ describe('buildNestedContext', () => {
 
     assert.deepEqual(
       buildNestedContext(['card', 'body'], body.current.children).els,
-      { title: '.card__body__title' }
+      {
+        root: '.card__body',
+        title: '.card__body__title'
+      }
     );
   });
 
@@ -36,6 +40,7 @@ describe('buildNestedContext', () => {
     assert.deepEqual(
       buildNestedContext(['card'], card.current.children).els,
       {
+        root: '.card',
         header: {
           root: '.card__header',
           title: {
@@ -60,6 +65,33 @@ describe('buildNestedContext', () => {
     assert.equal(
       (variant as VariantSelector<string>)('mobile', 'active'),
       '&.is-mobile.is-active'
+    );
+  });
+});
+
+describe('buildGlobalContext', () => {
+  it('builds the same element selectors as nested context', () => {
+    const card = createElement().children({
+      header: () =>
+        e().children(() => ({
+          title: e()
+        }))
+    });
+
+    assert.deepEqual(
+      buildGlobalContext('card', card.current.children).els,
+      buildNestedContext(['card'], card.current.children).els
+    );
+  });
+
+  it('builds full variant selectors', () => {
+    const { variant } = buildGlobalContext('card', {});
+
+    assert.equal(variant(), '.card');
+
+    assert.equal(
+      (variant as VariantSelector<string>)('compact'),
+      '.card.is-compact'
     );
   });
 });

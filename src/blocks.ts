@@ -15,12 +15,32 @@ import type {
  */
 export function buildNestedContext(
   namespace: string[],
+  children: NamedElements,
+  { root = '&' }: { root?: string } = {}
+): NestedContext {
+  const els = {
+    ...buildSelectors(namespace, children),
+    root: buildSelector(namespace)
+  };
+
+  return {
+    els,
+    variant: (...ns) => `${root}${ns.map(n => `.is-${n}`).join('')}`
+  };
+}
+
+/**
+ * Build a context for defining global rules
+ */
+export function buildGlobalContext(
+  block: string,
   children: NamedElements
 ): NestedContext {
-  return {
-    els: buildSelectors(namespace, children),
-    variant: (...ns) => `&${ns.map(n => `.is-${n}`).join('')}`
-  };
+  const namespace = [block];
+
+  return buildNestedContext(namespace, children, {
+    root: buildSelector(namespace)
+  });
 }
 
 /**
