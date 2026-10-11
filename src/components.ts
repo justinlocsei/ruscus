@@ -124,7 +124,7 @@ export class Component<
     value: ComponentState[T]
   ): void {
     if (Object.keys(this.current[field]).length) {
-      throw new Error(`${field} may only be set once`);
+      throw new Error(`${field} may only be called once`);
     }
 
     this.current[field] = value;

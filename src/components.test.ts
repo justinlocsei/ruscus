@@ -135,7 +135,7 @@ describe('Component', () => {
 
       assert.throws(
         () => instance.variants({ large: { padding: '2rem' } }),
-        'variants may only be set once'
+        'variants may only be called once'
       );
     });
   });
