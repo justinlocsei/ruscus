@@ -8,6 +8,7 @@ describe('Component', () => {
   it('starts with an empty state', () => {
     assert.deepEqual(component().current, {
       elements: {},
+      global: {},
       identifiers: {},
       nested: {},
       styles: {},
@@ -115,6 +116,52 @@ describe('Component', () => {
       assert.throws(
         () => instance.identifiers({ bravo: 'variable' }),
         'identifiers may only be called once'
+      );
+    });
+  });
+
+  describe('global', () => {
+    it('registers global rules on the component', () => {
+      assert.deepEqual(
+        component()
+          .global({
+            '.card': { color: 'red' },
+            '@media (min-width: 768px)': { '.card': { display: 'block' } }
+          })
+          .current
+          .global,
+        {
+          '.card': { color: 'red' },
+          '@media (min-width: 768px)': { '.card': { display: 'block' } }
+        }
+      );
+    });
+
+    it('can reference child elements', () => {
+      const instance = component()
+        .elements(e => ({ title: e() }))
+        .global(({ els }) => ({ [els.title]: { color: 'red' } }));
+
+      assert.equal(typeof instance.current.global, 'function');
+    });
+
+    it('allows chaining', () => {
+      assert.deepEqual(
+        component()
+          .global({ '.card': { color: 'black' } })
+          .css({ display: 'block' })
+          .current
+          .styles,
+        { display: 'block' }
+      );
+    });
+
+    it('throws when global rules are defined more than once', () => {
+      const instance = component().global({ '.card': { color: 'black' } });
+
+      assert.throws(
+        () => instance.global({ '.card': { color: 'red' } }),
+        'global may only be called once'
       );
     });
   });

@@ -28,17 +28,23 @@ type ComponentOptions = {
 };
 
 /**
- * Define a nested provider for a component spec
+ * Define a global provider for a component spec
  */
-type NestedProviderFor<S extends AnyComponentSpec> = NestedProvider<
+type GlobalProviderFor<S extends AnyComponentSpec> = NestedProvider<
   NestedContext<S['els'], S['variants']> & IdentifiersContext<S['ids']>
 >;
+
+/**
+ * Define a nested provider for a component spec
+ */
+type NestedProviderFor<S extends AnyComponentSpec> = GlobalProviderFor<S>;
 
 /**
  * The current state of a component
  */
 type ComponentState<S extends AnyComponentSpec> = {
   elements: NamedElements;
+  global: GlobalProviderFor<S>;
   identifiers: IdentifierTypes;
   nested: NestedProviderFor<S>;
   styles: Styles;
@@ -93,6 +99,7 @@ export class Component<
 
     this.current = {
       elements: {},
+      global: {},
       identifiers: {},
       nested: {},
       styles: {},
@@ -140,6 +147,15 @@ export class Component<
     );
 
     return this as WithElements<S, T>;
+  }
+
+  /**
+   * Define global styles for the component
+   */
+  global(definitions: GlobalProviderFor<S>): Component<S> {
+    this.updateState('global', definitions);
+
+    return this;
   }
 
   /**
