@@ -131,6 +131,25 @@ describe('styleComponent', () => {
     );
   });
 
+  it('provides identifiers to nested component styles', () => {
+    const output = styleComponent(
+      new Component('card')
+        .identifiers({ alfa: 'string' })
+        .nested(({ ids }) => ({
+          '&:hover': { animationName: ids.alfa }
+        }))
+    );
+
+    assert.equal(
+      output,
+      css`
+        .card:hover {
+          animation-name: card--alfa;
+        }
+      `
+    );
+  });
+
   it('emits nested rules for variant combinations', () => {
     const output = styleComponent(
       new Component('card').elements(e => ({

@@ -5,8 +5,18 @@ import {
 } from './blocks.ts';
 import type { Component } from './components.ts';
 import type { Element } from './elements.ts';
-import { asProperty, buildSelector } from './identifiers.ts';
-import type { Block, Declarations } from './types.ts';
+import {
+  asProperty,
+  buildIdentifiersContext,
+  buildSelector
+} from './identifiers.ts';
+import type {
+  AnyComponentSpec,
+  Block,
+  Declarations,
+  IdentifiersContext,
+  NestedContext
+} from './types.ts';
 
 /**
  * Options for compiling a component's CSS
@@ -16,24 +26,37 @@ export type CompileConfig = {
 };
 
 /**
+ * The context available in a component's nested definition
+ */
+type NestedComponentContext<S extends AnyComponentSpec> =
+  & NestedContext<S['els'], S['variants']>
+  & IdentifiersContext<S['ids']>;
+
+/**
  * Generate CSS for a component's styles
  */
-export function styleComponent(
-  component: Component,
+export function styleComponent<S extends AnyComponentSpec>(
+  component: Component<S>,
   config: CompileConfig = {}
 ): string {
-  return new ComponentCompiler(component, config).compile();
+  return new ComponentCompiler(
+    component as Component<AnyComponentSpec>,
+    config
+  ).compile();
 }
 
 class ComponentCompiler {
   private blocks: string[];
-  private component: Component;
+  private component: Component<AnyComponentSpec>;
   private config: Required<CompileConfig>;
 
   /**
    * Create a compiler for a component's styles
    */
-  constructor(component: Component, config: CompileConfig) {
+  constructor(
+    component: Component<AnyComponentSpec>,
+    config: CompileConfig
+  ) {
     this.blocks = [];
 
     this.component = component;
@@ -57,7 +80,13 @@ class ComponentCompiler {
       root,
       resolveNestedProvider(
         current.nested,
-        buildNestedContext([this.component.id], current.elements)
+        {
+          ...buildNestedContext([this.component.id], current.elements),
+          ...buildIdentifiersContext(
+            this.component.id,
+            current.identifiers
+          )
+        } as NestedComponentContext<AnyComponentSpec>
       )
     );
 
