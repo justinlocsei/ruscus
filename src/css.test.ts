@@ -81,6 +81,56 @@ describe('styleComponent', () => {
     );
   });
 
+  it('emits nested styles for the component', () => {
+    const output = styleComponent(
+      new Component('card')
+        .css({ display: 'block' })
+        .elements(e => ({
+          body: e(),
+          title: e(),
+          header: e().children({
+            title: e()
+          })
+        }))
+        .variants({ compact: { padding: '1rem' } })
+        .nested(({ els, variant: v }) => ({
+          [v('compact')]: { gap: '0.5rem' },
+          [els.title]: { color: 'red' },
+          [els.header.root]: { color: 'black' },
+          [els.header.title]: { color: 'blue' }
+        }))
+    );
+
+    assert.equal(
+      output,
+      css`
+        .card {
+          display: block;
+        }
+
+        .card.is-compact {
+          padding: 1rem;
+        }
+
+        .card.is-compact {
+          gap: 0.5rem;
+        }
+
+        .card .card__title {
+          color: red;
+        }
+
+        .card .card__header {
+          color: black;
+        }
+
+        .card .card__header__title {
+          color: blue;
+        }
+      `
+    );
+  });
+
   it('emits nested rules for variant combinations', () => {
     const output = styleComponent(
       new Component('card').elements(e => ({

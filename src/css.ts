@@ -53,6 +53,14 @@ class ComponentCompiler {
       this.addRule(`${root}.is-${name}`, styles);
     }
 
+    this.addNestedRules(
+      root,
+      resolveNestedProvider(
+        current.nested,
+        buildNestedContext([this.component.id], current.elements)
+      )
+    );
+
     for (
       const [name, element] of Object.entries(current.elements)
     ) {
