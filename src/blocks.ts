@@ -73,9 +73,9 @@ export function isDeclarations(block: Block): block is Declarations {
 /**
  * Resolve nested definitions from a provider
  */
-export function resolveNestedProvider(
-  provider: NestedProvider,
-  ctx: NestedContext
+export function resolveNestedProvider<C extends NestedContext>(
+  provider: NestedProvider<C>,
+  ctx: C
 ): RuleBlock {
   return typeof provider === 'function'
     ? provider(ctx)
