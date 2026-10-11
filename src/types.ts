@@ -5,7 +5,11 @@ export const ELEMENT_ROOT = 'root';
 /**
  * The most inclusive form of a component spec
  */
-export type AnyComponentSpec = ComponentSpec<ElementSpecs, string>;
+export type AnyComponentSpec = ComponentSpec<
+  ElementSpecs,
+  string,
+  IdentifierTypes
+>;
 
 /**
  * The most inclusive form of an element spec
@@ -42,9 +46,11 @@ type ChildSelectors<C extends AnyElementSpecs<C>> = {
  */
 export type ComponentSpec<
   E extends ElementSpecs = EmptyElementSpecs,
-  V extends string = never
+  V extends string = never,
+  I extends IdentifierTypes = EmptyIdentifierTypes
 > = {
   els: E;
+  ids: I;
   variants: V;
 };
 
@@ -77,6 +83,28 @@ export type ElementSpecs<T extends string = string> = {
  * An empty set of element specs
  */
 export type EmptyElementSpecs = { [K in never]: never };
+
+/**
+ * An empty set of identifier types
+ */
+export type EmptyIdentifierTypes = { [K in never]: never };
+
+/**
+ * A type for a component-specific identifier
+ */
+type IdentifierType = 'string' | 'variable';
+
+/**
+ * A mapping of local identifier names to their types
+ */
+export type IdentifierTypes = Record<string, IdentifierType>;
+
+/**
+ * The identifier values available while defining component styles
+ */
+export type IdentifiersContext<I extends IdentifierTypes = IdentifierTypes> = {
+  ids: { [K in keyof I]: string };
+};
 
 /**
  * The context available to nested rule definitions

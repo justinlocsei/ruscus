@@ -5,6 +5,7 @@ import type {
   Block,
   ComponentSpec,
   ElementSpec,
+  EmptyIdentifierTypes,
   PatchComponentSpec,
   PatchElementSpec
 } from './types.ts';
@@ -40,6 +41,7 @@ describe('PatchComponentSpec', () => {
         >,
         {
           els: { root: ElementSpec };
+          ids: EmptyIdentifierTypes;
           meta: string;
           variants: never;
         }
