@@ -78,16 +78,13 @@ class ComponentCompiler {
 
     this.addNestedRules(
       root,
-      resolveNestedProvider(
-        current.nested,
-        {
-          ...buildNestedContext([this.component.id], current.elements),
-          ...buildIdentifiersContext(
-            this.component.id,
-            current.identifiers
-          )
-        } as NestedComponentContext<AnyComponentSpec>
-      )
+      resolveNestedProvider(current.nested, {
+        ...buildNestedContext([this.component.id], current.elements),
+        ...buildIdentifiersContext(
+          this.component.id,
+          current.identifiers
+        )
+      })
     );
 
     for (
