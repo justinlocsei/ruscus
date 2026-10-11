@@ -104,6 +104,19 @@ export class Component<
   }
 
   /**
+   * Define nested styles for the component
+   */
+  nested(
+    definitions: NestedProvider<
+      NestedContext<S['els'], S['variants']>
+    >
+  ): Component<S> {
+    this.updateState('nested', definitions);
+
+    return this;
+  }
+
+  /**
    * Define variants for the component root
    */
   variants<T extends VariantStyles>(

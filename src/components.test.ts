@@ -84,6 +84,52 @@ describe('Component', () => {
     });
   });
 
+  describe('nested', () => {
+    it('registers nested rules on the component', () => {
+      assert.deepEqual(
+        component()
+          .nested({
+            '&:hover': { opacity: '0.5' },
+            a: { color: 'red' }
+          })
+          .current
+          .nested,
+        {
+          '&:hover': { opacity: '0.5' },
+          a: { color: 'red' }
+        }
+      );
+    });
+
+    it('can reference child elements', () => {
+      const instance = component()
+        .elements(e => ({ title: e() }))
+        .nested(({ els }) => ({ [els.title]: { color: 'red' } }));
+
+      assert.equal(typeof instance.current.nested, 'function');
+    });
+
+    it('allows chaining', () => {
+      assert.deepEqual(
+        component()
+          .nested({ '&:hover': { opacity: '0.5' } })
+          .css({ color: 'black' })
+          .current
+          .styles,
+        { color: 'black' }
+      );
+    });
+
+    it('throws when nested rules are defined more than once', () => {
+      const instance = component().nested({ '&:hover': { opacity: '0.5' } });
+
+      assert.throws(
+        () => instance.nested({ '&:focus': { outline: 'none' } }),
+        'nested may only be called once'
+      );
+    });
+  });
+
   describe('variants', () => {
     it('registers styles for each variant name', () => {
       assert.deepEqual(
