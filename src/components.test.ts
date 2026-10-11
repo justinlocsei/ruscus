@@ -8,6 +8,7 @@ describe('Component', () => {
   it('starts with an empty state', () => {
     assert.deepEqual(component().current, {
       elements: {},
+      identifiers: {},
       nested: {},
       styles: {},
       variants: {}
@@ -72,6 +73,19 @@ describe('Component', () => {
       });
     });
 
+    it('provides component-specific identifiers', () => {
+      const instance = component()
+        .identifiers({ alfa: 'string', bravo: 'variable' })
+        .elements((e, { ids }) => ({
+          body: e({ animationName: ids.alfa, gap: `var(${ids.bravo})` })
+        }));
+
+      assert.deepEqual(instance.current.elements.body?.current.styles, {
+        animationName: 'testing--alfa',
+        gap: 'var(--testing--bravo)'
+      });
+    });
+
     it('allows chaining after elements', () => {
       assert.deepEqual(
         component()
@@ -80,6 +94,27 @@ describe('Component', () => {
           .current
           .styles,
         { color: 'black' }
+      );
+    });
+  });
+
+  describe('identifiers', () => {
+    it('registers component-specific identifiers', () => {
+      assert.deepEqual(
+        component()
+          .identifiers({ alfa: 'string', bravo: 'variable' })
+          .current
+          .identifiers,
+        { alfa: 'string', bravo: 'variable' }
+      );
+    });
+
+    it('throws when identifiers are defined more than once', () => {
+      const instance = component().identifiers({ alfa: 'string' });
+
+      assert.throws(
+        () => instance.identifiers({ bravo: 'variable' }),
+        'identifiers may only be called once'
       );
     });
   });

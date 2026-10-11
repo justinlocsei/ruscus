@@ -4,11 +4,14 @@ import type {
   ProvidersToSpecs
 } from './elements.ts';
 import { createElement, resolveElements } from './elements.ts';
+import { buildIdentifiersContext } from './identifiers.ts';
 import { mergeStyles } from './styles.ts';
 import type { Thunkable } from './types/utils.ts';
 import type {
   AnyComponentSpec,
   ComponentSpec,
+  IdentifiersContext,
+  IdentifierTypes,
   NestedContext,
   NestedProvider,
   PatchComponentSpec,
@@ -29,6 +32,7 @@ type ComponentOptions = {
  */
 type ComponentState = {
   elements: NamedElements;
+  identifiers: IdentifierTypes;
   nested: NestedProvider;
   styles: Styles;
   variants: Record<string, Styles>;
@@ -42,6 +46,16 @@ type WithElements<
   T extends ElementProviders
 > = Component<
   PatchComponentSpec<S, { els: ProvidersToSpecs<T> }>
+>;
+
+/**
+ * Apply identifier constraints to a component
+ */
+type WithIdentifiers<
+  S extends AnyComponentSpec,
+  I extends IdentifierTypes
+> = Component<
+  PatchComponentSpec<S, { ids: I }>
 >;
 
 /**
@@ -72,6 +86,7 @@ export class Component<
 
     this.current = {
       elements: {},
+      identifiers: {},
       nested: {},
       styles: {},
       variants: {}
@@ -93,12 +108,29 @@ export class Component<
   }
 
   /**
+   * Define component-specific identifiers
+   */
+  identifiers<I extends IdentifierTypes>(types: I): WithIdentifiers<S, I> {
+    this.updateState('identifiers', types);
+
+    return this as WithIdentifiers<S, I>;
+  }
+
+  /**
    * Define the component's elements
    */
   elements<T extends ElementProviders>(
-    provider: (e: typeof createElement) => T
+    provider: (
+      e: typeof createElement,
+      ctx: IdentifiersContext<S['ids']>
+    ) => T
   ): WithElements<S, T> {
-    this.current.elements = resolveElements(provider(createElement));
+    this.current.elements = resolveElements(
+      provider(
+        createElement,
+        buildIdentifiersContext(this.id, this.current.identifiers)
+      )
+    );
 
     return this as WithElements<S, T>;
   }
