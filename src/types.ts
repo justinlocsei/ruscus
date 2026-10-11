@@ -30,6 +30,14 @@ export type AnySelectors = {
 export type Block = Declarations | RuleBlock;
 
 /**
+ * Get selectors for an element with children
+ */
+type ChildSelectors<C extends AnyElementSpecs<C>> = {
+  [K in typeof ELEMENT_ROOT | keyof C]: K extends typeof ELEMENT_ROOT ? string
+    : SelectorForSpec<C[Extract<K, keyof C>]>;
+};
+
+/**
  * A specification for a component
  */
 export type ComponentSpec<
@@ -118,7 +126,7 @@ type SelectorForSpec<S extends AnyElementSpec> = [
   keyof S['children']
 ] extends [never] ? string
   : S['children'] extends AnyElementSpecs<S['children']>
-    ? { [ELEMENT_ROOT]: string } & Selectors<S['children']>
+    ? ChildSelectors<S['children']>
   : never;
 
 /**
