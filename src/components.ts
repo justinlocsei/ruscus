@@ -28,12 +28,19 @@ type ComponentOptions = {
 };
 
 /**
+ * Define a nested provider for a component spec
+ */
+type NestedProviderFor<S extends AnyComponentSpec> = NestedProvider<
+  NestedContext<S['els'], S['variants']> & IdentifiersContext<S['ids']>
+>;
+
+/**
  * The current state of a component
  */
-type ComponentState = {
+type ComponentState<S extends AnyComponentSpec> = {
   elements: NamedElements;
   identifiers: IdentifierTypes;
-  nested: NestedProvider;
+  nested: NestedProviderFor<S>;
   styles: Styles;
   variants: Record<string, Styles>;
 };
@@ -71,7 +78,7 @@ type WithVariants<
 export class Component<
   S extends AnyComponentSpec = ComponentSpec
 > {
-  current: ComponentState;
+  current: ComponentState<S>;
   id: string;
 
   private name: string;
@@ -138,11 +145,7 @@ export class Component<
   /**
    * Define nested styles for the component
    */
-  nested(
-    definitions: NestedProvider<
-      NestedContext<S['els'], S['variants']>
-    >
-  ): Component<S> {
+  nested(definitions: NestedProviderFor<S>): Component<S> {
     this.updateState('nested', definitions);
 
     return this;
@@ -164,9 +167,9 @@ export class Component<
    *
    * @throws if the field already has a value
    */
-  private updateState<T extends keyof ComponentState>(
+  private updateState<T extends keyof ComponentState<S>>(
     field: T,
-    value: ComponentState[T]
+    value: ComponentState<S>[T]
   ): void {
     if (Object.keys(this.current[field]).length) {
       throw new Error(`${field} may only be called once`);
