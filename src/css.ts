@@ -83,10 +83,10 @@ class ComponentCompiler {
       );
     }
 
-    if (current.nested) {
+    for (const provider of current.nested) {
       this.addScopedFragmentRules(
         root,
-        resolveNestedProvider(current.nested, styleContext)
+        resolveNestedProvider(provider, styleContext)
       );
     }
 
@@ -96,9 +96,9 @@ class ComponentCompiler {
       this.addElementRules([name], element);
     }
 
-    if (current.global) {
+    for (const provider of current.global) {
       this.addGlobalFragmentRules(
-        resolveGlobalProvider(current.global, styleContext)
+        resolveGlobalProvider(provider, styleContext)
       );
     }
 
@@ -127,10 +127,10 @@ class ComponentCompiler {
       );
     }
 
-    if (current.nested) {
+    for (const provider of current.nested) {
       this.addScopedFragmentRules(
         selector,
-        resolveNestedProvider(current.nested, elementContext)
+        resolveNestedProvider(provider, elementContext)
       );
     }
 
