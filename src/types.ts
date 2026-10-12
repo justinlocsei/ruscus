@@ -1,4 +1,11 @@
-import type { Fragment, FragmentFactory } from './fragments.ts';
+import type {
+  AbsoluteFragmentFactory,
+  FragmentDefinitions,
+  RelativeFragmentFactory
+} from './fragments.ts';
+
+export type { FragmentDefinitions };
+
 import type { Patch } from './types/utils.ts';
 
 export const ELEMENT_ROOT = 'root';
@@ -121,13 +128,26 @@ export type NestedContext<
 /**
  * Nested rule definitions keyed by selector
  */
-export type NestedDefinitions = Record<string, Fragment>;
+export type NestedDefinitions = FragmentDefinitions<'relative'>;
+
+/**
+ * Global rule definitions keyed by selector or query prelude
+ */
+export type GlobalDefinitions = FragmentDefinitions<'absolute'>;
+
+/**
+ * A provider of global styles
+ */
+export type GlobalProvider<C extends NestedContext = NestedContext> = (
+  s: AbsoluteFragmentFactory,
+  ctx: C
+) => GlobalDefinitions;
 
 /**
  * A provider of nested styles
  */
 export type NestedProvider<C extends NestedContext = NestedContext> = (
-  s: FragmentFactory,
+  s: RelativeFragmentFactory,
   ctx: C
 ) => NestedDefinitions;
 
