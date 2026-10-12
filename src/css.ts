@@ -1,7 +1,8 @@
 import {
   buildNestedContext,
   resolveGlobalProvider,
-  resolveNestedProvider
+  resolveNestedProvider,
+  resolveVariantProvider
 } from './blocks.ts';
 import type { Component } from './components.ts';
 import type { Element } from './elements.ts';
@@ -15,7 +16,8 @@ import type {
   AnyComponentSpec,
   Declarations,
   FragmentDefinitions,
-  NestedContext
+  NestedContext,
+  VariantProvider
 } from './types.ts';
 
 /**
@@ -73,8 +75,12 @@ class ComponentCompiler {
 
     this.addRule(root, current.styles);
 
-    for (const [name, styles] of Object.entries(current.variants)) {
-      this.addRule(`${root}.is-${name}`, styles);
+    if (current.variants) {
+      this.addVariantFragmentRules(
+        root,
+        current.variants,
+        styleContext
+      );
     }
 
     if (current.nested) {
@@ -108,25 +114,47 @@ class ComponentCompiler {
 
     this.addRule(selector, current.styles);
 
-    for (const [name, styles] of Object.entries(current.variants)) {
-      this.addRule(`${selector}.is-${name}`, styles);
+    const elementContext = buildNestedContext(
+      [this.component.id, ...path],
+      current.children
+    );
+
+    if (current.variants) {
+      this.addVariantFragmentRules(
+        selector,
+        current.variants,
+        elementContext
+      );
     }
 
     if (current.nested) {
       this.addScopedFragmentRules(
         selector,
-        resolveNestedProvider(
-          current.nested,
-          buildNestedContext(
-            [this.component.id, ...path],
-            current.children
-          )
-        )
+        resolveNestedProvider(current.nested, elementContext)
       );
     }
 
     for (const [name, child] of Object.entries(current.children)) {
       this.addElementRules([...path, name], child);
+    }
+  }
+
+  /**
+   * Add variant fragment rules anchored to a selector
+   */
+  private addVariantFragmentRules<C extends NestedContext>(
+    anchor: string,
+    provider: VariantProvider<C>,
+    ctx: C
+  ): void {
+    const definitions = resolveVariantProvider(provider, ctx);
+
+    for (const [name, fragment] of Object.entries(definitions)) {
+      const rule = this.formatFragmentRules(`${anchor}.is-${name}`, fragment);
+
+      if (rule) {
+        this.blocks.push(rule);
+      }
     }
   }
 

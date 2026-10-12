@@ -56,10 +56,10 @@ describe('styleComponent', () => {
   it('emits styles for element variants', () => {
     const output = styleComponent(
       new Component('card').elements(e => ({
-        line: e({ marginTop: '0' }).variants({
-          bold: { fontWeight: '700' },
-          spacer: { marginTop: '1rem' }
-        })
+        line: e({ marginTop: '0' }).variants(s => ({
+          bold: s({ fontWeight: '700' }),
+          spacer: s({ marginTop: '1rem' })
+        }))
       }))
     );
 
@@ -92,7 +92,7 @@ describe('styleComponent', () => {
             title: e()
           })
         }))
-        .variants({ compact: { padding: '1rem' } })
+        .variants(s => ({ compact: s({ padding: '1rem' }) }))
         .nested((s, { els, variant: v }) => ({
           [v('compact')]: s({ gap: '0.5rem' }),
           [els.title]: s({ color: 'red' }),
@@ -207,10 +207,10 @@ describe('styleComponent', () => {
     const output = styleComponent(
       new Component('card').elements(e => ({
         body: e({ display: 'block' })
-          .variants({
-            compact: { padding: '0.5rem' },
-            large: { padding: '2rem' }
-          })
+          .variants(s => ({
+            compact: s({ padding: '0.5rem' }),
+            large: s({ padding: '2rem' })
+          }))
           .nested((s, { variant: v }) => ({
             [v('compact')]: s({ gap: '0.25rem' }),
             [v('compact', 'large')]: s({ gap: '1rem' })
@@ -297,10 +297,10 @@ describe('styleComponent', () => {
     const output = styleComponent(
       new Component('card')
         .css({ padding: '1rem' })
-        .variants({
-          compact: { padding: '0.5rem' },
-          large: { padding: '2rem' }
-        })
+        .variants(s => ({
+          compact: s({ padding: '0.5rem' }),
+          large: s({ padding: '2rem' })
+        }))
     );
 
     assert.equal(
