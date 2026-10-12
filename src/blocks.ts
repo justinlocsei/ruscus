@@ -1,10 +1,12 @@
 import type { NamedElements } from './elements.ts';
-import { defineFragment } from './fragments.ts';
+import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 import { buildSelector, ELEMENT_ROOT } from './identifiers.ts';
 import type {
   AnySelectors,
   Block,
   Declarations,
+  GlobalDefinitions,
+  GlobalProvider,
   NestedContext,
   NestedDefinitions,
   NestedProvider,
@@ -92,11 +94,21 @@ export function isDeclarations(block: Block): block is Declarations {
 }
 
 /**
+ * Resolve global definitions from a provider
+ */
+export function resolveGlobalProvider<C extends NestedContext>(
+  provider: GlobalProvider<C>,
+  ctx: C
+): GlobalDefinitions {
+  return provider(defineAbsoluteFragment, ctx);
+}
+
+/**
  * Resolve nested definitions from a provider
  */
 export function resolveNestedProvider<C extends NestedContext>(
   provider: NestedProvider<C>,
   ctx: C
 ): NestedDefinitions {
-  return provider(defineFragment, ctx);
+  return provider(defineRelativeFragment, ctx);
 }
