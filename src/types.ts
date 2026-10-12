@@ -152,6 +152,29 @@ export type NestedProvider<C extends NestedContext = NestedContext> = (
 ) => NestedDefinitions;
 
 /**
+ * Variant styles keyed by variant name
+ */
+export type VariantDefinitions = NestedDefinitions;
+
+/**
+ * A provider of variant styles
+ */
+export type VariantProvider<C extends NestedContext = NestedContext> = (
+  s: RelativeFragmentFactory,
+  ctx: C
+) => VariantDefinitions;
+
+/**
+ * Infer variant names from a variant provider
+ */
+export type VariantsFromProvider<P> = P extends (
+  s: RelativeFragmentFactory,
+  ctx: infer _C
+) => infer R ? R extends VariantDefinitions ? Extract<keyof R, string>
+  : never
+  : never;
+
+/**
  * Replace selected fields in a component spec
  */
 export type PatchComponentSpec<
@@ -207,8 +230,3 @@ export type Value = number | string;
 export type VariantSelector<V extends string> = <T extends V>(
   ...names: T[]
 ) => string;
-
-/**
- * Styles for named variants
- */
-export type VariantStyles<T extends string = string> = Record<T, Styles>;
