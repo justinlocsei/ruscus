@@ -1,12 +1,13 @@
 import type { NamedElements } from './elements.ts';
+import { defineFragment } from './fragments.ts';
 import { buildSelector, ELEMENT_ROOT } from './identifiers.ts';
 import type {
   AnySelectors,
   Block,
   Declarations,
   NestedContext,
+  NestedDefinitions,
   NestedProvider,
-  RuleBlock,
   Selectors
 } from './types.ts';
 
@@ -96,8 +97,6 @@ export function isDeclarations(block: Block): block is Declarations {
 export function resolveNestedProvider<C extends NestedContext>(
   provider: NestedProvider<C>,
   ctx: C
-): RuleBlock {
-  return typeof provider === 'function'
-    ? provider(ctx)
-    : provider;
+): NestedDefinitions {
+  return provider(defineFragment, ctx);
 }

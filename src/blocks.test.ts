@@ -111,40 +111,22 @@ describe('isDeclarations', () => {
 });
 
 describe('resolveNestedProvider', () => {
-  it('returns eager definitions', () => {
-    const block = { '&:hover': { opacity: '0.5' } };
-
-    assert.strictEqual(
-      resolveNestedProvider(block, buildNestedContext([], {})),
-      block
-    );
-  });
-
-  it('resolves lazy definitions', () => {
-    assert.deepEqual(
-      resolveNestedProvider(
-        () => ({ '&:hover': { opacity: '0.5' } }),
-        buildNestedContext([], {})
-      ),
-      { '&:hover': { opacity: '0.5' } }
-    );
-  });
-
   it('resolves contextual definitions', () => {
     const body = createElement().children({ title: e() });
     const ctx = buildNestedContext(['card', 'body'], body.current.children);
 
     const provider: NestedProvider<
       NestedContext<{ title: ElementSpec }>
-    > = ({ els }) => ({
-      [els.title]: { color: 'red' }
+    > = (s, { els }) => ({
+      [els.title]: s({ color: 'red' })
     });
 
     assert.deepEqual(
-      resolveNestedProvider(provider as NestedProvider, ctx),
-      {
-        '.card__body__title': { color: 'red' }
-      }
+      resolveNestedProvider(
+        provider as NestedProvider<typeof ctx>,
+        ctx
+      )['.card__body__title']?.current.styles,
+      { color: 'red' }
     );
   });
 });
