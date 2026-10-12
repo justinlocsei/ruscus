@@ -158,6 +158,32 @@ describe('styleComponent', () => {
     );
   });
 
+  it('emits global styles', () => {
+    const output = styleComponent(
+      new Component('card').global(s => ({
+        '.card': s({ color: 'black' }),
+        '@media (min-width: 768px)': s().nested({
+          '.card__title': s({ fontSize: '1rem' })
+        })
+      }))
+    );
+
+    assert.equal(
+      output,
+      css`
+        .card {
+          color: black;
+        }
+
+        @media (min-width: 768px) {
+          .card__title {
+            font-size: 1rem;
+          }
+        }
+      `
+    );
+  });
+
   it('provides identifiers to nested component styles', () => {
     const output = styleComponent(
       new Component('card')

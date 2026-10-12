@@ -1,7 +1,11 @@
-import { buildNestedContext, resolveNestedProvider } from './blocks.ts';
+import {
+  buildNestedContext,
+  resolveGlobalProvider,
+  resolveNestedProvider
+} from './blocks.ts';
 import type { Component } from './components.ts';
 import type { Element } from './elements.ts';
-import type { Fragment } from './fragments.ts';
+import type { Fragment, FragmentScope } from './fragments.ts';
 import {
   asProperty,
   buildIdentifiersContext,
@@ -10,7 +14,8 @@ import {
 import type {
   AnyComponentSpec,
   Declarations,
-  NestedDefinitions
+  FragmentDefinitions,
+  NestedContext
 } from './types.ts';
 
 /**
@@ -58,6 +63,14 @@ class ComponentCompiler {
     const { current } = this.component;
     const root = this.buildSelector();
 
+    const styleContext = {
+      ...buildNestedContext([this.component.id], current.elements),
+      ...buildIdentifiersContext(
+        this.component.id,
+        current.identifiers
+      )
+    } satisfies NestedContext;
+
     this.addRule(root, current.styles);
 
     for (const [name, styles] of Object.entries(current.variants)) {
@@ -65,15 +78,9 @@ class ComponentCompiler {
     }
 
     if (current.nested) {
-      this.addNestedRules(
+      this.addScopedFragmentRules(
         root,
-        resolveNestedProvider(current.nested, {
-          ...buildNestedContext([this.component.id], current.elements),
-          ...buildIdentifiersContext(
-            this.component.id,
-            current.identifiers
-          )
-        })
+        resolveNestedProvider(current.nested, styleContext)
       );
     }
 
@@ -81,6 +88,12 @@ class ComponentCompiler {
       const [name, element] of Object.entries(current.elements)
     ) {
       this.addElementRules([name], element);
+    }
+
+    if (current.global) {
+      this.addGlobalFragmentRules(
+        resolveGlobalProvider(current.global, styleContext)
+      );
     }
 
     return this.blocks.join('\n\n');
@@ -100,7 +113,7 @@ class ComponentCompiler {
     }
 
     if (current.nested) {
-      this.addNestedRules(
+      this.addScopedFragmentRules(
         selector,
         resolveNestedProvider(
           current.nested,
@@ -118,12 +131,12 @@ class ComponentCompiler {
   }
 
   /**
-   * Add nested rules anchored to a selector
+   * Add global fragment rules
    */
-  private addNestedRules(root: string, definitions: NestedDefinitions): void {
+  private addGlobalFragmentRules(definitions: FragmentDefinitions): void {
     for (const [key, fragment] of Object.entries(definitions)) {
       const rule = this.formatFragmentRules(
-        this.buildNestedSelector(root, key),
+        this.selectorForFragmentKey('', key, fragment.scope),
         fragment
       );
 
@@ -131,6 +144,40 @@ class ComponentCompiler {
         this.blocks.push(rule);
       }
     }
+  }
+
+  /**
+   * Add scoped fragment rules anchored to a selector
+   */
+  private addScopedFragmentRules(
+    anchor: string,
+    definitions: FragmentDefinitions
+  ): void {
+    for (const [key, fragment] of Object.entries(definitions)) {
+      const rule = this.formatFragmentRules(
+        this.selectorForFragmentKey(anchor, key, fragment.scope),
+        fragment
+      );
+
+      if (rule) {
+        this.blocks.push(rule);
+      }
+    }
+  }
+
+  /**
+   * Resolve a selector for a fragment map key
+   */
+  private selectorForFragmentKey(
+    anchor: string,
+    key: string,
+    scope: FragmentScope
+  ): string {
+    if (scope === 'absolute') {
+      return key;
+    }
+
+    return this.buildNestedSelector(anchor, key);
   }
 
   /**
@@ -155,9 +202,11 @@ class ComponentCompiler {
     }
 
     for (const [key, child] of nestedEntries) {
-      const selector = key.startsWith('&')
-        ? `${parentSelector}${key.slice(1)}`
-        : key;
+      const selector = this.selectorForNestedKey(
+        parentSelector,
+        key,
+        child.scope
+      );
 
       const rule = this.formatFragmentRules(selector, child);
 
@@ -171,6 +220,25 @@ class ComponentCompiler {
     }
 
     return this.formatNestedBlock(parentSelector, inner);
+  }
+
+  /**
+   * Resolve a selector for a nested fragment key
+   */
+  private selectorForNestedKey(
+    parentSelector: string,
+    key: string,
+    scope: FragmentScope
+  ): string {
+    if (key.startsWith('&')) {
+      return `${parentSelector}${key.slice(1)}`;
+    }
+
+    if (scope === 'absolute') {
+      return key;
+    }
+
+    return key;
   }
 
   /**
