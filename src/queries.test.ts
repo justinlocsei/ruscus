@@ -1,28 +1,37 @@
 import { assert, describe, it } from 'vitest';
 
+import { Component } from './components.ts';
+import { styleComponent } from './css.ts';
+import { defineAbsoluteFragment } from './fragments.ts';
 import { defineQueries } from './queries.ts';
-import { T } from './tests.ts';
+import { css, T } from './tests.ts';
 
 describe('defineQueries', () => {
-  it('maps labeled blocks to queries', () => {
+  it('maps labeled blocks to query fragments', () => {
     const queries = defineQueries({
       alfa: '@media (min-width: 768px)',
       bravo: '@container card (min-width: 400px)'
     });
 
-    assert.deepEqual(
-      queries({
-        alfa: { '.card': { color: 'red' } },
-        bravo: { '.card__title': { fontSize: '1rem' } }
-      }),
-      {
-        '@media (min-width: 768px)': {
-          '.card': { color: 'red' }
-        },
-        '@container card (min-width: 400px)': {
-          '.card__title': { fontSize: '1rem' }
-        }
+    const rules = queries({
+      alfa: {
+        '.card': defineAbsoluteFragment({ color: 'red' })
+      },
+      bravo: {
+        '.card__title': defineAbsoluteFragment({ fontSize: '1rem' })
       }
+    });
+
+    assert.deepEqual(
+      rules['@media (min-width: 768px)']?.current.nested['.card']?.current
+        .styles,
+      { color: 'red' }
+    );
+    assert.deepEqual(
+      rules['@container card (min-width: 400px)']?.current.nested[
+        '.card__title'
+      ]?.current.styles,
+      { fontSize: '1rem' }
     );
   });
 
@@ -32,14 +41,18 @@ describe('defineQueries', () => {
       bravo: '@media (min-width: 1024px)'
     });
 
-    assert.deepEqual(
-      queries({ alfa: { '.card': { display: 'block' } } }),
-      {
-        '@media (min-width: 768px)': {
-          '.card': { display: 'block' }
-        }
+    const rules = queries({
+      alfa: {
+        '.card': defineAbsoluteFragment({ display: 'block' })
       }
+    });
+
+    assert.deepEqual(
+      rules['@media (min-width: 768px)']?.current.nested['.card']?.current
+        .styles,
+      { display: 'block' }
     );
+    assert.equal(rules['@media (min-width: 1024px)'], undefined);
   });
 
   it('exposes raw queries on the provider', () => {
@@ -62,9 +75,36 @@ describe('defineQueries', () => {
     T.assert<T.Equivalent<typeof queries.alfa, string>>(true);
 
     // @ts-expect-error unknown query label
-    queries({ charlie: { '.card': { color: 'red' } } });
+    queries({ charlie: { '.card': defineAbsoluteFragment() } });
 
     // @ts-expect-error unknown query accessor
     queries.charlie;
+  });
+
+  it('spreads into global styles', () => {
+    const queries = defineQueries({
+      mobile: '@media (min-width: 768px)'
+    });
+
+    const output = styleComponent(
+      new Component('card').global(s => ({
+        ...queries({
+          mobile: {
+            '.card': s({ color: 'black' })
+          }
+        })
+      }))
+    );
+
+    assert.equal(
+      output,
+      css`
+        @media (min-width: 768px) {
+          .card {
+            color: black;
+          }
+        }
+      `
+    );
   });
 });

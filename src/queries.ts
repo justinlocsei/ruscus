@@ -1,4 +1,5 @@
-import type { RuleBlock } from './types.ts';
+import { defineAbsoluteFragment } from './fragments.ts';
+import type { GlobalDefinitions } from './types.ts';
 
 /**
  * A mapping of labels to queries
@@ -6,10 +7,10 @@ import type { RuleBlock } from './types.ts';
 type NamedQueries = Record<string, string>;
 
 /**
- * Blocks keyed by query labels
+ * Global fragments keyed by query labels
  */
 type QueryBlocks<Q extends NamedQueries> = {
-  [K in keyof Q]: RuleBlock;
+  [K in keyof Q]: GlobalDefinitions;
 };
 
 /**
@@ -17,7 +18,7 @@ type QueryBlocks<Q extends NamedQueries> = {
  */
 type QueryProvider<Q extends NamedQueries> =
   & { [K in keyof Q]: Q[K] }
-  & ((blocks: Partial<QueryBlocks<Q>>) => RuleBlock);
+  & ((blocks: Partial<QueryBlocks<Q>>) => GlobalDefinitions);
 
 /**
  * Define a provider of named queries
@@ -25,21 +26,28 @@ type QueryProvider<Q extends NamedQueries> =
 export function defineQueries<Q extends NamedQueries>(
   queries: Q
 ): QueryProvider<Q> {
-  const build = (blocks: Partial<QueryBlocks<Q>>): RuleBlock => {
-    const rules: RuleBlock = {};
+  const build = (blocks: Partial<QueryBlocks<Q>>): GlobalDefinitions => {
+    const rules: GlobalDefinitions = {};
 
-    for (const [label, block] of Object.entries(blocks)) {
-      const prelude = queries[label];
+    for (const [label, defs] of Object.entries(blocks)) {
+      const prelude = queries[label as keyof Q];
 
-      if (block === undefined || prelude === undefined) {
+      if (defs === undefined || prelude === undefined) {
         continue;
       }
 
-      rules[prelude] = block;
+      rules[prelude] = wrapQueryBlock(defs);
     }
 
     return rules;
   };
 
   return Object.assign(build, queries);
+}
+
+/**
+ * Wrap global fragments in a query prelude
+ */
+function wrapQueryBlock(defs: GlobalDefinitions) {
+  return defineAbsoluteFragment().nested(defs);
 }
