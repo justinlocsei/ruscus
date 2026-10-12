@@ -6,7 +6,6 @@ import type {
 import { createElement, resolveElements } from './elements.ts';
 import { buildIdentifiersContext } from './identifiers.ts';
 import { mergeStyles } from './styles.ts';
-import type { Thunkable } from './types/utils.ts';
 import type {
   AnyComponentSpec,
   ComponentSpec,
@@ -17,9 +16,9 @@ import type {
   NestedProvider,
   PatchComponentSpec,
   Styles,
-  VariantStyles
+  VariantProvider,
+  VariantsFromProvider
 } from './types.ts';
-import { resolveVariants } from './variants.ts';
 
 /**
  * Options for creating a component
@@ -50,6 +49,13 @@ type NestedProviderFor<S extends AnyComponentSpec> = NestedProvider<
 >;
 
 /**
+ * Define a variant provider for a component spec
+ */
+type VariantProviderFor<S extends AnyComponentSpec> = VariantProvider<
+  StyleContextFor<S>
+>;
+
+/**
  * The current state of a component
  */
 type ComponentState<S extends AnyComponentSpec = AnyComponentSpec> = {
@@ -58,7 +64,7 @@ type ComponentState<S extends AnyComponentSpec = AnyComponentSpec> = {
   identifiers: IdentifierTypes;
   nested?: NestedProviderFor<S>;
   styles: Styles;
-  variants: Record<string, Styles>;
+  variants?: VariantProviderFor<S>;
 };
 
 /**
@@ -86,9 +92,9 @@ type WithIdentifiers<
  */
 type WithVariants<
   S extends AnyComponentSpec,
-  V extends VariantStyles
+  P extends VariantProvider<StyleContextFor<S>>
 > = Component<
-  PatchComponentSpec<S, { variants: Extract<keyof V, string> }>
+  PatchComponentSpec<S, { variants: VariantsFromProvider<P> }>
 >;
 
 export class Component<
@@ -110,8 +116,7 @@ export class Component<
     this.current = {
       elements: {},
       identifiers: {},
-      styles: {},
-      variants: {}
+      styles: {}
     };
 
     this.id = [this.options.namespace, this.name]
@@ -178,12 +183,12 @@ export class Component<
   /**
    * Define variants for the component root
    */
-  variants<T extends VariantStyles>(
-    definitions: Thunkable<T>
-  ): WithVariants<S, T> {
-    this.updateState('variants', resolveVariants(definitions));
+  variants<P extends VariantProviderFor<S>>(
+    provider: P
+  ): WithVariants<S, P> {
+    this.updateState('variants', provider);
 
-    return this as WithVariants<S, T>;
+    return this as WithVariants<S, P>;
   }
 
   /**
@@ -197,7 +202,11 @@ export class Component<
   ): void {
     const current = this.current[field];
 
-    if (field === 'global' || field === 'nested') {
+    if (
+      field === 'global'
+      || field === 'nested'
+      || field === 'variants'
+    ) {
       if (current !== undefined) {
         throw new Error(`${field} may only be called once`);
       }

@@ -21,8 +21,7 @@ describe('Component', () => {
     assert.deepEqual(component().current, {
       elements: {},
       identifiers: {},
-      styles: {},
-      variants: {}
+      styles: {}
     });
   });
 
@@ -238,26 +237,19 @@ describe('Component', () => {
   });
 
   describe('variants', () => {
-    it('registers styles for each variant name', () => {
-      assert.deepEqual(
-        component()
-          .variants({
-            compact: { padding: '0.5rem' },
-            large: { padding: '2rem' }
-          })
-          .current
-          .variants,
-        {
-          compact: { padding: '0.5rem' },
-          large: { padding: '2rem' }
-        }
-      );
+    it('registers a variant provider', () => {
+      const instance = component().variants(s => ({
+        compact: s({ padding: '0.5rem' }),
+        large: s({ padding: '2rem' })
+      }));
+
+      assert.equal(typeof instance.current.variants, 'function');
     });
 
     it('allows chaining after variants', () => {
       assert.deepEqual(
         component()
-          .variants({ compact: { padding: '0.5rem' } })
+          .variants(s => ({ compact: s({ padding: '0.5rem' }) }))
           .css({ color: 'black' })
           .current
           .styles,
@@ -265,29 +257,13 @@ describe('Component', () => {
       );
     });
 
-    it('resolves lazy variant definitions', () => {
-      const padding = '0.5rem';
-
-      assert.deepEqual(
-        component()
-          .variants(() => ({
-            compact: { padding },
-            large: { padding: '2rem' }
-          }))
-          .current
-          .variants,
-        {
-          compact: { padding: '0.5rem' },
-          large: { padding: '2rem' }
-        }
-      );
-    });
-
     it('throws when variants are defined more than once', () => {
-      const instance = component().variants({ compact: { padding: '0.5rem' } });
+      const instance = component().variants(s => ({
+        compact: s({ padding: '0.5rem' })
+      }));
 
       assert.throws(
-        () => instance.variants({ large: { padding: '2rem' } }),
+        () => instance.variants(s => ({ large: s({ padding: '2rem' }) })),
         'variants may only be called once'
       );
     });
