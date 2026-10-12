@@ -60,9 +60,9 @@ type VariantProviderFor<S extends AnyComponentSpec> = VariantProvider<
  */
 type ComponentState<S extends AnyComponentSpec = AnyComponentSpec> = {
   elements: NamedElements;
-  global?: GlobalProviderFor<S>;
+  global: GlobalProvider[];
   identifiers: IdentifierTypes;
-  nested?: NestedProviderFor<S>;
+  nested: NestedProvider[];
   styles: Styles;
   variants?: VariantProviderFor<S>;
 };
@@ -115,7 +115,9 @@ export class Component<
 
     this.current = {
       elements: {},
+      global: [],
       identifiers: {},
+      nested: [],
       styles: {}
     };
 
@@ -166,7 +168,9 @@ export class Component<
    * Define global styles for the component
    */
   global(definitions: GlobalProviderFor<S>): Component<S> {
-    this.updateState('global', definitions);
+    this.current.global.push(
+      definitions as GlobalProvider
+    );
 
     return this;
   }
@@ -175,7 +179,9 @@ export class Component<
    * Define nested styles for the component
    */
   nested(definitions: NestedProviderFor<S>): Component<S> {
-    this.updateState('nested', definitions);
+    this.current.nested.push(
+      definitions as NestedProvider
+    );
 
     return this;
   }
@@ -202,11 +208,7 @@ export class Component<
   ): void {
     const current = this.current[field];
 
-    if (
-      field === 'global'
-      || field === 'nested'
-      || field === 'variants'
-    ) {
+    if (field === 'variants') {
       if (current !== undefined) {
         throw new Error(`${field} may only be called once`);
       }

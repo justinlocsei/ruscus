@@ -20,7 +20,9 @@ describe('Component', () => {
   it('starts with an empty state', () => {
     assert.deepEqual(component().current, {
       elements: {},
+      global: [],
       identifiers: {},
+      nested: [],
       styles: {}
     });
   });
@@ -138,10 +140,13 @@ describe('Component', () => {
         })
       }));
 
-      const { global } = instance.current;
+      const global = instance.current.global[0];
       assert.isDefined(global);
 
-      const definitions = resolveGlobalProvider(global, styleContext(instance));
+      const definitions = resolveGlobalProvider(
+        global,
+        styleContext(instance)
+      );
       assert.equal(definitions['.card']?.scope, 'absolute');
       assert.deepEqual(definitions['.card']?.current.styles, { color: 'red' });
 
@@ -158,7 +163,7 @@ describe('Component', () => {
         .elements(e => ({ title: e() }))
         .global((s, { els }) => ({ [els.title]: s({ color: 'red' }) }));
 
-      assert.equal(typeof instance.current.global, 'function');
+      assert.equal(typeof instance.current.global[0], 'function');
     });
 
     it('allows chaining', () => {
@@ -172,15 +177,12 @@ describe('Component', () => {
       );
     });
 
-    it('throws when global rules are defined more than once', () => {
-      const instance = component().global(s => ({
-        '.card': s({ color: 'black' })
-      }));
+    it('allows multiple global providers', () => {
+      const instance = component()
+        .global(s => ({ '.card': s({ color: 'black' }) }))
+        .global(s => ({ '.card__title': s({ color: 'red' }) }));
 
-      assert.throws(
-        () => instance.global(s => ({ '.card': s({ color: 'red' }) })),
-        'global may only be called once'
-      );
+      assert.equal(instance.current.global.length, 2);
     });
   });
 
@@ -191,10 +193,13 @@ describe('Component', () => {
         a: s({ color: 'red' })
       }));
 
-      const { nested } = instance.current;
+      const nested = instance.current.nested[0];
       assert.isDefined(nested);
 
-      const definitions = resolveNestedProvider(nested, styleContext(instance));
+      const definitions = resolveNestedProvider(
+        nested,
+        styleContext(instance)
+      );
 
       assert.equal(definitions['&:hover']?.scope, 'relative');
       assert.deepEqual(
@@ -210,7 +215,7 @@ describe('Component', () => {
         .elements(e => ({ title: e() }))
         .nested((s, { els }) => ({ [els.title]: s({ color: 'red' }) }));
 
-      assert.equal(typeof instance.current.nested, 'function');
+      assert.equal(typeof instance.current.nested[0], 'function');
     });
 
     it('allows chaining', () => {
@@ -224,15 +229,12 @@ describe('Component', () => {
       );
     });
 
-    it('throws when nested rules are defined more than once', () => {
-      const instance = component().nested(s => ({
-        '&:hover': s({ opacity: '0.5' })
-      }));
+    it('allows multiple nested providers', () => {
+      const instance = component()
+        .nested(s => ({ '&:hover': s({ opacity: '0.5' }) }))
+        .nested(s => ({ '&:focus': s({ outline: 'none' }) }));
 
-      assert.throws(
-        () => instance.nested(s => ({ '&:focus': s({ outline: 'none' }) })),
-        'nested may only be called once'
-      );
+      assert.equal(instance.current.nested.length, 2);
     });
   });
 
