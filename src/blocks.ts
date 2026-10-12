@@ -10,7 +10,9 @@ import type {
   NestedContext,
   NestedDefinitions,
   NestedProvider,
-  Selectors
+  Selectors,
+  VariantDefinitions,
+  VariantProvider
 } from './types.ts';
 
 /**
@@ -110,5 +112,15 @@ export function resolveNestedProvider<C extends NestedContext>(
   provider: NestedProvider<C>,
   ctx: C
 ): NestedDefinitions {
+  return provider(defineRelativeFragment, ctx);
+}
+
+/**
+ * Resolve variant definitions from a provider
+ */
+export function resolveVariantProvider<C extends NestedContext>(
+  provider: VariantProvider<C>,
+  ctx: C
+): VariantDefinitions {
   return provider(defineRelativeFragment, ctx);
 }

@@ -4,7 +4,8 @@ import {
   buildGlobalContext,
   buildNestedContext,
   isDeclarations,
-  resolveNestedProvider
+  resolveNestedProvider,
+  resolveVariantProvider
 } from './blocks.ts';
 import { createElement } from './elements.ts';
 import type {
@@ -107,6 +108,18 @@ describe('isDeclarations', () => {
 
   it('rejects nested selector blocks', () => {
     assert.equal(isDeclarations({ title: { color: 'red' } }), false);
+  });
+});
+
+describe('resolveVariantProvider', () => {
+  it('resolves contextual definitions', () => {
+    assert.deepEqual(
+      resolveVariantProvider(
+        s => ({ compact: s({ padding: '0.5rem' }) }),
+        buildNestedContext([], {})
+      ).compact?.current.styles,
+      { padding: '0.5rem' }
+    );
   });
 });
 
