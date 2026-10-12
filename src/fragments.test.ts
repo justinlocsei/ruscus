@@ -1,16 +1,47 @@
 import { assert, describe, it } from 'vitest';
 
-import { defineFragment, Fragment } from './fragments.ts';
+import {
+  defineAbsoluteFragment,
+  defineRelativeFragment,
+  Fragment
+} from './fragments.ts';
+import type { GlobalDefinitions, NestedDefinitions } from './types.ts';
 
-describe('defineFragment', () => {
-  it('creates a fragment without initial styles', () => {
-    assert.deepEqual(defineFragment().current.styles, {});
+describe('FragmentDefinitions', () => {
+  it('requires relative fragments in nested definitions', () => {
+    type AssertNested<T extends NestedDefinitions> = T;
+
+    // @ts-expect-error absolute top-level nested key
+    type _InvalidNested = AssertNested<{
+      '.card': ReturnType<typeof defineAbsoluteFragment>;
+    }>;
+  });
+
+  it('requires absolute fragments in global definitions', () => {
+    type AssertGlobal<T extends GlobalDefinitions> = T;
+
+    // @ts-expect-error relative top-level global key
+    type _InvalidGlobal = AssertGlobal<{
+      '&:hover': ReturnType<typeof defineRelativeFragment>;
+    }>;
+  });
+});
+
+describe('defineAbsoluteFragment', () => {
+  it('creates an absolute fragment', () => {
+    assert.equal(defineAbsoluteFragment().scope, 'absolute');
+  });
+});
+
+describe('defineRelativeFragment', () => {
+  it('creates a relative fragment', () => {
+    assert.equal(defineRelativeFragment().scope, 'relative');
   });
 });
 
 describe('Fragment', () => {
   it('uses an empty state by default', () => {
-    assert.deepEqual(new Fragment().current, {
+    assert.deepEqual(new Fragment('relative').current, {
       nested: {},
       styles: {}
     });
@@ -18,21 +49,22 @@ describe('Fragment', () => {
 
   it('applies CSS declarations', () => {
     assert.deepEqual(
-      defineFragment({ color: 'red' }).current.styles,
+      defineRelativeFragment({ color: 'red' }).current.styles,
       { color: 'red' }
     );
   });
 
   it('merges CSS declarations', () => {
     assert.deepEqual(
-      defineFragment({ color: 'red' }).css({ opacity: '0.5' }).current.styles,
+      defineRelativeFragment({ color: 'red' }).css({ opacity: '0.5' }).current
+        .styles,
       { color: 'red', opacity: '0.5' }
     );
   });
 
   it('registers nested fragments', () => {
-    const fragment = defineFragment({ color: 'red' }).nested({
-      '&:hover': defineFragment({ opacity: '0.5' })
+    const fragment = defineRelativeFragment({ color: 'red' }).nested({
+      '&:hover': defineRelativeFragment({ opacity: '0.5' })
     });
 
     assert.deepEqual(
@@ -42,13 +74,13 @@ describe('Fragment', () => {
   });
 
   it('throws when nested rules are defined more than once', () => {
-    const fragment = defineFragment().nested({
-      a: defineFragment({ color: 'red' })
+    const fragment = defineRelativeFragment().nested({
+      a: defineRelativeFragment({ color: 'red' })
     });
 
     assert.throws(
-      () => fragment.nested({ b: defineFragment() }),
-      'nested may only be called once'
+      () => fragment.nested({ b: defineRelativeFragment() }),
+      'nested may only be set once'
     );
   });
 });

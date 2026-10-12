@@ -2,37 +2,62 @@ import { mergeStyles } from './styles.ts';
 import type { Styles } from './types.ts';
 
 /**
- * Nested fragments keyed by selector
+ * The scope of a fragment
  */
-type NestedFragments = Record<string, Fragment>;
+export type FragmentScope = 'absolute' | 'relative';
+
+/**
+ * Fragment definitions keyed by selector
+ */
+export type FragmentDefinitions<S extends FragmentScope = FragmentScope> =
+  Record<string, Fragment<S>>;
 
 /**
  * The current state of a fragment
  */
 type FragmentState = {
-  nested: NestedFragments;
+  nested: FragmentDefinitions;
   styles: Styles;
 };
 
 /**
- * Create a fragment with initial CSS
+ * Create an absolute fragment with initial CSS
  */
-export function defineFragment(styles: Styles = {}): Fragment {
-  return new Fragment().css(styles);
+export function defineAbsoluteFragment(
+  styles: Styles = {}
+): Fragment<'absolute'> {
+  return new Fragment('absolute').css(styles);
 }
 
 /**
- * A fragment factory
+ * Create a relative fragment with initial CSS
  */
-export type FragmentFactory = typeof defineFragment;
+export function defineRelativeFragment(
+  styles: Styles = {}
+): Fragment<'relative'> {
+  return new Fragment('relative').css(styles);
+}
 
-export class Fragment {
+/**
+ * An absolute-fragment factory
+ */
+export type AbsoluteFragmentFactory = typeof defineAbsoluteFragment;
+
+/**
+ * A relative-fragment factory
+ */
+export type RelativeFragmentFactory = typeof defineRelativeFragment;
+
+export class Fragment<S extends FragmentScope = FragmentScope> {
   current: FragmentState;
+  scope: S;
 
   /**
    * Create a fragment
    */
-  constructor() {
+  constructor(scope: S) {
+    this.scope = scope;
+
     this.current = {
       nested: {},
       styles: {}
@@ -42,7 +67,7 @@ export class Fragment {
   /**
    * Apply CSS declarations to the fragment
    */
-  css(styles: Styles): Fragment {
+  css(styles: Styles): Fragment<S> {
     this.current.styles = mergeStyles(this.current.styles, styles);
 
     return this;
@@ -51,7 +76,7 @@ export class Fragment {
   /**
    * Define nested styles
    */
-  nested(definitions: NestedFragments): Fragment {
+  nested(definitions: FragmentDefinitions): Fragment<S> {
     this.updateState('nested', definitions);
 
     return this;
