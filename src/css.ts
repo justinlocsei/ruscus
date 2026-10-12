@@ -1,16 +1,17 @@
-import {
-  buildNestedContext,
-  isDeclarations,
-  resolveNestedProvider
-} from './blocks.ts';
+import { buildNestedContext, resolveNestedProvider } from './blocks.ts';
 import type { Component } from './components.ts';
 import type { Element } from './elements.ts';
+import type { Fragment } from './fragments.ts';
 import {
   asProperty,
   buildIdentifiersContext,
   buildSelector
 } from './identifiers.ts';
-import type { AnyComponentSpec, Block, Declarations } from './types.ts';
+import type {
+  AnyComponentSpec,
+  Declarations,
+  NestedDefinitions
+} from './types.ts';
 
 /**
  * Options for compiling a component's CSS
@@ -63,16 +64,18 @@ class ComponentCompiler {
       this.addRule(`${root}.is-${name}`, styles);
     }
 
-    this.addNestedRules(
-      root,
-      resolveNestedProvider(current.nested, {
-        ...buildNestedContext([this.component.id], current.elements),
-        ...buildIdentifiersContext(
-          this.component.id,
-          current.identifiers
-        )
-      })
-    );
+    if (current.nested) {
+      this.addNestedRules(
+        root,
+        resolveNestedProvider(current.nested, {
+          ...buildNestedContext([this.component.id], current.elements),
+          ...buildIdentifiersContext(
+            this.component.id,
+            current.identifiers
+          )
+        })
+      );
+    }
 
     for (
       const [name, element] of Object.entries(current.elements)
@@ -96,16 +99,18 @@ class ComponentCompiler {
       this.addRule(`${selector}.is-${name}`, styles);
     }
 
-    this.addNestedRules(
-      selector,
-      resolveNestedProvider(
-        current.nested,
-        buildNestedContext(
-          [this.component.id, ...path],
-          current.children
+    if (current.nested) {
+      this.addNestedRules(
+        selector,
+        resolveNestedProvider(
+          current.nested,
+          buildNestedContext(
+            [this.component.id, ...path],
+            current.children
+          )
         )
-      )
-    );
+      );
+    }
 
     for (const [name, child] of Object.entries(current.children)) {
       this.addElementRules([...path, name], child);
@@ -115,17 +120,95 @@ class ComponentCompiler {
   /**
    * Add nested rules anchored to a selector
    */
-  private addNestedRules(root: string, block: Block): void {
-    if (isDeclarations(block)) {
-      this.addRule(root, block);
-    } else {
-      for (const [key, value] of Object.entries(block)) {
-        this.addNestedRules(
-          this.buildNestedSelector(root, key),
-          value
-        );
+  private addNestedRules(root: string, definitions: NestedDefinitions): void {
+    for (const [key, fragment] of Object.entries(definitions)) {
+      const rule = this.formatFragmentRules(
+        this.buildNestedSelector(root, key),
+        fragment
+      );
+
+      if (rule) {
+        this.blocks.push(rule);
       }
     }
+  }
+
+  /**
+   * Format a fragment as CSS at a selector
+   */
+  private formatFragmentRules(
+    parentSelector: string,
+    fragment: Fragment
+  ): string | undefined {
+    const { nested, styles } = fragment.current;
+    const nestedEntries = Object.entries(nested);
+
+    if (nestedEntries.length === 0) {
+      return this.formatRule(parentSelector, styles);
+    }
+
+    const inner: string[] = [];
+    const declarations = this.formatDeclarations(styles);
+
+    if (declarations) {
+      inner.push(declarations);
+    }
+
+    for (const [key, child] of nestedEntries) {
+      const selector = key.startsWith('&')
+        ? `${parentSelector}${key.slice(1)}`
+        : key;
+
+      const rule = this.formatFragmentRules(selector, child);
+
+      if (rule) {
+        inner.push(rule);
+      }
+    }
+
+    if (inner.length === 0) {
+      return undefined;
+    }
+
+    return this.formatNestedBlock(parentSelector, inner);
+  }
+
+  /**
+   * Format declaration lines without a selector wrapper
+   */
+  private formatDeclarations(styles: Declarations): string | undefined {
+    const properties = Object
+      .entries(styles)
+      .filter(([_, v]) => v !== undefined)
+      .map(([k]) => k);
+
+    if (properties.length === 0) {
+      return undefined;
+    }
+
+    const indent = ' '.repeat(this.config.indentation);
+
+    return properties
+      .map(p => `${indent}${asProperty(p)}: ${styles[p]};`)
+      .join('\n');
+  }
+
+  /**
+   * Wrap nested rules in a selector block
+   */
+  private formatNestedBlock(selector: string, inner: string[]): string {
+    const indent = ' '.repeat(this.config.indentation);
+
+    const body = inner
+      .map(rule =>
+        rule
+          .split('\n')
+          .map(line => `${indent}${line}`)
+          .join('\n')
+      )
+      .join('\n\n');
+
+    return `${selector} {\n${body}\n}`;
   }
 
   /**
@@ -162,21 +245,12 @@ class ComponentCompiler {
     selector: string,
     styles: Declarations
   ): string | undefined {
-    const properties = Object
-      .entries(styles)
-      .filter(([_, v]) => v !== undefined)
-      .map(([k]) => k);
+    const body = this.formatDeclarations(styles);
 
-    if (properties.length === 0) {
+    if (!body) {
       return undefined;
     }
 
-    const indent = ' '.repeat(this.config.indentation);
-
-    const declarations = properties
-      .map(p => `${indent}${asProperty(p)}: ${styles[p]};`)
-      .join('\n');
-
-    return `${selector} {\n${declarations}\n}`;
+    return `${selector} {\n${body}\n}`;
   }
 }

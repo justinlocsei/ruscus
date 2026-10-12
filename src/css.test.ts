@@ -93,11 +93,11 @@ describe('styleComponent', () => {
           })
         }))
         .variants({ compact: { padding: '1rem' } })
-        .nested(({ els, variant: v }) => ({
-          [v('compact')]: { gap: '0.5rem' },
-          [els.title]: { color: 'red' },
-          [els.header.root]: { color: 'black' },
-          [els.header.title]: { color: 'blue' }
+        .nested((s, { els, variant: v }) => ({
+          [v('compact')]: s({ gap: '0.5rem' }),
+          [els.title]: s({ color: 'red' }),
+          [els.header.root]: s({ color: 'black' }),
+          [els.header.title]: s({ color: 'blue' })
         }))
     );
 
@@ -136,16 +136,9 @@ describe('styleComponent', () => {
       new Component('card').elements(e => ({
         title: e(),
         body: e()
-      })).nested(({ els }) => ({
-        [els.title]: {
-          a: {
-            color: 'red'
-          }
-        },
-
-        [els.body]: {
-          fontWeight: '700'
-        }
+      })).nested((s, { els }) => ({
+        [els.title]: s().nested({ a: s({ color: 'red' }) }),
+        [els.body]: s({ fontWeight: '700' })
       }))
     );
 
@@ -169,8 +162,8 @@ describe('styleComponent', () => {
     const output = styleComponent(
       new Component('card')
         .identifiers({ alfa: 'string' })
-        .nested(({ ids }) => ({
-          '&:hover': { animationName: ids.alfa }
+        .nested((s, { ids }) => ({
+          '&:hover': s({ animationName: ids.alfa })
         }))
     );
 
@@ -192,9 +185,9 @@ describe('styleComponent', () => {
             compact: { padding: '0.5rem' },
             large: { padding: '2rem' }
           })
-          .nested(({ variant: v }) => ({
-            [v('compact')]: { gap: '0.25rem' },
-            [v('compact', 'large')]: { gap: '1rem' }
+          .nested((s, { variant: v }) => ({
+            [v('compact')]: s({ gap: '0.25rem' }),
+            [v('compact', 'large')]: s({ gap: '1rem' })
           }))
       }))
     );
@@ -230,9 +223,9 @@ describe('styleComponent', () => {
       new Component('card').elements(e => ({
         body: e({ display: 'block' })
           .children({ title: e() })
-          .nested(({ els }) => ({
-            '&:hover': { opacity: '0.9' },
-            [els.title]: { color: 'red' }
+          .nested((s, { els }) => ({
+            '&:hover': s({ opacity: '0.9' }),
+            [els.title]: s({ color: 'red' })
           }))
       }))
     );
