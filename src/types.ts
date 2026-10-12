@@ -1,4 +1,4 @@
-import type { DefineFragment, Fragment } from './fragments.ts';
+import type { Fragment, FragmentFactory } from './fragments.ts';
 import type { Patch } from './types/utils.ts';
 
 export const ELEMENT_ROOT = 'root';
@@ -127,7 +127,7 @@ export type NestedDefinitions = Record<string, Fragment>;
  * A provider of nested styles
  */
 export type NestedProvider<C extends NestedContext = NestedContext> = (
-  s: DefineFragment,
+  s: FragmentFactory,
   ctx: C
 ) => NestedDefinitions;
 
