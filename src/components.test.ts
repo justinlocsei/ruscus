@@ -1,8 +1,12 @@
 import { assert, describe, it } from 'vitest';
 
-import { buildNestedContext, resolveNestedProvider } from './blocks.ts';
+import {
+  buildNestedContext,
+  resolveGlobalProvider,
+  resolveNestedProvider
+} from './blocks.ts';
 import { Component } from './components.ts';
-import { defineFragment } from './fragments.ts';
+import { defineAbsoluteFragment } from './fragments.ts';
 import { buildIdentifiersContext } from './identifiers.ts';
 
 describe('Component', () => {
@@ -131,14 +135,15 @@ describe('Component', () => {
       const instance = component().global(s => ({
         '.card': s({ color: 'red' }),
         '@media (min-width: 768px)': s().nested({
-          '.card': defineFragment({ display: 'block' })
+          '.card': defineAbsoluteFragment({ display: 'block' })
         })
       }));
 
       const { global } = instance.current;
       assert.isDefined(global);
 
-      const definitions = resolveNestedProvider(global, styleContext(instance));
+      const definitions = resolveGlobalProvider(global, styleContext(instance));
+      assert.equal(definitions['.card']?.scope, 'absolute');
       assert.deepEqual(definitions['.card']?.current.styles, { color: 'red' });
 
       assert.deepEqual(
@@ -192,6 +197,7 @@ describe('Component', () => {
 
       const definitions = resolveNestedProvider(nested, styleContext(instance));
 
+      assert.equal(definitions['&:hover']?.scope, 'relative');
       assert.deepEqual(
         definitions['&:hover']?.current.styles,
         { opacity: '0.5' }

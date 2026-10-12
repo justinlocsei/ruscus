@@ -10,6 +10,7 @@ import type { Thunkable } from './types/utils.ts';
 import type {
   AnyComponentSpec,
   ComponentSpec,
+  GlobalProvider,
   IdentifiersContext,
   IdentifierTypes,
   NestedContext,
@@ -37,14 +38,16 @@ type StyleContextFor<S extends AnyComponentSpec> =
 /**
  * Define a global provider for a component spec
  */
-type GlobalProviderFor<S extends AnyComponentSpec> = NestedProvider<
+type GlobalProviderFor<S extends AnyComponentSpec> = GlobalProvider<
   StyleContextFor<S>
 >;
 
 /**
  * Define a nested provider for a component spec
  */
-type NestedProviderFor<S extends AnyComponentSpec> = GlobalProviderFor<S>;
+type NestedProviderFor<S extends AnyComponentSpec> = NestedProvider<
+  StyleContextFor<S>
+>;
 
 /**
  * The current state of a component
