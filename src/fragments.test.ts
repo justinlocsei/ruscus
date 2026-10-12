@@ -80,7 +80,7 @@ describe('Fragment', () => {
 
     assert.throws(
       () => fragment.nested({ b: defineRelativeFragment() }),
-      'nested may only be set once'
+      'nested may only be called once'
     );
   });
 });
