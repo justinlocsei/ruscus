@@ -30,8 +30,15 @@ type ComponentOptions = {
 /**
  * Define a global provider for a component spec
  */
+type StyleContextFor<S extends AnyComponentSpec> =
+  & NestedContext<S['els'], S['variants']>
+  & IdentifiersContext<S['ids']>;
+
+/**
+ * Define a global provider for a component spec
+ */
 type GlobalProviderFor<S extends AnyComponentSpec> = NestedProvider<
-  NestedContext<S['els'], S['variants']> & IdentifiersContext<S['ids']>
+  StyleContextFor<S>
 >;
 
 /**
@@ -42,11 +49,11 @@ type NestedProviderFor<S extends AnyComponentSpec> = GlobalProviderFor<S>;
 /**
  * The current state of a component
  */
-type ComponentState<S extends AnyComponentSpec> = {
+type ComponentState<S extends AnyComponentSpec = AnyComponentSpec> = {
   elements: NamedElements;
-  global: GlobalProviderFor<S>;
+  global?: GlobalProviderFor<S>;
   identifiers: IdentifierTypes;
-  nested: NestedProviderFor<S>;
+  nested?: NestedProviderFor<S>;
   styles: Styles;
   variants: Record<string, Styles>;
 };
@@ -99,9 +106,7 @@ export class Component<
 
     this.current = {
       elements: {},
-      global: {},
       identifiers: {},
-      nested: {},
       styles: {},
       variants: {}
     };
@@ -187,7 +192,13 @@ export class Component<
     field: T,
     value: ComponentState<S>[T]
   ): void {
-    if (Object.keys(this.current[field]).length) {
+    const current = this.current[field];
+
+    if (field === 'global' || field === 'nested') {
+      if (current !== undefined) {
+        throw new Error(`${field} may only be called once`);
+      }
+    } else if (Object.keys(current as object).length) {
       throw new Error(`${field} may only be called once`);
     }
 
