@@ -1,4 +1,4 @@
-import type { FragmentFactory } from './fragments.ts';
+import type { RelativeFragmentFactory } from './fragments.ts';
 import { mergeStyles } from './styles.ts';
 import type { Thunkable } from './types/utils.ts';
 import type {
@@ -70,7 +70,10 @@ export function resolveElements(
  */
 type ElementState = {
   children: NamedElements;
-  nested?: (s: FragmentFactory, ctx: NestedContext) => NestedDefinitions;
+  nested?: (
+    s: RelativeFragmentFactory,
+    ctx: NestedContext
+  ) => NestedDefinitions;
   styles: Styles;
   variants: Record<string, Styles>;
 };
@@ -140,7 +143,7 @@ export class Element<
    */
   nested(
     definitions: (
-      s: FragmentFactory,
+      s: RelativeFragmentFactory,
       ctx: NestedContext<S['children'], S['variants']>
     ) => NestedDefinitions
   ): Element<S> {
