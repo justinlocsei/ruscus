@@ -38,8 +38,7 @@ describe('Element', () => {
   it('starts with an empty state', () => {
     assert.deepEqual(new Element().current, {
       children: {},
-      styles: {},
-      variants: {}
+      styles: {}
     });
   });
 
@@ -131,26 +130,19 @@ describe('Element', () => {
   });
 
   describe('variants', () => {
-    it('registers styles for each variant name', () => {
-      assert.deepEqual(
-        createElement()
-          .variants({
-            bold: { fontWeight: '700' },
-            spacer: { marginTop: '1rem' }
-          })
-          .current
-          .variants,
-        {
-          bold: { fontWeight: '700' },
-          spacer: { marginTop: '1rem' }
-        }
-      );
+    it('registers a variant provider', () => {
+      const element = createElement().variants(s => ({
+        bold: s({ fontWeight: '700' }),
+        spacer: s({ marginTop: '1rem' })
+      }));
+
+      assert.equal(typeof element.current.variants, 'function');
     });
 
     it('allows chaining', () => {
       assert.deepEqual(
         createElement()
-          .variants({ bold: { fontWeight: '700' } })
+          .variants(s => ({ bold: s({ fontWeight: '700' }) }))
           .css({ color: 'black' })
           .current
           .styles,
@@ -158,29 +150,13 @@ describe('Element', () => {
       );
     });
 
-    it('resolves lazy variant definitions', () => {
-      const weight = '700';
-
-      assert.deepEqual(
-        createElement()
-          .variants(() => ({
-            bold: { fontWeight: weight },
-            spacer: { marginTop: '1rem' }
-          }))
-          .current
-          .variants,
-        {
-          bold: { fontWeight: '700' },
-          spacer: { marginTop: '1rem' }
-        }
-      );
-    });
-
     it('throws when variants are defined more than once', () => {
-      const element = createElement().variants({ bold: { fontWeight: '700' } });
+      const element = createElement().variants(s => ({
+        bold: s({ fontWeight: '700' })
+      }));
 
       assert.throws(
-        () => element.variants({ spacer: { marginTop: '1rem' } }),
+        () => element.variants(s => ({ spacer: s({ marginTop: '1rem' }) })),
         'variants may only be set once'
       );
     });
@@ -259,10 +235,10 @@ describe('Element', () => {
 
     it('exposes variants to nested rules', () => {
       createElement()
-        .variants({
-          bold: { fontWeight: '700' },
-          spacer: { marginTop: '1rem' }
-        })
+        .variants(s => ({
+          bold: s({ fontWeight: '700' }),
+          spacer: s({ marginTop: '1rem' })
+        }))
         .nested((s, { variant }) => {
           T.assert<
             T.Equivalent<

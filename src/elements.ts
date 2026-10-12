@@ -8,10 +8,10 @@ import type {
   NestedDefinitions,
   PatchElementSpec,
   Styles,
-  VariantStyles
+  VariantProvider,
+  VariantsFromProvider
 } from './types.ts';
 import { resolve } from './utils.ts';
-import { resolveVariants } from './variants.ts';
 
 /**
  * An eager or lazy element definition
@@ -68,6 +68,11 @@ export function resolveElements(
 /**
  * The current state of an element
  */
+type ElementVariantContext<S extends AnyElementSpec> = NestedContext<
+  S['children'],
+  never
+>;
+
 type ElementState = {
   children: NamedElements;
   nested?: (
@@ -75,7 +80,10 @@ type ElementState = {
     ctx: NestedContext
   ) => NestedDefinitions;
   styles: Styles;
-  variants: Record<string, Styles>;
+  variants?: (
+    s: RelativeFragmentFactory,
+    ctx: NestedContext
+  ) => NestedDefinitions;
 };
 
 /**
@@ -93,9 +101,9 @@ type WithChildren<
  */
 type WithVariants<
   S extends AnyElementSpec,
-  V extends VariantStyles
+  P extends VariantProvider<ElementVariantContext<S>>
 > = Element<
-  PatchElementSpec<S, { variants: Extract<keyof V, string> }>
+  PatchElementSpec<S, { variants: VariantsFromProvider<P> }>
 >;
 
 export class Element<
@@ -109,8 +117,7 @@ export class Element<
   constructor() {
     this.current = {
       children: {},
-      styles: {},
-      variants: {}
+      styles: {}
     };
   }
 
@@ -155,12 +162,12 @@ export class Element<
   /**
    * Define variants for the element
    */
-  variants<T extends VariantStyles>(
-    provider: Thunkable<T>
-  ): WithVariants<S, T> {
-    this.updateState('variants', resolveVariants(provider));
+  variants<P extends VariantProvider<ElementVariantContext<S>>>(
+    provider: P
+  ): WithVariants<S, P> {
+    this.updateState('variants', provider);
 
-    return this as WithVariants<S, T>;
+    return this as WithVariants<S, P>;
   }
 
   /**
@@ -177,9 +184,8 @@ export class Element<
     let isSet: boolean;
 
     if (current !== undefined) {
-      isSet = typeof current === 'function'
-        ? true
-        : Object.keys(current).length > 0;
+      isSet = field === 'nested' || field === 'variants'
+        || Object.keys(current).length > 0;
     } else {
       isSet = false;
     }
