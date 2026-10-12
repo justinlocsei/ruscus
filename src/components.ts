@@ -6,6 +6,8 @@ import type {
 import { createElement, resolveElements } from './elements.ts';
 import { buildIdentifiersContext } from './identifiers.ts';
 import { mergeStyles } from './styles.ts';
+import type { Trait } from './traits.ts';
+import { applyTrait } from './traits.ts';
 import type {
   AnyComponentSpec,
   ComponentSpec,
@@ -162,6 +164,17 @@ export class Component<
     );
 
     return this as WithElements<S, T>;
+  }
+
+  /**
+   * Apply reusable trait styles and nested rules
+   */
+  is(...traits: Trait[]): Component<S> {
+    for (const trait of traits) {
+      applyTrait(this.current, trait);
+    }
+
+    return this;
   }
 
   /**

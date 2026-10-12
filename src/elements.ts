@@ -1,5 +1,7 @@
 import type { RelativeFragmentFactory } from './fragments.ts';
 import { mergeStyles } from './styles.ts';
+import type { Trait } from './traits.ts';
+import { applyTrait } from './traits.ts';
 import type { Thunkable } from './types/utils.ts';
 import type {
   AnyElementSpec,
@@ -144,6 +146,17 @@ export class Element<
   css(styles: Styles): Element<S> {
     const { current } = this;
     current.styles = mergeStyles(current.styles, styles);
+
+    return this;
+  }
+
+  /**
+   * Apply reusable trait styles and nested rules
+   */
+  is(...traits: Trait[]): Element<S> {
+    for (const trait of traits) {
+      applyTrait(this.current, trait);
+    }
 
     return this;
   }
