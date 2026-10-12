@@ -131,6 +131,40 @@ describe('styleComponent', () => {
     );
   });
 
+  it('supports deeply nested styles', () => {
+    const output = styleComponent(
+      new Component('card').elements(e => ({
+        title: e(),
+        body: e()
+      })).nested(({ els }) => ({
+        [els.title]: {
+          a: {
+            color: 'red'
+          }
+        },
+
+        [els.body]: {
+          fontWeight: '700'
+        }
+      }))
+    );
+
+    assert.equal(
+      output,
+      css`
+        .card .card__title {
+          a {
+            color: red;
+          }
+        }
+
+        .card .card__body {
+          font-weight: 700;
+        }
+      `
+    );
+  });
+
   it('provides identifiers to nested component styles', () => {
     const output = styleComponent(
       new Component('card')
