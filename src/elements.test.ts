@@ -38,7 +38,6 @@ describe('Element', () => {
   it('starts with an empty state', () => {
     assert.deepEqual(new Element().current, {
       children: {},
-      nested: {},
       styles: {},
       variants: {}
     });
@@ -189,19 +188,17 @@ describe('Element', () => {
 
   describe('nested', () => {
     it('registers nested rules on the element', () => {
-      assert.deepEqual(
-        createElement()
-          .nested({ '&:hover': { opacity: '0.5' } })
-          .current
-          .nested,
-        { '&:hover': { opacity: '0.5' } }
-      );
+      const element = createElement().nested(s => ({
+        '&:hover': s({ opacity: '0.5' })
+      }));
+
+      assert.equal(typeof element.current.nested, 'function');
     });
 
     it('stores contextual definitions for compile-time resolution', () => {
       const element = createElement()
         .children({ title: e() })
-        .nested(({ els }) => ({ [els.title]: { color: 'red' } }));
+        .nested((s, { els }) => ({ [els.title]: s({ color: 'red' }) }));
 
       assert.equal(typeof element.current.nested, 'function');
     });
@@ -209,7 +206,7 @@ describe('Element', () => {
     it('types els from children', () => {
       createElement()
         .children({ title: e() })
-        .nested(({ els }) => {
+        .nested((s, { els }) => {
           T.assert<
             T.Equivalent<
               typeof els,
@@ -217,12 +214,12 @@ describe('Element', () => {
             >
           >(true);
 
-          return { [els.title]: { color: 'red' } };
+          return { [els.title]: s({ color: 'red' }) };
         });
 
       createElement()
         .children({ title: e() })
-        .nested(({ els }) => {
+        .nested((s, { els }) => {
           T.assert<
             T.Equivalent<
               typeof els,
@@ -231,8 +228,8 @@ describe('Element', () => {
           >(true);
 
           return {
-            '&:hover': { opacity: '0.9' },
-            [els.title]: { color: 'red' }
+            '&:hover': s({ opacity: '0.9' }),
+            [els.title]: s({ color: 'red' })
           };
         });
 
@@ -243,7 +240,7 @@ describe('Element', () => {
               title: e().children(() => ({ text: e() }))
             }))
         })
-        .nested(({ els }) => {
+        .nested((s, { els }) => {
           T.assert<
             T.Equivalent<
               typeof els,
@@ -256,7 +253,7 @@ describe('Element', () => {
             >
           >(true);
 
-          return { [els.header.title.text]: { color: 'red' } };
+          return { [els.header.title.text]: s({ color: 'red' }) };
         });
     });
 
@@ -266,7 +263,7 @@ describe('Element', () => {
           bold: { fontWeight: '700' },
           spacer: { marginTop: '1rem' }
         })
-        .nested(({ variant }) => {
+        .nested((s, { variant }) => {
           T.assert<
             T.Equivalent<
               typeof variant,
@@ -275,8 +272,8 @@ describe('Element', () => {
           >(true);
 
           return {
-            [variant('bold')]: { color: 'blue' },
-            [variant('bold', 'spacer')]: { color: 'red' }
+            [variant('bold')]: s({ color: 'blue' }),
+            [variant('bold', 'spacer')]: s({ color: 'red' })
           };
         });
     });
@@ -284,7 +281,7 @@ describe('Element', () => {
     it('allows chaining', () => {
       assert.deepEqual(
         createElement()
-          .nested({ '&:hover': { opacity: '0.5' } })
+          .nested(s => ({ '&:hover': s({ opacity: '0.5' }) }))
           .css({ color: 'black' })
           .current
           .styles,
@@ -293,10 +290,12 @@ describe('Element', () => {
     });
 
     it('throws when nested rules are defined more than once', () => {
-      const element = createElement().nested({ '&:hover': { opacity: '0.5' } });
+      const element = createElement().nested(s => ({
+        '&:hover': s({ opacity: '0.5' })
+      }));
 
       assert.throws(
-        () => element.nested({ '&:focus': { outline: 'none' } }),
+        () => element.nested(s => ({ '&:focus': s({ outline: 'none' }) })),
         'nested may only be set once'
       );
     });

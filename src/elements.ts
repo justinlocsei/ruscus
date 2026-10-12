@@ -1,10 +1,11 @@
+import type { FragmentFactory } from './fragments.ts';
 import { mergeStyles } from './styles.ts';
 import type { Thunkable } from './types/utils.ts';
 import type {
   AnyElementSpec,
   ElementSpec,
   NestedContext,
-  NestedProvider,
+  NestedDefinitions,
   PatchElementSpec,
   Styles,
   VariantStyles
@@ -69,7 +70,7 @@ export function resolveElements(
  */
 type ElementState = {
   children: NamedElements;
-  nested: NestedProvider;
+  nested?: (s: FragmentFactory, ctx: NestedContext) => NestedDefinitions;
   styles: Styles;
   variants: Record<string, Styles>;
 };
@@ -105,7 +106,6 @@ export class Element<
   constructor() {
     this.current = {
       children: {},
-      nested: {},
       styles: {},
       variants: {}
     };
@@ -139,9 +139,10 @@ export class Element<
    * Define nested styles for the element
    */
   nested(
-    definitions: NestedProvider<
-      NestedContext<S['children'], S['variants']>
-    >
+    definitions: (
+      s: FragmentFactory,
+      ctx: NestedContext<S['children'], S['variants']>
+    ) => NestedDefinitions
   ): Element<S> {
     this.updateState('nested', definitions);
 
@@ -168,7 +169,19 @@ export class Element<
     field: T,
     value: ElementState[T]
   ): void {
-    if (Object.keys(this.current[field]).length) {
+    const current = this.current[field];
+
+    let isSet: boolean;
+
+    if (current !== undefined) {
+      isSet = typeof current === 'function'
+        ? true
+        : Object.keys(current).length > 0;
+    } else {
+      isSet = false;
+    }
+
+    if (isSet) {
       throw new Error(`${field} may only be set once`);
     }
 
