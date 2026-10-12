@@ -1,4 +1,5 @@
-import type { Patch, Thunkable } from './types/utils.ts';
+import type { DefineFragment, Fragment } from './fragments.ts';
+import type { Patch } from './types/utils.ts';
 
 export const ELEMENT_ROOT = 'root';
 
@@ -118,11 +119,17 @@ export type NestedContext<
 };
 
 /**
+ * Nested rule definitions keyed by selector
+ */
+export type NestedDefinitions = Record<string, Fragment>;
+
+/**
  * A provider of nested styles
  */
-export type NestedProvider<C extends NestedContext = NestedContext> =
-  | Thunkable<RuleBlock>
-  | ((ctx: C) => RuleBlock);
+export type NestedProvider<C extends NestedContext = NestedContext> = (
+  s: DefineFragment,
+  ctx: C
+) => NestedDefinitions;
 
 /**
  * Replace selected fields in a component spec
