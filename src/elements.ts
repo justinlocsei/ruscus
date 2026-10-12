@@ -73,12 +73,14 @@ type ElementVariantContext<S extends AnyElementSpec> = NestedContext<
   never
 >;
 
+type ElementNestedProvider = (
+  s: RelativeFragmentFactory,
+  ctx: NestedContext
+) => NestedDefinitions;
+
 type ElementState = {
   children: NamedElements;
-  nested?: (
-    s: RelativeFragmentFactory,
-    ctx: NestedContext
-  ) => NestedDefinitions;
+  nested: ElementNestedProvider[];
   styles: Styles;
   variants?: (
     s: RelativeFragmentFactory,
@@ -117,6 +119,7 @@ export class Element<
   constructor() {
     this.current = {
       children: {},
+      nested: [],
       styles: {}
     };
   }
@@ -154,7 +157,7 @@ export class Element<
       ctx: NestedContext<S['children'], S['variants']>
     ) => NestedDefinitions
   ): Element<S> {
-    this.updateState('nested', definitions);
+    this.current.nested.push(definitions);
 
     return this;
   }
@@ -184,8 +187,7 @@ export class Element<
     let isSet: boolean;
 
     if (current !== undefined) {
-      isSet = field === 'nested' || field === 'variants'
-        || Object.keys(current).length > 0;
+      isSet = field === 'variants' || Object.keys(current).length > 0;
     } else {
       isSet = false;
     }

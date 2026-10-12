@@ -38,6 +38,7 @@ describe('Element', () => {
   it('starts with an empty state', () => {
     assert.deepEqual(new Element().current, {
       children: {},
+      nested: [],
       styles: {}
     });
   });
@@ -168,7 +169,7 @@ describe('Element', () => {
         '&:hover': s({ opacity: '0.5' })
       }));
 
-      assert.equal(typeof element.current.nested, 'function');
+      assert.equal(typeof element.current.nested[0], 'function');
     });
 
     it('stores contextual definitions for compile-time resolution', () => {
@@ -176,7 +177,7 @@ describe('Element', () => {
         .children({ title: e() })
         .nested((s, { els }) => ({ [els.title]: s({ color: 'red' }) }));
 
-      assert.equal(typeof element.current.nested, 'function');
+      assert.equal(typeof element.current.nested[0], 'function');
     });
 
     it('types els from children', () => {
@@ -265,15 +266,12 @@ describe('Element', () => {
       );
     });
 
-    it('throws when nested rules are defined more than once', () => {
-      const element = createElement().nested(s => ({
-        '&:hover': s({ opacity: '0.5' })
-      }));
+    it('allows multiple nested providers', () => {
+      const element = createElement()
+        .nested(s => ({ '&:hover': s({ opacity: '0.5' }) }))
+        .nested(s => ({ '&:focus': s({ outline: 'none' }) }));
 
-      assert.throws(
-        () => element.nested(s => ({ '&:focus': s({ outline: 'none' }) })),
-        'nested may only be set once'
-      );
+      assert.equal(element.current.nested.length, 2);
     });
   });
 });
