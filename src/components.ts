@@ -8,7 +8,7 @@ import type {
 import { defineElement, resolveElements } from './elements.ts';
 import { buildIdentifiersContext } from './identifiers.ts';
 import type { Buildable } from './internal.ts';
-import { build } from './internal.ts';
+import { buildPlan } from './internal.ts';
 import { projectComponent } from './projection.ts';
 import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
@@ -227,7 +227,7 @@ export class Component<
       component: this
     };
 
-    Object.defineProperty(applied, build, {
+    Object.defineProperty(applied, buildPlan, {
       configurable: false,
       enumerable: false,
       value: buildable,

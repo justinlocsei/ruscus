@@ -1,7 +1,7 @@
 import { assert, describe, it } from 'vitest';
 
 import { Component } from './components.ts';
-import { build } from './internal.ts';
+import { buildPlan } from './internal.ts';
 import { T } from './tests.ts';
 
 describe('Component.apply', () => {
@@ -50,9 +50,9 @@ describe('Component.apply', () => {
     const component = new Component('card').css({ color: 'red' });
     const applied = component.apply();
 
-    assert.strictEqual(applied[build].component, component);
+    assert.strictEqual(applied[buildPlan].component, component);
     assert.equal(
-      applied[build].compile(),
+      applied[buildPlan].compile(),
       '.card {\n  color: red;\n}'
     );
   });
