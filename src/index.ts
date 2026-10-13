@@ -1,4 +1,5 @@
 export {
+  Component,
   type ComponentFactory,
   defineComponent as component
 } from './components.ts';
