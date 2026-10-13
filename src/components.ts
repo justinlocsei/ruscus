@@ -3,7 +3,7 @@ import type {
   NamedElements,
   ProvidersToSpecs
 } from './elements.ts';
-import { createElement, resolveElements } from './elements.ts';
+import { defineElement, resolveElements } from './elements.ts';
 import { buildIdentifiersContext } from './identifiers.ts';
 import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
@@ -152,13 +152,13 @@ export class Component<
    */
   elements<T extends ElementProviders>(
     provider: (
-      e: typeof createElement,
+      e: typeof defineElement,
       ctx: IdentifiersContext<S['ids']>
     ) => T
   ): WithElements<S, T> {
     this.current.elements = resolveElements(
       provider(
-        createElement,
+        defineElement,
         buildIdentifiersContext(this.id, this.current.identifiers)
       )
     );
