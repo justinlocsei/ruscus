@@ -211,9 +211,13 @@ type SelectorForSpec<S extends AnyElementSpec> = [
 /**
  * Class selectors for a set of nested elements
  */
-export type Selectors<E extends AnyElementSpecs<E> = EmptyElementSpecs> = {
-  [K in keyof E]: SelectorForSpec<E[K]>;
-};
+export type Selectors<E extends AnyElementSpecs<E> = EmptyElementSpecs> =
+  & {
+    root: string;
+  }
+  & {
+    [K in keyof E]: SelectorForSpec<E[K]>;
+  };
 
 /**
  * A mapping of CSS properties to values
