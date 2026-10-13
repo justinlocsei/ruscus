@@ -41,7 +41,7 @@ export type EmptyElementSpecs = { [K in never]: never };
 /**
  * A constraint on element specs that preserves each element's type
  */
-type NamedElements<E> = { [K in keyof E]: AnyElementSpec };
+export type NamedElements<E> = { [K in keyof E]: AnyElementSpec };
 
 /**
  * The context available to nested element definitions
