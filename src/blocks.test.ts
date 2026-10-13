@@ -68,6 +68,7 @@ describe('buildNestedContext', () => {
     );
   });
 
+  it('does not change element selectors when root is a full block selector', () => {
     const card = defineElement().children({
       header: () =>
         e().children(() => ({
@@ -76,13 +77,14 @@ describe('buildNestedContext', () => {
     });
 
     assert.deepEqual(
-      buildGlobalContext('card', card.current.children).els,
+      buildNestedContext(['card'], card.current.children, { root: '.card' })
+        .els,
       buildNestedContext(['card'], card.current.children).els
     );
   });
 
-  it('builds full variant selectors', () => {
-    const { variants } = buildGlobalContext('card', {});
+  it('builds full variant selectors when root is a full block selector', () => {
+    const { variants } = buildNestedContext(['card'], {}, { root: '.card' });
 
     assert.equal(variants(), '.card');
 

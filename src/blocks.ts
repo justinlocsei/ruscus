@@ -1,6 +1,8 @@
 import type { NamedElements } from './elements.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
-import { buildSelector, ELEMENT_ROOT } from './identifiers.ts';
+import { ELEMENT_ROOT } from './identifiers.ts';
+import type { NameGenerator } from './naming.ts';
+import { createVerboseNameGenerator } from './naming.ts';
 import type {
   AnySelectors,
   Block,
@@ -18,14 +20,20 @@ import type {
 /**
  * Build a context for defining nested rules
  */
+type NestedContextOptions = {
+  name?: NameGenerator;
+  root?: string;
+};
+
 export function buildNestedContext(
   namespace: string[],
   children: NamedElements,
-  { root = '&' }: { root?: string } = {}
+  { name = createVerboseNameGenerator(), root = '&' }: NestedContextOptions = {}
 ): NestedContext {
+  const rootClass = name(namespace);
   const els: Selectors = {
-    root: buildSelector(namespace),
-    ...buildSelectors(namespace, children)
+    root: `.${rootClass}`,
+    ...buildSelectors(namespace, children, name)
   };
 
   return {
@@ -39,25 +47,26 @@ export function buildNestedContext(
  */
 function buildSelectors(
   namespace: string[],
-  elements: NamedElements
+  elements: NamedElements,
+  name: NameGenerator
 ): AnySelectors {
   const els: AnySelectors = {};
 
-  for (const name of Object.keys(elements)) {
-    const element = elements[name];
+  for (const key of Object.keys(elements)) {
+    const element = elements[key];
 
     if (element === undefined) {
       continue;
     }
 
-    const path = [...namespace, name];
+    const path = [...namespace, key];
     const { children } = element.current;
 
-    els[name] = Object.keys(children).length === 0
-      ? buildSelector(path)
+    els[key] = Object.keys(children).length === 0
+      ? `.${name(path)}`
       : {
-        [ELEMENT_ROOT]: buildSelector(path),
-        ...buildSelectors(path, children)
+        [ELEMENT_ROOT]: `.${name(path)}`,
+        ...buildSelectors(path, children, name)
       };
   }
 
