@@ -187,7 +187,7 @@ describe('Element', () => {
           T.assert<
             T.Equivalent<
               typeof els,
-              { title: string }
+              { root: string; title: string }
             >
           >(true);
 
@@ -200,7 +200,7 @@ describe('Element', () => {
           T.assert<
             T.Equivalent<
               typeof els,
-              { title: string }
+              { root: string; title: string }
             >
           >(true);
 
@@ -222,6 +222,7 @@ describe('Element', () => {
             T.Equivalent<
               typeof els,
               {
+                root: string;
                 header: {
                   root: string;
                   title: { root: string; text: string };
