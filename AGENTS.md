@@ -19,7 +19,7 @@ npm run test
 
 ## Testing
 
-Tests live beside source as `src/**/*.test.ts`. After editing a source file, run its matching test file when one exists.
+Unit tests live beside source as `src/**/*.test.ts`. Integration tests live under `tests/` (golden CSS via `verifyOutput` in `tests/helpers.ts`). After editing a source file, run its matching test file when one exists.
 
 ## Code style
 
