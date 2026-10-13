@@ -11,14 +11,10 @@
     flex-direction: column;
   }
 
-  .card__title {
-    font-weight: 700;
-  }
-}
-
-@media (min-width: 1024px) {
-  .card__body {
-    padding: 2rem;
+  @media (min-width: 768px) {
+    .card__title {
+      font-weight: 700;
+    }
   }
 }
 
@@ -29,5 +25,11 @@
 
   .card__title {
     font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card__body {
+    padding: 2rem;
   }
 }
