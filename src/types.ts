@@ -3,6 +3,7 @@ import type {
   FragmentDefinitions,
   RelativeFragmentFactory
 } from './fragments.ts';
+import type { RuscusInternal, ruscusInternal } from './internal.ts';
 
 export type { FragmentDefinitions };
 
@@ -230,3 +231,55 @@ export type Value = number | string;
 export type VariantSelector<V extends string> = <T extends V>(
   ...names: T[]
 ) => string;
+
+/**
+ * A projector for variant class names
+ */
+export type VariantProjector<V extends string> = (...names: V[]) => string;
+
+/**
+ * Project an element as class names
+ */
+export type ElementProjector<S extends AnyElementSpec> = [
+  keyof S['children']
+] extends [never] ? [S['variants']] extends [never] ? string
+  : VariantProjector<S['variants']>
+  : {
+    root: [S['variants']] extends [never] ? string
+      : VariantProjector<S['variants']>;
+  } & ElementProjectors<S['children']>;
+
+/**
+ * Project an element tree as class names
+ */
+export type ElementProjectors<
+  E extends AnyElementSpecs<E> = EmptyElementSpecs
+> = {
+  [K in keyof E]: ElementProjector<E[K]>;
+};
+
+/**
+ * Project a component identifier as a concrete string
+ */
+export type IDProjector<I extends IdentifierTypes> = [
+  keyof I
+] extends [never] ? Record<never, never>
+  : (name: keyof I) => string;
+
+/**
+ * A component that can be applied to the DOM
+ */
+export type Applied<S extends AnyComponentSpec> =
+  & {
+    root: [S['variants']] extends [never] ? string
+      : VariantProjector<S['variants']>;
+  }
+  & ElementProjectors<S['els']>
+  & IDProjector<S['ids']>;
+
+/**
+ * An applied component with internal hooks
+ */
+export type AppliedWithInternal<S extends AnyComponentSpec> =
+  & Applied<S>
+  & { [ruscusInternal]: RuscusInternal<S> };
