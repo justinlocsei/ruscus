@@ -26,7 +26,7 @@ export type FragmentStyles<S extends Scope> = {
  * Define a scoped fragment factory
  */
 export type IsFragmentFactory<S extends Scope> = (
-  styles: Styles
+  styles?: Styles
 ) => Fragment<S>;
 
 /**
