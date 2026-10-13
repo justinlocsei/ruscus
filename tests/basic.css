@@ -1,0 +1,14 @@
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.card__body {
+  margin: 0;
+  padding: 1rem;
+}
+
+.card__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
