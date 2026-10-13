@@ -232,3 +232,13 @@ export class Component<
     this.current[field] = value;
   }
 }
+
+/**
+ * Define a component
+ */
+export function defineComponent(
+  name: string,
+  options: ComponentOptions = {}
+): Component {
+  return new Component(name, options);
+}
