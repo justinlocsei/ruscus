@@ -1,4 +1,9 @@
 /**
+ * An object without keys
+ */
+export type EmptyObject = { [K in never]: never };
+
+/**
  * An eager value or a function that produces one
  */
 export type Thunkable<T> = T | (() => T);
