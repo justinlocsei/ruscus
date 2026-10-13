@@ -53,6 +53,11 @@ export function defineElement(
 }
 
 /**
+ * A factory for defining elements
+ */
+export type ElementFactory = typeof defineElement;
+
+/**
  * Resolve element providers to a tree of elements
  */
 export function resolveElements(

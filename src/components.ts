@@ -269,3 +269,8 @@ export function defineComponent(
 ): Component {
   return new Component(name, options);
 }
+
+/**
+ * A factory for defining components
+ */
+export type ComponentFactory = typeof defineComponent;
