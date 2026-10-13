@@ -35,20 +35,6 @@ export function buildNestedContext(
 }
 
 /**
- * Build a context for defining global rules
- */
-export function buildGlobalContext(
-  block: string,
-  children: NamedElements
-): NestedContext {
-  const namespace = [block];
-
-  return buildNestedContext(namespace, children, {
-    root: buildSelector(namespace)
-  });
-}
-
-/**
  * Build a selector for each item in an element tree
  */
 function buildSelectors(

@@ -1,7 +1,6 @@
 import { assert, describe, it } from 'vitest';
 
 import {
-  buildGlobalContext,
   buildNestedContext,
   isDeclarations,
   resolveNestedProvider,
@@ -68,10 +67,7 @@ describe('buildNestedContext', () => {
       '&.is-mobile.is-active'
     );
   });
-});
 
-describe('buildGlobalContext', () => {
-  it('builds the same element selectors as nested context', () => {
     const card = defineElement().children({
       header: () =>
         e().children(() => ({
