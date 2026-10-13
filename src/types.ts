@@ -3,7 +3,7 @@ import type {
   FragmentDefinitions,
   RelativeFragmentFactory
 } from './fragments.ts';
-import type { RuscusInternal, ruscusInternal } from './internal.ts';
+import type { Buildable, build } from './internal.ts';
 
 export type { FragmentDefinitions };
 
@@ -282,4 +282,4 @@ export type Applied<S extends AnyComponentSpec> =
  */
 export type AppliedWithInternal<S extends AnyComponentSpec> =
   & Applied<S>
-  & { [ruscusInternal]: RuscusInternal<S> };
+  & { [build]: Buildable<S> };
