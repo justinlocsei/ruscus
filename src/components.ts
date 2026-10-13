@@ -1,3 +1,5 @@
+import type { CompileConfig } from './css.ts';
+import { styleComponent } from './css.ts';
 import type {
   ElementProviders,
   NamedElements,
@@ -5,11 +7,15 @@ import type {
 } from './elements.ts';
 import { defineElement, resolveElements } from './elements.ts';
 import { buildIdentifiersContext } from './identifiers.ts';
+import type { Buildable } from './internal.ts';
+import { build } from './internal.ts';
+import { projectComponent } from './projection.ts';
 import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
 import { applyTrait } from './traits.ts';
 import type {
   AnyComponentSpec,
+  AppliedWithInternal,
   ComponentSpec,
   GlobalProvider,
   IdentifiersContext,
@@ -208,6 +214,27 @@ export class Component<
     this.updateState('variants', provider);
 
     return this as WithVariants<S, P>;
+  }
+
+  /**
+   * Project the component into class names and identifiers
+   */
+  apply(): AppliedWithInternal<S> {
+    const applied = projectComponent(this);
+
+    const buildable: Buildable<S> = {
+      compile: (config: CompileConfig = {}) => styleComponent(this, config),
+      component: this
+    };
+
+    Object.defineProperty(applied, build, {
+      configurable: false,
+      enumerable: false,
+      value: buildable,
+      writable: false
+    });
+
+    return applied as AppliedWithInternal<S>;
   }
 
   /**
