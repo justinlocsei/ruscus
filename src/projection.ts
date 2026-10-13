@@ -1,6 +1,8 @@
 import type { Component } from './components.ts';
 import type { Element, NamedElements } from './elements.ts';
-import { buildIdentifiersContext, buildSelector } from './identifiers.ts';
+import { buildIdentifiersContext } from './identifiers.ts';
+import type { NameGenerator, NamingScheme } from './naming.ts';
+import { createVerboseNameGenerator, useNaming } from './naming.ts';
 import type {
   AnyComponentSpec,
   Applied,
@@ -9,25 +11,38 @@ import type {
 } from './types.ts';
 
 /**
+ * Options for projecting class names
+ */
+export type ProjectConfig = {
+  naming?: NamingScheme;
+};
+
+/**
  * Build class names from component and element path segments
  */
-export function buildClassName(levels: readonly string[]): string {
-  return buildSelector(levels).slice(1);
+export function buildClassName(
+  levels: readonly string[],
+  name: NameGenerator = createVerboseNameGenerator()
+): string {
+  return name(levels);
 }
 
 /**
  * Project a component into class names and identifier accessors
  */
 export function projectComponent<S extends AnyComponentSpec>(
-  component: Component<S>
+  component: Component<S>,
+  config: ProjectConfig = {}
 ): Applied<S> {
+  const name = useNaming(component, config.naming);
   const root = projectVariant(
-    component.id,
+    name([component.id]),
     component.current.variants !== undefined
   );
   const elements = projectElements(
     [component.id],
-    component.current.elements
+    component.current.elements,
+    name
   ) as ElementProjectors<S['els']>;
 
   const ids = buildIdentifiersContext(
@@ -49,18 +64,20 @@ export function projectComponent<S extends AnyComponentSpec>(
  */
 function projectElements(
   namespace: readonly string[],
-  elements: NamedElements
+  elements: NamedElements,
+  name: NameGenerator
 ): Record<string, unknown> {
   const projected: Record<string, unknown> = {};
 
-  for (const [name, element] of Object.entries(elements)) {
+  for (const [key, element] of Object.entries(elements)) {
     if (element === undefined) {
       continue;
     }
 
-    projected[name] = projectElement(
-      [...namespace, name],
-      element
+    projected[key] = projectElement(
+      [...namespace, key],
+      element,
+      name
     );
   }
 
@@ -72,10 +89,11 @@ function projectElements(
  */
 function projectElement(
   path: readonly string[],
-  element: Element
+  element: Element,
+  name: NameGenerator
 ): unknown {
   const root = projectVariant(
-    buildClassName(path),
+    name(path),
     element.current.variants !== undefined
   );
   const children = element.current.children;
@@ -86,7 +104,7 @@ function projectElement(
 
   return {
     root,
-    ...projectElements(path, children)
+    ...projectElements(path, children, name)
   };
 }
 
