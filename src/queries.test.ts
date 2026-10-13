@@ -23,14 +23,13 @@ describe('defineQueries', () => {
     });
 
     assert.deepEqual(
-      rules['@media (min-width: 768px)']?.current.nested['.card']?.current
-        .styles,
+      rules['@media (min-width: 768px)']?.styles.nested['.card']?.styles.root,
       { color: 'red' }
     );
     assert.deepEqual(
-      rules['@container card (min-width: 400px)']?.current.nested[
+      rules['@container card (min-width: 400px)']?.styles.nested[
         '.card__title'
-      ]?.current.styles,
+      ]?.styles.root,
       { fontSize: '1rem' }
     );
   });
@@ -48,8 +47,7 @@ describe('defineQueries', () => {
     });
 
     assert.deepEqual(
-      rules['@media (min-width: 768px)']?.current.nested['.card']?.current
-        .styles,
+      rules['@media (min-width: 768px)']?.styles.nested['.card']?.styles.root,
       { display: 'block' }
     );
     assert.equal(rules['@media (min-width: 1024px)'], undefined);
