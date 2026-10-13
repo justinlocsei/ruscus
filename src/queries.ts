@@ -1,5 +1,12 @@
 import { defineAbsoluteFragment } from './fragments.ts';
-import type { GlobalDefinitions } from './types.ts';
+import type { ScopedFragments } from './types/fragments.ts';
+
+/**
+ * Rules keyed by query labels
+ */
+type AppliedQueries<Q extends NamedQueries> = {
+  [K in keyof Q]: QueryRules;
+};
 
 /**
  * A mapping of labels to queries
@@ -7,18 +14,23 @@ import type { GlobalDefinitions } from './types.ts';
 type NamedQueries = Record<string, string>;
 
 /**
- * Global fragments keyed by query labels
+ * A function that applies rules to queries
  */
-type QueryBlocks<Q extends NamedQueries> = {
-  [K in keyof Q]: GlobalDefinitions;
-};
+type QueryApplicator<Q extends NamedQueries> = (
+  blocks: Partial<AppliedQueries<Q>>
+) => QueryRules;
 
 /**
  * A provider that supports partial rules and exposes named queries
  */
 type QueryProvider<Q extends NamedQueries> =
   & { [K in keyof Q]: Q[K] }
-  & ((blocks: Partial<QueryBlocks<Q>>) => GlobalDefinitions);
+  & QueryApplicator<Q>;
+
+/**
+ * Global definitions for query rules
+ */
+type QueryRules = ScopedFragments<'absolute'>;
 
 /**
  * Define a provider of named queries
@@ -26,28 +38,20 @@ type QueryProvider<Q extends NamedQueries> =
 export function defineQueries<Q extends NamedQueries>(
   queries: Q
 ): QueryProvider<Q> {
-  const build = (blocks: Partial<QueryBlocks<Q>>): GlobalDefinitions => {
-    const rules: GlobalDefinitions = {};
+  const build: QueryApplicator<Q> = blocks => {
+    return Object.entries(blocks).reduce<QueryRules>(
+      (previous, [label, rules]) => {
+        const query = queries[label];
 
-    for (const [label, defs] of Object.entries(blocks)) {
-      const prelude = queries[label as keyof Q];
+        if (rules && query) {
+          previous[query] = defineAbsoluteFragment().nested(rules);
+        }
 
-      if (defs === undefined || prelude === undefined) {
-        continue;
-      }
-
-      rules[prelude] = wrapQueryBlock(defs);
-    }
-
-    return rules;
+        return previous;
+      },
+      {}
+    );
   };
 
   return Object.assign(build, queries);
-}
-
-/**
- * Wrap global fragments in a query prelude
- */
-function wrapQueryBlock(defs: GlobalDefinitions) {
-  return defineAbsoluteFragment().nested(defs);
 }
