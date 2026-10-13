@@ -2,6 +2,18 @@
   display: flex;
 }
 
+.card__body {
+  padding: 1rem;
+}
+
+.card__body__text {
+  line-height: 1.5;
+}
+
+.card__header__title {
+  font-weight: 700;
+}
+
 .card .card__body {
   flex: 1;
 }
@@ -18,10 +30,6 @@
   font-size: 1.25rem;
 }
 
-.card__body {
-  padding: 1rem;
-}
-
 .card__body:hover {
   opacity: 0.9;
 }
@@ -30,14 +38,6 @@
   color: gray;
 }
 
-.card__body__text {
-  line-height: 1.5;
-}
-
 .card__header .card__header__title {
   color: navy;
-}
-
-.card__header__title {
-  font-weight: 700;
 }

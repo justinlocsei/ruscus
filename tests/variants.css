@@ -10,18 +10,6 @@
   padding: 2rem;
 }
 
-.card.is-compact {
-  gap: 0.25rem;
-}
-
-.card.is-compact.is-large {
-  gap: 1rem;
-}
-
-.card .card__title {
-  font-weight: 700;
-}
-
 .card__body {
   display: block;
 }
@@ -34,18 +22,38 @@
   padding: 2rem;
 }
 
-.card__body.is-compact {
-  gap: 0.25rem;
-}
-
-.card__body.is-compact.is-large {
-  gap: 1rem;
-}
-
 .card__title {
   font-size: 1.25rem;
 }
 
 .card__title.is-emphasis {
   color: blue;
+}
+
+.card.is-compact {
+  gap: 0.25rem;
+}
+
+.card.is-compact.is-large {
+  gap: 1rem;
+}
+
+.card {
+  border-style: solid;
+}
+
+.card .card__title {
+  font-weight: 700;
+}
+
+.card__body.is-compact {
+    gap: 0.25rem;
+
+  .card__body.is-compact:hover {
+    opacity: 0.9;
+  }
+}
+
+.card__body.is-compact.is-large {
+  gap: 1rem;
 }

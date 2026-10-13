@@ -9,8 +9,10 @@ compareStyles('variants', c =>
           compact: s({ padding: '0.5rem' }),
           large: s({ padding: '2rem' })
         }))
-        .nested((s, { variant: v }) => ({
-          [v('compact')]: s({ gap: '0.25rem' }),
+        .nested((s, { variants: v }) => ({
+          [v('compact')]: s({ gap: '0.25rem' }).nested({
+            '&:hover': s({ opacity: '0.9' })
+          }),
           [v('compact', 'large')]: s({ gap: '1rem' })
         })),
       title: e({ fontSize: '1.25rem' }).variants(s => ({
@@ -21,8 +23,9 @@ compareStyles('variants', c =>
       compact: s({ padding: '0.5rem' }),
       large: s({ padding: '2rem' })
     }))
-    .nested((s, { els, variant: v }) => ({
+    .nested((s, { els, variants: v }) => ({
       [v('compact')]: s({ gap: '0.25rem' }),
       [v('compact', 'large')]: s({ gap: '1rem' }),
+      [els.root]: s({ borderStyle: 'solid' }),
       [els.title]: s({ fontWeight: '700' })
     })));
