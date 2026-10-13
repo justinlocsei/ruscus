@@ -1,6 +1,6 @@
 import type { RelativeFragmentFactory, ScopedFragments } from './fragments.ts';
 import type { ElementRoot } from './ids.ts';
-import type { EmptyObject, Patch } from './utils.ts';
+import type { EmptyObject, HasVariants, Patch } from './utils.ts';
 
 /**
  * The most inclusive form of an element spec
@@ -21,9 +21,8 @@ type ChildSelectors<C extends NamedElements<C>> = {
 export type ElementSpec<
   C extends ElementSpecs = EmptyElementSpecs,
   V extends string = never
-> = {
+> = HasVariants<V> & {
   children: C;
-  variants: V;
 };
 
 /**

@@ -4,7 +4,7 @@ import type {
   NestedContext
 } from './elements.ts';
 import type { AbsoluteFragmentFactory, ScopedFragments } from './fragments.ts';
-import type { EmptyObject, Patch } from './utils.ts';
+import type { EmptyObject, HasVariants, Patch } from './utils.ts';
 
 /**
  * The most inclusive form of a component spec
@@ -22,10 +22,9 @@ export type ComponentSpec<
   E extends ElementSpecs = EmptyElementSpecs,
   V extends string = never,
   I extends NamedIdentifiers = EmptyIdentifierTypes
-> = {
+> = HasVariants<V> & {
   els: E;
   ids: I;
-  variants: V;
 };
 
 /**
