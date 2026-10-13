@@ -1,6 +1,12 @@
-# Ruscus
+<p align="center">
+  <img src="./assets/logo.svg" width="600" alt="Larkspur">
+</p>
 
-Ruscus is a zero-runtime, TypeScript-first system for orchestrating component styles.  A component's styled surface area is defined once as a tree of named elements and variants, and that definition projects into a typed set of class names for your view layer.  The CSS itself is yours to write: plain strings or objects, with a small set of opt-in typed values for things like colors and dimensions that cross the CSS/JS boundary.
+<br>
+
+<p align="center">
+  Ruscus is a zero-runtime, TypeScript-first system for orchestrating component styles.  A component's styled surface area is defined once as a tree of named elements and variants, and that definition projects into a typed set of class names for your view layer.  The CSS itself is yours to write: plain strings or objects, with a small set of opt-in typed values for things like colors and dimensions that cross the CSS/JS boundary.
+</p>
 
 ---
 
