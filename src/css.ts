@@ -7,11 +7,9 @@ import {
 import type { Component } from './components.ts';
 import type { Element } from './elements.ts';
 import type { Fragment, FragmentScope } from './fragments.ts';
-import {
-  asProperty,
-  buildIdentifiersContext,
-  buildSelector
-} from './identifiers.ts';
+import { asProperty, buildIdentifiersContext } from './identifiers.ts';
+import type { NameGenerator, NamingScheme } from './naming.ts';
+import { useNaming } from './naming.ts';
 import type {
   AnyComponentSpec,
   Declarations,
@@ -25,6 +23,7 @@ import type {
  */
 export type CompileConfig = {
   indentation?: number;
+  naming?: NamingScheme;
 };
 
 /**
@@ -43,7 +42,8 @@ export function styleComponent<S extends AnyComponentSpec>(
 class ComponentCompiler {
   private blocks: string[];
   private component: Component<AnyComponentSpec>;
-  private config: Required<CompileConfig>;
+  private config: Required<Omit<CompileConfig, 'naming'>>;
+  private name: NameGenerator;
 
   /**
    * Create a compiler for a component's styles
@@ -56,6 +56,7 @@ class ComponentCompiler {
 
     this.component = component;
     this.config = { indentation: 2, ...config };
+    this.name = useNaming(component, config.naming);
   }
 
   /**
@@ -66,7 +67,9 @@ class ComponentCompiler {
     const root = this.buildSelector();
 
     const styleContext = {
-      ...buildNestedContext([this.component.id], current.elements),
+      ...buildNestedContext([this.component.id], current.elements, {
+        name: this.name
+      }),
       ...buildIdentifiersContext(
         this.component.id,
         current.identifiers
@@ -122,7 +125,8 @@ class ComponentCompiler {
 
     const elementContext = buildNestedContext(
       [this.component.id, ...path],
-      current.children
+      current.children,
+      { name: this.name }
     );
 
     if (current.variants) {
@@ -147,7 +151,8 @@ class ComponentCompiler {
 
     const elementContext = buildNestedContext(
       [this.component.id, ...path],
-      current.children
+      current.children,
+      { name: this.name }
     );
 
     for (const provider of current.nested) {
@@ -360,7 +365,7 @@ class ComponentCompiler {
    * Build a selector for a component element
    */
   private buildSelector(...parts: string[]): string {
-    return buildSelector([this.component.id, ...parts]);
+    return `.${this.name([this.component.id, ...parts])}`;
   }
 
   /**
