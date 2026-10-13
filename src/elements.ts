@@ -89,10 +89,7 @@ type ElementState = {
   children: NamedElements;
   nested: ElementNestedProvider[];
   styles: Styles;
-  variants?: (
-    s: RelativeFragmentFactory,
-    ctx: NestedContext
-  ) => NestedDefinitions;
+  variants?: VariantProvider<NestedContext>;
 };
 
 /**
@@ -186,7 +183,10 @@ export class Element<
   variants<P extends VariantProvider<ElementVariantContext<S>>>(
     provider: P
   ): WithVariants<S, P> {
-    this.updateState('variants', provider);
+    this.updateState(
+      'variants',
+      provider as VariantProvider<NestedContext>
+    );
 
     return this as WithVariants<S, P>;
   }

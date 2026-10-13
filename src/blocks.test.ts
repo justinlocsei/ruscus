@@ -54,17 +54,17 @@ describe('buildNestedContext', () => {
   });
 
   it('builds anchor-relative variant selectors', () => {
-    const { variant } = buildNestedContext([], {});
+    const { variants } = buildNestedContext([], {});
 
-    assert.equal(variant(), '&');
+    assert.equal(variants(), '&');
 
     assert.equal(
-      (variant as VariantSelector<string>)('compact'),
+      (variants as VariantSelector<string>)('compact'),
       '&.is-compact'
     );
 
     assert.equal(
-      (variant as VariantSelector<string>)('mobile', 'active'),
+      (variants as VariantSelector<string>)('mobile', 'active'),
       '&.is-mobile.is-active'
     );
   });
@@ -86,12 +86,12 @@ describe('buildGlobalContext', () => {
   });
 
   it('builds full variant selectors', () => {
-    const { variant } = buildGlobalContext('card', {});
+    const { variants } = buildGlobalContext('card', {});
 
-    assert.equal(variant(), '.card');
+    assert.equal(variants(), '.card');
 
     assert.equal(
-      (variant as VariantSelector<string>)('compact'),
+      (variants as VariantSelector<string>)('compact'),
       '.card.is-compact'
     );
   });

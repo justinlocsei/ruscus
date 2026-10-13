@@ -240,17 +240,17 @@ describe('Element', () => {
           bold: s({ fontWeight: '700' }),
           spacer: s({ marginTop: '1rem' })
         }))
-        .nested((s, { variant }) => {
+        .nested((s, { variants }) => {
           T.assert<
             T.Equivalent<
-              typeof variant,
+              typeof variants,
               <T extends 'bold' | 'spacer'>(...names: T[]) => string
             >
           >(true);
 
           return {
-            [variant('bold')]: s({ color: 'blue' }),
-            [variant('bold', 'spacer')]: s({ color: 'red' })
+            [variants('bold')]: s({ color: 'blue' }),
+            [variants('bold', 'spacer')]: s({ color: 'red' })
           };
         });
     });

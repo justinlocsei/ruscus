@@ -93,7 +93,7 @@ describe('styleComponent', () => {
           })
         }))
         .variants(s => ({ compact: s({ padding: '1rem' }) }))
-        .nested((s, { els, variant: v }) => ({
+        .nested((s, { els, variants: v }) => ({
           [v('compact')]: s({ gap: '0.5rem' }),
           [els.title]: s({ color: 'red' }),
           [els.header.root]: s({ color: 'black' }),
@@ -211,7 +211,7 @@ describe('styleComponent', () => {
             compact: s({ padding: '0.5rem' }),
             large: s({ padding: '2rem' })
           }))
-          .nested((s, { variant: v }) => ({
+          .nested((s, { variants: v }) => ({
             [v('compact')]: s({ gap: '0.25rem' }),
             [v('compact', 'large')]: s({ gap: '1rem' })
           }))

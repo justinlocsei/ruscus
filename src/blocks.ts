@@ -30,7 +30,7 @@ export function buildNestedContext(
 
   return {
     els,
-    variant: (...ns) => `${root}${ns.map(n => `.is-${n}`).join('')}`
+    variants: (...ns) => `${root}${ns.map(n => `.is-${n}`).join('')}`
   };
 }
 

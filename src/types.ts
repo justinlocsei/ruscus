@@ -123,7 +123,7 @@ export type NestedContext<
   V extends string = never
 > = {
   els: Selectors<E>;
-  variant: VariantSelector<V>;
+  variants: VariantSelector<V>;
 };
 
 /**
