@@ -1,4 +1,4 @@
-import type { Styles } from './types.ts';
+import type { Styles } from './types/css.ts';
 
 /**
  * Merge multiple styles on top of a base
