@@ -83,6 +83,12 @@ class ComponentCompiler {
       );
     }
 
+    for (
+      const [name, element] of Object.entries(current.elements)
+    ) {
+      this.addElementStyles([name], element);
+    }
+
     for (const provider of current.nested) {
       this.addScopedFragmentRules(
         root,
@@ -93,7 +99,7 @@ class ComponentCompiler {
     for (
       const [name, element] of Object.entries(current.elements)
     ) {
-      this.addElementRules([name], element);
+      this.addElementNested([name], element);
     }
 
     for (const provider of current.global) {
@@ -106,9 +112,9 @@ class ComponentCompiler {
   }
 
   /**
-   * Add rules for a component's elements
+   * Add base styles for a component's elements
    */
-  private addElementRules(path: string[], element: Element): void {
+  private addElementStyles(path: string[], element: Element): void {
     const { current } = element;
     const selector = this.buildSelector(...path);
 
@@ -127,6 +133,23 @@ class ComponentCompiler {
       );
     }
 
+    for (const [name, child] of Object.entries(current.children)) {
+      this.addElementStyles([...path, name], child);
+    }
+  }
+
+  /**
+   * Add nested rules for a component's elements
+   */
+  private addElementNested(path: string[], element: Element): void {
+    const { current } = element;
+    const selector = this.buildSelector(...path);
+
+    const elementContext = buildNestedContext(
+      [this.component.id, ...path],
+      current.children
+    );
+
     for (const provider of current.nested) {
       this.addScopedFragmentRules(
         selector,
@@ -135,7 +158,7 @@ class ComponentCompiler {
     }
 
     for (const [name, child] of Object.entries(current.children)) {
-      this.addElementRules([...path, name], child);
+      this.addElementNested([...path, name], child);
     }
   }
 
@@ -311,9 +334,15 @@ class ComponentCompiler {
    * Build a selector for a nested rule key
    */
   private buildNestedSelector(anchor: string, key: string): string {
-    return key.startsWith('&')
-      ? `${anchor}${key.slice(1)}`
-      : `${anchor} ${key}`;
+    if (key.startsWith('&')) {
+      return `${anchor}${key.slice(1)}`;
+    }
+
+    if (key === anchor) {
+      return anchor;
+    }
+
+    return `${anchor} ${key}`;
   }
 
   /**
