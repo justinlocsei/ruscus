@@ -1,0 +1,33 @@
+.card {
+  display: block;
+}
+
+.card {
+  color: black;
+}
+
+@container card (min-width: 400px) {
+  .card {
+    flex-direction: column;
+  }
+
+  .card__title {
+    font-weight: 700;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card__body {
+    padding: 2rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 1rem;
+  }
+
+  .card__title {
+    font-size: 1.25rem;
+  }
+}

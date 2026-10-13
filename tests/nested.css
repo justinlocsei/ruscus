@@ -1,0 +1,43 @@
+.card {
+  display: flex;
+}
+
+.card .card__body {
+  flex: 1;
+}
+
+.card .card__body__text {
+  margin-top: 0.5rem;
+}
+
+.card .card__header {
+  border-bottom: 1px solid #ccc;
+}
+
+.card .card__header__title {
+  font-size: 1.25rem;
+}
+
+.card__body {
+  padding: 1rem;
+}
+
+.card__body:hover {
+  opacity: 0.9;
+}
+
+.card__body .card__body__text {
+  color: gray;
+}
+
+.card__body__text {
+  line-height: 1.5;
+}
+
+.card__header .card__header__title {
+  color: navy;
+}
+
+.card__header__title {
+  font-weight: 700;
+}

@@ -1,0 +1,51 @@
+.card {
+  display: flex;
+}
+
+.card.is-compact {
+  padding: 0.5rem;
+}
+
+.card.is-large {
+  padding: 2rem;
+}
+
+.card.is-compact {
+  gap: 0.25rem;
+}
+
+.card.is-compact.is-large {
+  gap: 1rem;
+}
+
+.card .card__title {
+  font-weight: 700;
+}
+
+.card__body {
+  display: block;
+}
+
+.card__body.is-compact {
+  padding: 0.5rem;
+}
+
+.card__body.is-large {
+  padding: 2rem;
+}
+
+.card__body.is-compact {
+  gap: 0.25rem;
+}
+
+.card__body.is-compact.is-large {
+  gap: 1rem;
+}
+
+.card__title {
+  font-size: 1.25rem;
+}
+
+.card__title.is-emphasis {
+  color: blue;
+}
