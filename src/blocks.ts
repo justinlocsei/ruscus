@@ -23,9 +23,9 @@ export function buildNestedContext(
   children: NamedElements,
   { root = '&' }: { root?: string } = {}
 ): NestedContext {
-  const els = {
-    ...buildSelectors(namespace, children),
-    root: buildSelector(namespace)
+  const els: Selectors = {
+    root: buildSelector(namespace),
+    ...buildSelectors(namespace, children)
   };
 
   return {
@@ -54,7 +54,7 @@ export function buildGlobalContext(
 function buildSelectors(
   namespace: string[],
   elements: NamedElements
-): Selectors {
+): AnySelectors {
   const els: AnySelectors = {};
 
   for (const name of Object.keys(elements)) {

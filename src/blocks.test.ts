@@ -26,7 +26,7 @@ describe('buildNestedContext', () => {
       {
         root: '.card__body',
         title: '.card__body__title'
-      }
+      } as Record<string, string>
     );
   });
 
@@ -49,7 +49,7 @@ describe('buildNestedContext', () => {
             text: '.card__header__title__text'
           }
         }
-      }
+      } as Record<string, unknown>
     );
   });
 
