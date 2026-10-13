@@ -1,6 +1,6 @@
 import type { RelativeFragmentFactory, ScopedFragments } from './fragments.ts';
 import type { ElementRoot } from './ids.ts';
-import type { Patch } from './utils.ts';
+import type { EmptyObject, Patch } from './utils.ts';
 
 /**
  * The most inclusive form of an element spec
@@ -36,7 +36,7 @@ export type ElementSpecs<T extends string = string> = {
 /**
  * An empty set of element specs
  */
-export type EmptyElementSpecs = { [K in never]: never };
+export type EmptyElementSpecs = EmptyObject;
 
 /**
  * A constraint on element specs that preserves each element's type
