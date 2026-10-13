@@ -7,7 +7,7 @@ import {
   resolveNestedProvider,
   resolveVariantProvider
 } from './blocks.ts';
-import { createElement } from './elements.ts';
+import { defineElement } from './elements.ts';
 import type {
   ElementSpec,
   NestedContext,
@@ -15,11 +15,11 @@ import type {
   VariantSelector
 } from './types.ts';
 
-const e = createElement;
+const e = defineElement;
 
 describe('buildNestedContext', () => {
   it('includes selectors for child elements', () => {
-    const body = createElement().children({ title: e() });
+    const body = defineElement().children({ title: e() });
 
     assert.deepEqual(
       buildNestedContext(['card', 'body'], body.current.children).els,
@@ -31,7 +31,7 @@ describe('buildNestedContext', () => {
   });
 
   it('exposes deeply nested selectors', () => {
-    const card = createElement().children({
+    const card = defineElement().children({
       header: () =>
         e().children(() => ({
           title: e().children(() => ({ text: e() }))
@@ -72,7 +72,7 @@ describe('buildNestedContext', () => {
 
 describe('buildGlobalContext', () => {
   it('builds the same element selectors as nested context', () => {
-    const card = createElement().children({
+    const card = defineElement().children({
       header: () =>
         e().children(() => ({
           title: e()
@@ -125,7 +125,7 @@ describe('resolveVariantProvider', () => {
 
 describe('resolveNestedProvider', () => {
   it('resolves contextual definitions', () => {
-    const body = createElement().children({ title: e() });
+    const body = defineElement().children({ title: e() });
     const ctx = buildNestedContext(['card', 'body'], body.current.children);
 
     const provider: NestedProvider<

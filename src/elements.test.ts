@@ -1,20 +1,20 @@
 import { assert, describe, it } from 'vitest';
 
 import type { ProvidersToSpecs, SpecFromProvider } from './elements.ts';
-import { createElement, Element, resolveElements } from './elements.ts';
+import { defineElement, Element, resolveElements } from './elements.ts';
 import { T } from './tests.ts';
 import type { ElementSpec, EmptyElementSpecs } from './types.ts';
 
-const e = createElement;
+const e = defineElement;
 
 describe('createElement', () => {
   it('creates an element with empty styles by default', () => {
-    assert.deepEqual(createElement().current.styles, {});
+    assert.deepEqual(defineElement().current.styles, {});
   });
 
   it('applies initial styles', () => {
     assert.deepEqual(
-      createElement({ color: 'red' }).current.styles,
+      defineElement({ color: 'red' }).current.styles,
       { color: 'red' }
     );
   });
@@ -22,11 +22,11 @@ describe('createElement', () => {
 
 describe('resolveElements', () => {
   it('resolves eager and lazy providers', () => {
-    const root = createElement({ display: 'block' });
+    const root = defineElement({ display: 'block' });
 
     const resolved = resolveElements({
       root,
-      title: () => createElement({ color: 'red' })
+      title: () => defineElement({ color: 'red' })
     });
 
     assert.strictEqual(resolved.root, root);
@@ -45,7 +45,7 @@ describe('Element', () => {
 
   describe('children', () => {
     it('registers child element instances for each name', () => {
-      const { current: { children } } = createElement().children({
+      const { current: { children } } = defineElement().children({
         body: e({ margin: '0' }),
         title: e().css({ color: 'red' })
       });
@@ -55,7 +55,7 @@ describe('Element', () => {
     });
 
     it('supports lazy child providers', () => {
-      const result = createElement().children({
+      const result = defineElement().children({
         title: () => e().css({ fontWeight: '700' })
       });
 
@@ -65,7 +65,7 @@ describe('Element', () => {
     });
 
     it('supports lazy child maps', () => {
-      const result = createElement().children(() => ({
+      const result = defineElement().children(() => ({
         title: e().css({ fontWeight: '700' })
       }));
 
@@ -75,7 +75,7 @@ describe('Element', () => {
     });
 
     it('allows nested children', () => {
-      const parent = createElement().children({
+      const parent = defineElement().children({
         content: e().children({
           text: e({ color: 'red' })
         })
@@ -89,7 +89,7 @@ describe('Element', () => {
 
     it('allows chaining', () => {
       assert.deepEqual(
-        createElement()
+        defineElement()
           .children({ root: e({ display: 'block' }) })
           .css({ color: 'black' })
           .current
@@ -99,7 +99,7 @@ describe('Element', () => {
     });
 
     it('throws when children are defined more than once', () => {
-      const element = createElement().children({
+      const element = defineElement().children({
         alfa: e({ display: 'block' })
       });
 
@@ -132,7 +132,7 @@ describe('Element', () => {
 
   describe('variants', () => {
     it('registers a variant provider', () => {
-      const element = createElement().variants(s => ({
+      const element = defineElement().variants(s => ({
         bold: s({ fontWeight: '700' }),
         spacer: s({ marginTop: '1rem' })
       }));
@@ -142,7 +142,7 @@ describe('Element', () => {
 
     it('allows chaining', () => {
       assert.deepEqual(
-        createElement()
+        defineElement()
           .variants(s => ({ bold: s({ fontWeight: '700' }) }))
           .css({ color: 'black' })
           .current
@@ -152,7 +152,7 @@ describe('Element', () => {
     });
 
     it('throws when variants are defined more than once', () => {
-      const element = createElement().variants(s => ({
+      const element = defineElement().variants(s => ({
         bold: s({ fontWeight: '700' })
       }));
 
@@ -165,7 +165,7 @@ describe('Element', () => {
 
   describe('nested', () => {
     it('registers nested rules on the element', () => {
-      const element = createElement().nested(s => ({
+      const element = defineElement().nested(s => ({
         '&:hover': s({ opacity: '0.5' })
       }));
 
@@ -173,7 +173,7 @@ describe('Element', () => {
     });
 
     it('stores contextual definitions for compile-time resolution', () => {
-      const element = createElement()
+      const element = defineElement()
         .children({ title: e() })
         .nested((s, { els }) => ({ [els.title]: s({ color: 'red' }) }));
 
@@ -181,7 +181,7 @@ describe('Element', () => {
     });
 
     it('types els from children', () => {
-      createElement()
+      defineElement()
         .children({ title: e() })
         .nested((s, { els }) => {
           T.assert<
@@ -194,7 +194,7 @@ describe('Element', () => {
           return { [els.title]: s({ color: 'red' }) };
         });
 
-      createElement()
+      defineElement()
         .children({ title: e() })
         .nested((s, { els }) => {
           T.assert<
@@ -210,7 +210,7 @@ describe('Element', () => {
           };
         });
 
-      createElement()
+      defineElement()
         .children({
           header: () =>
             e().children(() => ({
@@ -235,7 +235,7 @@ describe('Element', () => {
     });
 
     it('exposes variants to nested rules', () => {
-      createElement()
+      defineElement()
         .variants(s => ({
           bold: s({ fontWeight: '700' }),
           spacer: s({ marginTop: '1rem' })
@@ -257,7 +257,7 @@ describe('Element', () => {
 
     it('allows chaining', () => {
       assert.deepEqual(
-        createElement()
+        defineElement()
           .nested(s => ({ '&:hover': s({ opacity: '0.5' }) }))
           .css({ color: 'black' })
           .current
@@ -267,7 +267,7 @@ describe('Element', () => {
     });
 
     it('allows multiple nested providers', () => {
-      const element = createElement()
+      const element = defineElement()
         .nested(s => ({ '&:hover': s({ opacity: '0.5' }) }))
         .nested(s => ({ '&:focus': s({ outline: 'none' }) }));
 
@@ -281,7 +281,7 @@ describe('ProvidersToSpecs', () => {
     T.assert<
       T.Equivalent<
         ProvidersToSpecs<{
-          body: ReturnType<typeof createElement>;
+          body: ReturnType<typeof defineElement>;
           title: () => Element;
         }>,
         {
@@ -323,7 +323,7 @@ describe('SpecFromProvider', () => {
   it('infers a spec from an eager provider', () => {
     T.assert<
       T.Equivalent<
-        SpecFromProvider<ReturnType<typeof createElement>>,
+        SpecFromProvider<ReturnType<typeof defineElement>>,
         ElementSpec
       >
     >(true);

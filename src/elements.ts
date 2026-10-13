@@ -44,9 +44,9 @@ export type ProvidersToSpecs<T extends ElementProviders> = {
 };
 
 /**
- * Create an element
+ * Define an element
  */
-export function createElement(
+export function defineElement(
   styles: Styles = {}
 ): Element {
   return new Element().css(styles);
