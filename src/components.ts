@@ -85,9 +85,7 @@ type WithVariants<
   PatchComponentSpec<S, { variants: VariantsFromProvider<P> }>
 >;
 
-export class Component<
-  S extends AnyComponentSpec = ComponentSpec
-> {
+export class Component<S extends AnyComponentSpec> {
   current: ComponentState<S>;
   id: string;
 
