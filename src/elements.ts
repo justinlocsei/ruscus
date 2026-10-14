@@ -1,18 +1,18 @@
-import type { RelativeFragmentFactory } from './fragments.ts';
 import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
 import { applyTrait } from './traits.ts';
-import type { Thunkable } from './types/utils.ts';
+import type { Styles } from './types/css.ts';
 import type {
   AnyElementSpec,
   ElementSpec,
   NestedContext,
   NestedDefinitions,
   PatchElementSpec,
-  Styles,
   VariantProvider,
   VariantsFromProvider
-} from './types.ts';
+} from './types/elements.ts';
+import type { RelativeFragmentFactory } from './types/fragments.ts';
+import type { Thunkable } from './types/utils.ts';
 import { resolve } from './utils.ts';
 
 /**
@@ -26,14 +26,14 @@ export type ElementProvider = Thunkable<Element>;
 export type ElementProviders = Record<string, ElementProvider>;
 
 /**
- * A mapping of element names to elements
+ * A mapping of names to elements
  */
 export type NamedElements = Record<string, Element>;
 
 /**
  * Infer an element spec from a provider
  */
-export type SpecFromProvider<P extends ElementProvider> = P extends
+type SpecFromProvider<P extends ElementProvider> = P extends
   () => Element<infer S> ? S : P extends Element<infer S> ? S : never;
 
 /**
@@ -58,36 +58,42 @@ export function defineElement(
 export type ElementFactory = typeof defineElement;
 
 /**
- * Resolve element providers to a tree of elements
+ * Resolve element providers to concrete elements
  */
 export function resolveElements(
   providers: ElementProviders
 ): NamedElements {
-  const els: NamedElements = {};
-
-  for (const [name, provider] of Object.entries(providers)) {
-    els[name] = resolve(provider);
-  }
-
-  return els;
+  return Object.entries(providers).reduce<NamedElements>(
+    (els, [name, provider]) => {
+      els[name] = resolve(provider);
+      return els;
+    },
+    {}
+  );
 }
 
 /**
- * The current state of an element
+ * The context available when defining variants
  */
-type ElementVariantContext<S extends AnyElementSpec> = NestedContext<
+type VariantContext<S extends AnyElementSpec> = NestedContext<
   S['children'],
   never
 >;
 
-type ElementNestedProvider = (
+/**
+ * A provider for nested element definitions
+ */
+type NestedElementProvider<C extends NestedContext = NestedContext> = (
   s: RelativeFragmentFactory,
-  ctx: NestedContext
+  ctx: C
 ) => NestedDefinitions;
 
+/**
+ * The current state of an element
+ */
 type ElementState = {
   children: NamedElements;
-  nested: ElementNestedProvider[];
+  nested: NestedElementProvider[];
   styles: Styles;
   variants?: VariantProvider<NestedContext>;
 };
@@ -107,7 +113,7 @@ type WithChildren<
  */
 type WithVariants<
   S extends AnyElementSpec,
-  P extends VariantProvider<ElementVariantContext<S>>
+  P extends VariantProvider<VariantContext<S>>
 > = Element<
   PatchElementSpec<S, { variants: VariantsFromProvider<P> }>
 >;
@@ -153,7 +159,7 @@ export class Element<
   }
 
   /**
-   * Apply reusable trait styles and nested rules
+   * Apply traits to the element
    */
   is(...traits: Trait[]): Element<S> {
     for (const trait of traits) {
@@ -167,12 +173,11 @@ export class Element<
    * Define nested styles for the element
    */
   nested(
-    definitions: (
-      s: RelativeFragmentFactory,
-      ctx: NestedContext<S['children'], S['variants']>
-    ) => NestedDefinitions
+    provider: NestedElementProvider<
+      NestedContext<S['children'], S['variants']>
+    >
   ): Element<S> {
-    this.current.nested.push(definitions);
+    this.current.nested.push(provider);
 
     return this;
   }
@@ -180,7 +185,7 @@ export class Element<
   /**
    * Define variants for the element
    */
-  variants<P extends VariantProvider<ElementVariantContext<S>>>(
+  variants<P extends VariantProvider<VariantContext<S>>>(
     provider: P
   ): WithVariants<S, P> {
     this.updateState(
@@ -205,13 +210,13 @@ export class Element<
     let isSet: boolean;
 
     if (current !== undefined) {
-      isSet = field === 'variants' || Object.keys(current).length > 0;
+      isSet = typeof current !== 'object' || Object.keys(current).length > 0;
     } else {
       isSet = false;
     }
 
     if (isSet) {
-      throw new Error(`${field} may only be set once`);
+      throw new Error(`${field} may only be called once`);
     }
 
     this.current[field] = value;

@@ -1,14 +1,12 @@
 import { assert, describe, it } from 'vitest';
 
-import type { ProvidersToSpecs, SpecFromProvider } from './elements.ts';
 import { defineElement, Element, resolveElements } from './elements.ts';
 import { T } from './tests.ts';
-import type { ElementSpec, EmptyElementSpecs } from './types.ts';
 
 const e = defineElement;
 
-describe('createElement', () => {
-  it('creates an element with empty styles by default', () => {
+describe('defineElement', () => {
+  it('defines an element with empty styles by default', () => {
     assert.deepEqual(defineElement().current.styles, {});
   });
 
@@ -17,20 +15,6 @@ describe('createElement', () => {
       defineElement({ color: 'red' }).current.styles,
       { color: 'red' }
     );
-  });
-});
-
-describe('resolveElements', () => {
-  it('resolves eager and lazy providers', () => {
-    const root = defineElement({ display: 'block' });
-
-    const resolved = resolveElements({
-      root,
-      title: () => defineElement({ color: 'red' })
-    });
-
-    assert.strictEqual(resolved.root, root);
-    assert.deepEqual(resolved.title?.current.styles, { color: 'red' });
   });
 });
 
@@ -45,7 +29,7 @@ describe('Element', () => {
 
   describe('children', () => {
     it('registers child element instances for each name', () => {
-      const { current: { children } } = defineElement().children({
+      const { current: { children } } = e().children({
         body: e({ margin: '0' }),
         title: e().css({ color: 'red' })
       });
@@ -55,7 +39,7 @@ describe('Element', () => {
     });
 
     it('supports lazy child providers', () => {
-      const result = defineElement().children({
+      const result = e().children({
         title: () => e().css({ fontWeight: '700' })
       });
 
@@ -64,8 +48,8 @@ describe('Element', () => {
       });
     });
 
-    it('supports lazy child maps', () => {
-      const result = defineElement().children(() => ({
+    it('supports lazy child definitions', () => {
+      const result = e().children(() => ({
         title: e().css({ fontWeight: '700' })
       }));
 
@@ -74,8 +58,8 @@ describe('Element', () => {
       });
     });
 
-    it('allows nested children', () => {
-      const parent = defineElement().children({
+    it('supports nested children', () => {
+      const parent = e().children({
         content: e().children({
           text: e({ color: 'red' })
         })
@@ -87,9 +71,9 @@ describe('Element', () => {
       );
     });
 
-    it('allows chaining', () => {
+    it('preserves chaining', () => {
       assert.deepEqual(
-        defineElement()
+        e()
           .children({ root: e({ display: 'block' }) })
           .css({ color: 'black' })
           .current
@@ -99,13 +83,13 @@ describe('Element', () => {
     });
 
     it('throws when children are defined more than once', () => {
-      const element = defineElement().children({
+      const element = e().children({
         alfa: e({ display: 'block' })
       });
 
       assert.throws(
         () => element.children({ bravo: e({ color: 'red' }) }),
-        'children may only be set once'
+        'children may only be called once'
       );
     });
   });
@@ -113,14 +97,14 @@ describe('Element', () => {
   describe('css', () => {
     it('adds styles to the element', () => {
       assert.deepEqual(
-        new Element().css({ color: 'red' }).current.styles,
+        e().css({ color: 'red' }).current.styles,
         { color: 'red' }
       );
     });
 
     it('merges styles', () => {
       assert.deepEqual(
-        new Element()
+        e()
           .css({ color: 'red' })
           .css({ background: 'blue' })
           .current
@@ -130,71 +114,25 @@ describe('Element', () => {
     });
   });
 
-  describe('variants', () => {
-    it('registers a variant provider', () => {
-      const element = defineElement().variants(s => ({
-        bold: s({ fontWeight: '700' }),
-        spacer: s({ marginTop: '1rem' })
-      }));
-
-      assert.equal(typeof element.current.variants, 'function');
-    });
-
-    it('allows chaining', () => {
-      assert.deepEqual(
-        defineElement()
-          .variants(s => ({ bold: s({ fontWeight: '700' }) }))
-          .css({ color: 'black' })
-          .current
-          .styles,
-        { color: 'black' }
-      );
-    });
-
-    it('throws when variants are defined more than once', () => {
-      const element = defineElement().variants(s => ({
-        bold: s({ fontWeight: '700' })
-      }));
-
-      assert.throws(
-        () => element.variants(s => ({ spacer: s({ marginTop: '1rem' }) })),
-        'variants may only be set once'
-      );
-    });
-  });
-
   describe('nested', () => {
     it('registers nested rules on the element', () => {
-      const element = defineElement().nested(s => ({
+      const element = e().nested(s => ({
         '&:hover': s({ opacity: '0.5' })
       }));
 
-      assert.equal(typeof element.current.nested[0], 'function');
+      assert.deepEqual(element.current.nested.map(p => typeof p), ['function']);
     });
 
     it('stores contextual definitions for compile-time resolution', () => {
-      const element = defineElement()
+      const element = e()
         .children({ title: e() })
         .nested((s, { els }) => ({ [els.title]: s({ color: 'red' }) }));
 
-      assert.equal(typeof element.current.nested[0], 'function');
+      assert.deepEqual(element.current.nested.map(p => typeof p), ['function']);
     });
 
-    it('types els from children', () => {
-      defineElement()
-        .children({ title: e() })
-        .nested((s, { els }) => {
-          T.assert<
-            T.Equivalent<
-              typeof els,
-              { root: string; title: string }
-            >
-          >(true);
-
-          return { [els.title]: s({ color: 'red' }) };
-        });
-
-      defineElement()
+    it('exposes narrowly typed elements to the nested provider', () => {
+      e()
         .children({ title: e() })
         .nested((s, { els }) => {
           T.assert<
@@ -209,8 +147,10 @@ describe('Element', () => {
             [els.title]: s({ color: 'red' })
           };
         });
+    });
 
-      defineElement()
+    it('exposes deeply nested elements', () => {
+      e()
         .children({
           header: () =>
             e().children(() => ({
@@ -235,8 +175,8 @@ describe('Element', () => {
         });
     });
 
-    it('exposes variants to nested rules', () => {
-      defineElement()
+    it('exposes variants to nested providers', () => {
+      e()
         .variants(s => ({
           bold: s({ fontWeight: '700' }),
           spacer: s({ marginTop: '1rem' })
@@ -249,6 +189,9 @@ describe('Element', () => {
             >
           >(true);
 
+          // @ts-expect-error unknown variant
+          variants('bolder');
+
           return {
             [variants('bold')]: s({ color: 'blue' }),
             [variants('bold', 'spacer')]: s({ color: 'red' })
@@ -256,7 +199,7 @@ describe('Element', () => {
         });
     });
 
-    it('allows chaining', () => {
+    it('preserves chaining', () => {
       assert.deepEqual(
         defineElement()
           .nested(s => ({ '&:hover': s({ opacity: '0.5' }) }))
@@ -267,7 +210,7 @@ describe('Element', () => {
       );
     });
 
-    it('allows multiple nested providers', () => {
+    it('supports multiple nested providers', () => {
       const element = defineElement()
         .nested(s => ({ '&:hover': s({ opacity: '0.5' }) }))
         .nested(s => ({ '&:focus': s({ outline: 'none' }) }));
@@ -275,67 +218,51 @@ describe('Element', () => {
       assert.equal(element.current.nested.length, 2);
     });
   });
-});
 
-describe('ProvidersToSpecs', () => {
-  it('converts providers to specs', () => {
-    T.assert<
-      T.Equivalent<
-        ProvidersToSpecs<{
-          body: ReturnType<typeof defineElement>;
-          title: () => Element;
-        }>,
-        {
-          body: ElementSpec;
-          title: ElementSpec;
-        }
-      >
-    >(true);
+  describe('variants', () => {
+    it('registers a variant provider', () => {
+      const element = defineElement().variants(s => ({
+        bold: s({ fontWeight: '700' }),
+        spacer: s({ marginTop: '1rem' })
+      }));
+
+      assert.equal(typeof element.current.variants, 'function');
+    });
+
+    it('preserves chaining', () => {
+      assert.deepEqual(
+        defineElement()
+          .variants(s => ({ bold: s({ fontWeight: '700' }) }))
+          .css({ color: 'black' })
+          .current
+          .styles,
+        { color: 'black' }
+      );
+    });
+
+    it('throws when variants are defined more than once', () => {
+      const element = defineElement().variants(s => ({
+        bold: s({ fontWeight: '700' })
+      }));
+
+      assert.throws(
+        () => element.variants(s => ({ spacer: s({ marginTop: '1rem' }) })),
+        'variants may only be called once'
+      );
+    });
   });
 });
 
-describe('SpecFromProvider', () => {
-  it('infers a nested spec from an element with children', () => {
-    type Nested = Element<
-      ElementSpec<{ text: ElementSpec }>
-    >;
+describe('resolveElements', () => {
+  it('resolves eager and lazy providers', () => {
+    const root = defineElement({ display: 'block' });
 
-    T.assert<
-      T.Equivalent<
-        SpecFromProvider<Nested>,
-        ElementSpec<{ text: ElementSpec }>
-      >
-    >(true);
-  });
+    const resolved = resolveElements({
+      root,
+      title: () => defineElement({ color: 'red' })
+    });
 
-  it('infers variant names from an element with variants', () => {
-    type WithVariants = Element<
-      ElementSpec<EmptyElementSpecs, 'spacer'>
-    >;
-
-    T.assert<
-      T.Equivalent<
-        SpecFromProvider<WithVariants>,
-        ElementSpec<EmptyElementSpecs, 'spacer'>
-      >
-    >(true);
-  });
-
-  it('infers a spec from an eager provider', () => {
-    T.assert<
-      T.Equivalent<
-        SpecFromProvider<ReturnType<typeof defineElement>>,
-        ElementSpec
-      >
-    >(true);
-  });
-
-  it('infers a spec from a lazy provider', () => {
-    T.assert<
-      T.Equivalent<
-        SpecFromProvider<() => Element>,
-        ElementSpec
-      >
-    >(true);
+    assert.strictEqual(resolved.root, root);
+    assert.deepEqual(resolved.title?.current.styles, { color: 'red' });
   });
 });
