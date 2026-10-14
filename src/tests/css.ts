@@ -6,16 +6,16 @@ function dedent(text: string): string {
     .replace(/^\n/, '')
     .split('\n');
 
-  const margin = lines[0]?.match(/^ */)?.[0]?.length ?? 0;
+  const indent = lines[0]?.match(/^ */)?.[0]?.length ?? 0;
 
   return lines
-    .map(line => line.slice(margin))
+    .map(l => l.slice(indent))
     .join('\n')
     .trim();
 }
 
 /**
- * Define compiled CSS output
+ * A template tag that defines flush-left CSS output
  */
 export function css(
   strings: TemplateStringsArray,
@@ -23,8 +23,8 @@ export function css(
 ): string {
   let text = strings[0] ?? '';
 
-  for (let index = 0; index < values.length; index++) {
-    text += String(values[index]) + (strings[index + 1] ?? '');
+  for (let i = 0; i < values.length; i++) {
+    text += String(values[i]) + (strings[i + 1] ?? '');
   }
 
   return dedent(text);
