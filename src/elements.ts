@@ -1,6 +1,6 @@
 import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
-import { applyTrait } from './traits.ts';
+import { applyTraits } from './traits.ts';
 import type { Styles } from './types/css.ts';
 import type {
   AnyElementSpec,
@@ -162,9 +162,7 @@ export class Element<
    * Apply traits to the element
    */
   is(...traits: Trait[]): Element<S> {
-    for (const trait of traits) {
-      applyTrait(this.current, trait);
-    }
+    applyTraits(this.current, traits);
 
     return this;
   }

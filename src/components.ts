@@ -12,7 +12,7 @@ import { buildPlan } from './internal.ts';
 import { projectComponent } from './projection.ts';
 import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
-import { applyTrait } from './traits.ts';
+import { applyTraits } from './traits.ts';
 import type {
   AnyComponentSpec,
   ComponentSpec,
@@ -156,9 +156,7 @@ export class Component<
    * Apply reusable trait styles and nested rules
    */
   is(...traits: Trait[]): Component<S> {
-    for (const trait of traits) {
-      applyTrait(this.current, trait);
-    }
+    applyTraits(this.current, traits);
 
     return this;
   }
