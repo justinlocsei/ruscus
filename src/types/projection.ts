@@ -33,8 +33,10 @@ export type ElementProjectors<
 /**
  * Project a single element as a class name
  */
-type ProjectElement<S extends HasVariants<string>> = [S['variants']] extends
-  [never] ? string
+type ProjectElement<S extends HasVariants<string>> = [
+  S['variants']
+] extends [never] ? string
+  : string extends S['variants'] ? string | VariantProjector<S['variants']>
   : VariantProjector<S['variants']>;
 
 /**
