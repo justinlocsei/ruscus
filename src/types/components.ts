@@ -19,13 +19,22 @@ export type AnyComponentSpec = ComponentSpec<
  * A specification for a component
  */
 export type ComponentSpec<
-  E extends ElementSpecs = EmptyElementSpecs,
-  V extends string = never,
-  I extends NamedIdentifiers = EmptyIdentifierTypes
+  E extends ElementSpecs,
+  V extends string,
+  I extends NamedIdentifiers
 > = HasVariants<V> & {
   els: E;
   ids: I;
 };
+
+/**
+ * An empty component spec
+ */
+export type EmptyComponentSpec = ComponentSpec<
+  EmptyElementSpecs,
+  never,
+  EmptyIdentifierTypes
+>;
 
 /**
  * An empty set of identifier types
