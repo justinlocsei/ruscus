@@ -1,7 +1,7 @@
 import { assert, describe, it } from 'vitest';
 
 import { mergeStyles } from './styles.ts';
-import type { Styles } from './types.ts';
+import type { Styles } from './types/css.ts';
 
 describe('mergeStyles', () => {
   it('merges styles on top of a base', () => {
