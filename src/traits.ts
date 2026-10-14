@@ -12,7 +12,7 @@ export type Trait = Fragment<'relative'>;
 /**
  * A target to which traits can be applied
  */
-type Target = {
+export type HasTraits = {
   nested: NestedProvider[];
   styles: Styles;
 };
@@ -20,14 +20,16 @@ type Target = {
 /**
  * Apply a trait's styles to a target
  */
-export function applyTrait(
-  target: Target,
-  { styles }: Trait
+export function applyTraits(
+  target: HasTraits,
+  traits: Trait[]
 ): void {
-  target.styles = mergeStyles(target.styles, styles.root);
+  for (const { styles } of traits) {
+    target.styles = mergeStyles(target.styles, styles.root);
 
-  if (Object.keys(styles.nested).length > 0) {
-    target.nested.push(() => styles.nested);
+    if (Object.keys(styles.nested).length > 0) {
+      target.nested.push(() => styles.nested);
+    }
   }
 }
 
