@@ -6,12 +6,12 @@ import type {
 export { ELEMENT_ROOT } from './types/ids.ts';
 
 /**
- * Project a camelCase style property to a CSS property name
+ * Project a camel-cased value as a CSS property name
  */
-export function asProperty(camelCase: string): string {
-  return camelCase.replace(
+export function asProperty(camel: string): string {
+  return camel.replace(
     /[A-Z]/g,
-    letter => `-${letter.toLowerCase()}`
+    l => `-${l.toLowerCase()}`
   );
 }
 
