@@ -28,6 +28,7 @@ import type {
   VariantProvider,
   VariantsFromProvider
 } from './types/elements.ts';
+import { cast } from './utils.ts';
 
 /**
  * Options for creating a component
@@ -149,7 +150,7 @@ export class Component<S extends AnyComponentSpec> {
   identifiers<I extends NamedIdentifiers>(types: I): WithIdentifiers<S, I> {
     this.updateState('identifiers', types);
 
-    return this as WithIdentifiers<S, I>;
+    return cast<WithIdentifiers<S, I>>(this);
   }
 
   /**
@@ -168,7 +169,7 @@ export class Component<S extends AnyComponentSpec> {
       )
     );
 
-    return this as WithElements<S, T>;
+    return cast<WithElements<S, T>>(this);
   }
 
   /**
@@ -210,7 +211,7 @@ export class Component<S extends AnyComponentSpec> {
   ): WithVariants<S, P> {
     this.updateState('variants', provider);
 
-    return this as WithVariants<S, P>;
+    return cast<WithVariants<S, P>>(this);
   }
 
   /**
