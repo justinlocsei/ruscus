@@ -3,32 +3,30 @@ import type { Element, NamedElements } from './elements.ts';
 import { buildIdentifiersContext } from './identifiers.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
+import type { AnyComponentSpec } from './types/components.ts';
+import type { VariantProvider } from './types/elements.ts';
 import type {
-  AnyComponentSpec,
-  Applied,
+  ApplicableComponent,
   ElementProjectors,
   VariantProjector
-} from './types.ts';
+} from './types/projection.ts';
 
 /**
- * Options for projecting class names
- */
-export type ProjectConfig = {
-  naming?: NamingScheme;
-};
-
-/**
- * Project a component into class names and identifier accessors
+ * Project a component
  */
 export function projectComponent<S extends AnyComponentSpec>(
   component: Component<S>,
-  config: ProjectConfig = {}
-): Applied<S> {
-  const name = useNaming(component, config.naming);
-  const root = projectVariant(
+  { naming }: { naming?: NamingScheme } = {}
+): ApplicableComponent<S> {
+  type Applied = ApplicableComponent<S>;
+
+  const name = useNaming(component, naming);
+
+  const root = projectNode(
     name([component.id]),
-    component.current.variants !== undefined
+    component.current.variants
   );
+
   const elements = projectElements(
     [component.id],
     component.current.elements,
@@ -41,74 +39,68 @@ export function projectComponent<S extends AnyComponentSpec>(
   ).ids as Record<keyof S['ids'], string>;
 
   if (Object.keys(ids).length === 0) {
-    return { ...elements, root } as Applied<S>;
+    return { ...elements, root } as Applied;
   }
 
-  const applied = ((name: keyof S['ids']) => ids[name]) as Applied<S>;
+  const applied = ((name: keyof S['ids']) => ids[name]) as Applied;
 
-  return Object.assign(applied, { ...elements, root }) as Applied<S>;
+  return Object.assign(applied, { ...elements, root }) as Applied;
 }
 
 /**
  * Project an element tree into class names
  */
 function projectElements(
-  namespace: readonly string[],
+  namespace: string[],
   elements: NamedElements,
   name: NameGenerator
 ): Record<string, unknown> {
-  const projected: Record<string, unknown> = {};
+  return Object.entries(elements).reduce<Record<string, unknown>>(
+    (previous, [key, element]) => {
+      if (element === undefined) {
+        return previous;
+      }
 
-  for (const [key, element] of Object.entries(elements)) {
-    if (element === undefined) {
-      continue;
-    }
+      previous[key] = projectElement(
+        [...namespace, key],
+        element,
+        name
+      );
 
-    projected[key] = projectElement(
-      [...namespace, key],
-      element,
-      name
-    );
-  }
-
-  return projected;
+      return previous;
+    },
+    {} as Record<string, unknown>
+  );
 }
 
 /**
- * Project one element into a class name or child projector
+ * Project an element as a lone class name or child projector
  */
 function projectElement(
-  path: readonly string[],
+  path: string[],
   element: Element,
   name: NameGenerator
 ): unknown {
-  const root = projectVariant(
+  const root = projectNode(
     name(path),
-    element.current.variants !== undefined
+    element.current.variants
   );
-  const children = element.current.children;
 
-  if (Object.keys(children).length === 0) {
-    return root;
-  }
+  const { children } = element.current;
 
-  return {
-    root,
-    ...projectElements(path, children, name)
-  };
+  return Object.keys(children).length
+    ? { root, ...projectElements(path, children, name) }
+    : root;
 }
 
 /**
- * Build a root or element class projector
+ * Project a node as a class name or variant projector
  */
-function projectVariant(
-  className: string,
-  hasVariants: boolean
+function projectNode(
+  name: string,
+  variants?: VariantProvider
 ): VariantProjector<string> | string {
-  if (!hasVariants) {
-    return className;
-  }
-
-  return (...names: string[]) =>
-    [className, ...names.map(name => `is-${name}`)].join(' ');
+  return variants
+    ? (...vs: string[]) => [name, ...vs.map(v => `is-${v}`)].join(' ')
+    : name;
 }
