@@ -9,7 +9,10 @@ function createFactory<T extends Scope>(scope: T): IsFragmentFactory<T> {
       const nested = factory(styles);
       nested.styles.nested = definitions;
 
-      return nested;
+      return {
+        ...nested,
+        scope: 'relative'
+      };
     },
     scope,
     styles: {
