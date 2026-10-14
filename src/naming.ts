@@ -1,25 +1,23 @@
 import type { Component } from './components.ts';
 import type { NamedElements } from './elements.ts';
-import { buildSelector } from './identifiers.ts';
-import type { AnyComponentSpec } from './types.ts';
 
 /**
- * Produce a bare class name from namespace levels (component id plus element path)
+ * A generator for class names
  */
 export type NameGenerator = (levels: readonly string[]) => string;
 
 /**
- * Built-in class naming schemes
+ * An available naming schema for classes
  */
 export type NamingScheme = 'compact' | 'verbose';
 
 /**
- * Build a short, stable hash prefix from a component ID
+ * Build a short hash for a value
  */
-export function hashComponentId(id: string): string {
+function hash(value: string): string {
   let hash = 2_166_136_261;
 
-  for (const character of id) {
+  for (const character of value) {
     hash ^= character.charCodeAt(0);
     hash = Math.imul(hash, 16_777_619);
   }
@@ -30,36 +28,25 @@ export function hashComponentId(id: string): string {
 /**
  * Create a name generator for a component
  */
-export function useNaming<S extends AnyComponentSpec>(
-  component: Component<S>,
+export function useNaming(
+  component: Component,
   scheme: NamingScheme = 'verbose'
 ): NameGenerator {
-  if (scheme === 'compact') {
-    return createCompactNameGenerator(
-      component.id,
-      component.current.elements
-    );
+  switch (scheme) {
+    case 'compact':
+      return createCompactNameGenerator(component);
+
+    case 'verbose':
+      return ls => ls.join('__');
   }
-
-  return createVerboseNameGenerator();
 }
 
 /**
- * BEM-style verbose names (default)
+ * Build a generator for compact class names
  */
-export function createVerboseNameGenerator(): NameGenerator {
-  return levels => buildSelector(levels).slice(1);
-}
-
-/**
- * Compact names: hashed component prefix and predictable local suffixes
- */
-function createCompactNameGenerator(
-  componentId: string,
-  elements: NamedElements
-): NameGenerator {
-  const prefix = hashComponentId(componentId);
-  const suffixByPath = buildPathSuffixMap(elements);
+function createCompactNameGenerator(component: Component): NameGenerator {
+  const prefix = hash(component.id);
+  const suffixByPath = buildPathSuffixMap(component.current.elements);
 
   return levels => classNameForLevels(levels, prefix, suffixByPath);
 }
