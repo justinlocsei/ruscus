@@ -2,19 +2,16 @@ import type { NamedElements } from './elements.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 import { ELEMENT_ROOT } from './identifiers.ts';
 import type { NameGenerator } from './naming.ts';
+import type { GlobalDefinitions, GlobalProvider } from './types/components.ts';
+import type { AnySelectors, Block, Declarations } from './types/css.ts';
 import type {
-  AnySelectors,
-  Block,
-  Declarations,
-  GlobalDefinitions,
-  GlobalProvider,
   NestedContext,
   NestedDefinitions,
   NestedProvider,
   Selectors,
   VariantDefinitions,
   VariantProvider
-} from './types.ts';
+} from './types/elements.ts';
 
 /**
  * Build a context for defining nested rules

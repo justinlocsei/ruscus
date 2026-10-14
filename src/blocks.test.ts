@@ -12,7 +12,7 @@ import type {
   NestedContext,
   NestedProvider,
   VariantSelector
-} from './types.ts';
+} from './types/elements.ts';
 
 const e = defineElement;
 
