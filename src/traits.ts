@@ -10,18 +10,9 @@ import type { Fragment, RelativeFragmentFactory } from './types/fragments.ts';
 export type Trait = Fragment<'relative'>;
 
 /**
- * Define a trait
- */
-export function defineTrait(
-  build: (s: RelativeFragmentFactory) => Trait
-): Trait {
-  return build(defineRelativeFragment);
-}
-
-/**
  * A target to which traits can be applied
  */
-type TraitTarget = {
+type Target = {
   nested: NestedProvider[];
   styles: Styles;
 };
@@ -30,7 +21,7 @@ type TraitTarget = {
  * Apply a trait's styles to a target
  */
 export function applyTrait(
-  target: TraitTarget,
+  target: Target,
   { styles }: Trait
 ): void {
   target.styles = mergeStyles(target.styles, styles.root);
@@ -38,4 +29,13 @@ export function applyTrait(
   if (Object.keys(styles.nested).length > 0) {
     target.nested.push(() => styles.nested);
   }
+}
+
+/**
+ * Define a trait
+ */
+export function defineTrait(
+  build: (s: RelativeFragmentFactory) => Trait
+): Trait {
+  return build(defineRelativeFragment);
 }
