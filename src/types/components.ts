@@ -60,10 +60,22 @@ export type GlobalProvider<C extends NestedContext = NestedContext> = (
 type IdentifierType = 'string' | 'variable';
 
 /**
+ * Values for component identifirs
+ */
+export type IdentifierValues<T extends string = string> = Record<T, string>;
+
+/**
+ * Get the identifier values for a component spec
+ */
+export type IdentifierValuesFor<S extends AnyComponentSpec> = IdentifierValues<
+  keyof S['ids'] & string
+>;
+
+/**
  * A context that exposes a component's identifiers
  */
 export type IdentifiersContext<I extends NamedIdentifiers = NamedIdentifiers> =
-  { ids: { [K in keyof I]: string } };
+  { ids: IdentifierValues<keyof I & string> };
 
 /**
  * A mapping of identifier names to their types
