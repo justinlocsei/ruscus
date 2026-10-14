@@ -1,4 +1,8 @@
-import type { IsFragmentFactory, Scope } from './types/fragments.ts';
+import type {
+  IsFragmentFactory,
+  Scope,
+  ScopedFragments
+} from './types/fragments.ts';
 
 /**
  * Create a fragment factory
@@ -7,12 +11,15 @@ function createFactory<T extends Scope>(scope: T): IsFragmentFactory<T> {
   const factory: IsFragmentFactory<T> = (styles = {}) => ({
     nested: definitions => {
       const nested = factory(styles);
-      nested.styles.nested = definitions;
+      const scoped = { ...definitions };
 
-      return {
-        ...nested,
-        scope: 'relative'
-      };
+      for (const fragment of Object.values(definitions)) {
+        fragment.scope = 'relative';
+      }
+
+      nested.styles.nested = scoped as ScopedFragments<'relative'>;
+
+      return nested;
     },
     scope,
     styles: {

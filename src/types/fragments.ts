@@ -9,7 +9,7 @@ export type AbsoluteFragmentFactory = IsFragmentFactory<'absolute'>;
  * A styled fragment
  */
 export type Fragment<S extends Scope = Scope> = {
-  nested: (definitions: ScopedFragments) => Fragment<'relative'>;
+  nested: (definitions: ScopedFragments) => Fragment<S>;
   scope: S;
   styles: FragmentStyles;
 };
@@ -23,7 +23,7 @@ export type FragmentFactory = IsFragmentFactory<Scope>;
  * Styles bound to a fragment
  */
 export type FragmentStyles = {
-  nested: ScopedFragments;
+  nested: ScopedFragments<'relative'>;
   root: Styles;
 };
 
