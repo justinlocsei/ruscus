@@ -6,7 +6,6 @@ import {
 } from './blocks.ts';
 import type { Component } from './components.ts';
 import type { Element } from './elements.ts';
-import { asProperty, buildIdentifiersContext } from './identifiers.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
 import type { AnyComponentSpec } from './types/components.ts';
@@ -25,6 +24,16 @@ export type CompileConfig = {
   indentation?: number;
   naming?: NamingScheme;
 };
+
+/**
+ * Project a camel-cased value as a CSS property name
+ */
+export function asProperty(camel: string): string {
+  return camel.replace(
+    /[A-Z]/g,
+    l => `-${l.toLowerCase()}`
+  );
+}
 
 /**
  * Generate CSS for a component's styles
