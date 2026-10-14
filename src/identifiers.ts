@@ -16,7 +16,7 @@ export function asProperty(camel: string): string {
 }
 
 /**
- * Build the identifiers available while defining component styles
+ * Build the identifiers available when defining component styles
  */
 export function buildIdentifiersContext<I extends NamedIdentifiers>(
   scope: string,

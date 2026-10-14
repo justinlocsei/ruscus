@@ -4,7 +4,7 @@ import { asProperty, buildIdentifiersContext } from './identifiers.ts';
 import { checkConversion } from './tests.ts';
 
 describe('asProperty', () => {
-  it('projects camelCase properties as CSS properties', () => {
+  it('projects camel-cased values as CSS properties', () => {
     checkConversion<string, string>(
       (id, property, message) => {
         assert.equal(property, asProperty(id), message);
@@ -19,7 +19,7 @@ describe('asProperty', () => {
 });
 
 describe('buildIdentifiersContext', () => {
-  it('projects string and variable identifiers', () => {
+  it('projects all supported identifier types', () => {
     const context = buildIdentifiersContext('ui--card', {
       alfa: 'string',
       bravo: 'variable'
@@ -33,7 +33,7 @@ describe('buildIdentifiersContext', () => {
     });
   });
 
-  it('projects camelCase names as kebab-case', () => {
+  it('normalizes camel-cased identifier names', () => {
     const context = buildIdentifiersContext('card', {
       alfaBeta: 'string'
     });
