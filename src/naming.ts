@@ -1,4 +1,4 @@
-import type { Component } from './components.ts';
+import type { AnyComponent } from './components.ts';
 import type { NamedElements } from './elements.ts';
 
 /**
@@ -29,7 +29,7 @@ function hash(value: string): string {
  * Create a name generator for a component
  */
 export function useNaming(
-  component: Component,
+  component: AnyComponent,
   scheme: NamingScheme = 'verbose'
 ): NameGenerator {
   switch (scheme) {
@@ -44,7 +44,7 @@ export function useNaming(
 /**
  * Build a generator for compact class names
  */
-function createCompactNameGenerator(component: Component): NameGenerator {
+function createCompactNameGenerator(component: AnyComponent): NameGenerator {
   const prefix = hash(component.id);
   const suffixByPath = buildPathSuffixMap(component.current.elements);
 
