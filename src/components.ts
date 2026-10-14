@@ -15,7 +15,7 @@ import type { Trait } from './traits.ts';
 import { applyTraits } from './traits.ts';
 import type {
   AnyComponentSpec,
-  ComponentSpec,
+  EmptyComponentSpec,
   GlobalProvider,
   IdentifiersContext,
   NamedIdentifiers,
@@ -237,12 +237,17 @@ export class Component<S extends AnyComponentSpec> {
 }
 
 /**
+ * The most inclusive form of a component class
+ */
+export type AnyComponent = Component<AnyComponentSpec>;
+
+/**
  * Define a component
  */
 export function defineComponent(
   name: string,
   options: ComponentOptions = {}
-): Component {
+): Component<EmptyComponentSpec> {
   return new Component(name, options);
 }
 
