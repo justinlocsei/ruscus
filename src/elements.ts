@@ -4,7 +4,7 @@ import { applyTraits } from './traits.ts';
 import type { Styles } from './types/css.ts';
 import type {
   AnyElementSpec,
-  ElementSpec,
+  EmptyElementSpec,
   NestedContext,
   NestedDefinitions,
   PatchElementSpec,
@@ -18,7 +18,7 @@ import { resolve } from './utils.ts';
 /**
  * An eager or lazy element definition
  */
-export type ElementProvider = Thunkable<Element>;
+export type ElementProvider = Thunkable<AnyElement>;
 
 /**
  * A mapping of element names to providers
@@ -28,7 +28,7 @@ export type ElementProviders = Record<string, ElementProvider>;
 /**
  * A mapping of names to elements
  */
-export type NamedElements = Record<string, Element>;
+export type NamedElements = Record<string, AnyElement>;
 
 /**
  * Infer an element spec from a provider
@@ -44,11 +44,16 @@ export type ProvidersToSpecs<T extends ElementProviders> = {
 };
 
 /**
+ * The most inclusive form of an element class
+ */
+export type AnyElement = Element<AnyElementSpec>;
+
+/**
  * Define an element
  */
 export function defineElement(
   styles: Styles = {}
-): Element {
+): Element<EmptyElementSpec> {
   return new Element().css(styles);
 }
 
@@ -118,9 +123,7 @@ type WithVariants<
   PatchElementSpec<S, { variants: VariantsFromProvider<P> }>
 >;
 
-export class Element<
-  S extends AnyElementSpec = ElementSpec
-> {
+export class Element<S extends AnyElementSpec> {
   current: ElementState;
 
   /**

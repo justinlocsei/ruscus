@@ -19,8 +19,8 @@ type ChildSelectors<C extends NamedElements<C>> = {
  * A specification for an element
  */
 export type ElementSpec<
-  C extends ElementSpecs = EmptyElementSpecs,
-  V extends string = never
+  C extends ElementSpecs,
+  V extends string
 > = HasVariants<V> & {
   children: C;
 };
@@ -31,6 +31,14 @@ export type ElementSpec<
 export type ElementSpecs<T extends string = string> = {
   [K in T]: ElementSpec<ElementSpecs | EmptyElementSpecs, string>;
 };
+
+/**
+ * An empty element spec
+ */
+export type EmptyElementSpec = ElementSpec<
+  EmptyElementSpecs,
+  never
+>;
 
 /**
  * An empty set of element specs
