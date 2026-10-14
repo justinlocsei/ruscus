@@ -7,7 +7,7 @@ import type {
 } from './elements.ts';
 import { defineElement, resolveElements } from './elements.ts';
 import { buildIdentifiersContext } from './identifiers.ts';
-import type { Buildable } from './internal.ts';
+import type { BuildableComponent, BuildPlan } from './internal.ts';
 import { buildPlan } from './internal.ts';
 import { projectComponent } from './projection.ts';
 import { mergeStyles } from './styles.ts';
@@ -15,18 +15,19 @@ import type { Trait } from './traits.ts';
 import { applyTrait } from './traits.ts';
 import type {
   AnyComponentSpec,
-  AppliedWithInternal,
   ComponentSpec,
   GlobalProvider,
   IdentifiersContext,
-  IdentifierTypes,
+  NamedIdentifiers,
+  PatchComponentSpec
+} from './types/components.ts';
+import type { Styles } from './types/css.ts';
+import type {
   NestedContext,
   NestedProvider,
-  PatchComponentSpec,
-  Styles,
   VariantProvider,
   VariantsFromProvider
-} from './types.ts';
+} from './types/elements.ts';
 
 /**
  * Options for creating a component
@@ -36,32 +37,11 @@ type ComponentOptions = {
 };
 
 /**
- * Define a global provider for a component spec
+ * Define the context available to providers of derived component styles
  */
-type StyleContextFor<S extends AnyComponentSpec> =
+type ContextFor<S extends AnyComponentSpec> =
   & NestedContext<S['els'], S['variants']>
   & IdentifiersContext<S['ids']>;
-
-/**
- * Define a global provider for a component spec
- */
-type GlobalProviderFor<S extends AnyComponentSpec> = GlobalProvider<
-  StyleContextFor<S>
->;
-
-/**
- * Define a nested provider for a component spec
- */
-type NestedProviderFor<S extends AnyComponentSpec> = NestedProvider<
-  StyleContextFor<S>
->;
-
-/**
- * Define a variant provider for a component spec
- */
-type VariantProviderFor<S extends AnyComponentSpec> = VariantProvider<
-  StyleContextFor<S>
->;
 
 /**
  * The current state of a component
@@ -69,10 +49,10 @@ type VariantProviderFor<S extends AnyComponentSpec> = VariantProvider<
 type ComponentState<S extends AnyComponentSpec = AnyComponentSpec> = {
   elements: NamedElements;
   global: GlobalProvider[];
-  identifiers: IdentifierTypes;
+  identifiers: NamedIdentifiers;
   nested: NestedProvider[];
   styles: Styles;
-  variants?: VariantProviderFor<S>;
+  variants?: VariantProvider<ContextFor<S>>;
 };
 
 /**
@@ -90,7 +70,7 @@ type WithElements<
  */
 type WithIdentifiers<
   S extends AnyComponentSpec,
-  I extends IdentifierTypes
+  I extends NamedIdentifiers
 > = Component<
   PatchComponentSpec<S, { ids: I }>
 >;
@@ -100,7 +80,7 @@ type WithIdentifiers<
  */
 type WithVariants<
   S extends AnyComponentSpec,
-  P extends VariantProvider<StyleContextFor<S>>
+  P extends VariantProvider<ContextFor<S>>
 > = Component<
   PatchComponentSpec<S, { variants: VariantsFromProvider<P> }>
 >;
@@ -147,7 +127,7 @@ export class Component<
   /**
    * Define component-specific identifiers
    */
-  identifiers<I extends IdentifierTypes>(types: I): WithIdentifiers<S, I> {
+  identifiers<I extends NamedIdentifiers>(types: I): WithIdentifiers<S, I> {
     this.updateState('identifiers', types);
 
     return this as WithIdentifiers<S, I>;
@@ -186,7 +166,7 @@ export class Component<
   /**
    * Define global styles for the component
    */
-  global(definitions: GlobalProviderFor<S>): Component<S> {
+  global(definitions: GlobalProvider<ContextFor<S>>): Component<S> {
     this.current.global.push(
       definitions as GlobalProvider
     );
@@ -197,7 +177,7 @@ export class Component<
   /**
    * Define nested styles for the component
    */
-  nested(definitions: NestedProviderFor<S>): Component<S> {
+  nested(definitions: NestedProvider<ContextFor<S>>): Component<S> {
     this.current.nested.push(
       definitions as NestedProvider
     );
@@ -208,7 +188,7 @@ export class Component<
   /**
    * Define variants for the component root
    */
-  variants<P extends VariantProviderFor<S>>(
+  variants<P extends VariantProvider<ContextFor<S>>>(
     provider: P
   ): WithVariants<S, P> {
     this.updateState('variants', provider);
@@ -219,10 +199,10 @@ export class Component<
   /**
    * Project the component into class names and identifiers
    */
-  apply(): AppliedWithInternal<S> {
+  apply(): BuildableComponent<S> {
     const applied = projectComponent(this);
 
-    const buildable: Buildable<S> = {
+    const value: BuildPlan = {
       compile: (config: CompileConfig = {}) => styleComponent(this, config),
       component: this
     };
@@ -230,11 +210,11 @@ export class Component<
     Object.defineProperty(applied, buildPlan, {
       configurable: false,
       enumerable: false,
-      value: buildable,
+      value,
       writable: false
     });
 
-    return applied as AppliedWithInternal<S>;
+    return applied as BuildableComponent<S>;
   }
 
   /**
