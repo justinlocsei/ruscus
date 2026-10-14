@@ -32,10 +32,3 @@ export function buildIdentifiersContext<I extends IdentifierTypes>(
 
   return { ids } as IdentifiersContext<I>;
 }
-
-/**
- * Build a BEM class selector from namespace levels
- */
-export function buildSelector(levels: readonly string[]): string {
-  return `.${levels.join('__')}`;
-}

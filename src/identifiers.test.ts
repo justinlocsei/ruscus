@@ -1,10 +1,6 @@
 import { assert, describe, it } from 'vitest';
 
-import {
-  asProperty,
-  buildIdentifiersContext,
-  buildSelector
-} from './identifiers.ts';
+import { asProperty, buildIdentifiersContext } from './identifiers.ts';
 import { checkConversion } from './tests.ts';
 
 describe('asProperty', () => {
@@ -43,20 +39,5 @@ describe('buildIdentifiersContext', () => {
     });
 
     assert.equal(context.ids.alfaBeta, 'card--alfa-beta');
-  });
-});
-
-describe('buildSelector', () => {
-  it('joins levels with BEM element separators', () => {
-    checkConversion<readonly string[], string>(
-      (levels, selector, message) => {
-        assert.equal(selector, buildSelector(levels), message);
-      },
-      [
-        [['card'], '.card'],
-        [['card', 'body'], '.card__body'],
-        [['card', 'body', 'title'], '.card__body__title']
-      ]
-    );
   });
 });
