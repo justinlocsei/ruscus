@@ -1,6 +1,9 @@
-import type { IdentifiersContext, IdentifierTypes } from './types.ts';
+import type {
+  IdentifiersContext,
+  NamedIdentifiers
+} from './types/components.ts';
 
-export { ELEMENT_ROOT } from './types.ts';
+export { ELEMENT_ROOT } from './types/ids.ts';
 
 /**
  * Project a camelCase style property to a CSS property name
@@ -15,7 +18,7 @@ export function asProperty(camelCase: string): string {
 /**
  * Build the identifiers available while defining component styles
  */
-export function buildIdentifiersContext<I extends IdentifierTypes>(
+export function buildIdentifiersContext<I extends NamedIdentifiers>(
   scope: string,
   spec: I
 ): IdentifiersContext<I> {
