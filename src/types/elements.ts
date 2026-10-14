@@ -94,7 +94,7 @@ type SelectorForSpec<S extends AnyElementSpec> = [
 /**
  * Definitions for variant styles
  */
-type VariantDefinitions = ScopedFragments<'relative'>;
+export type VariantDefinitions = ScopedFragments<'relative'>;
 
 /**
  * A provider of variant styles
