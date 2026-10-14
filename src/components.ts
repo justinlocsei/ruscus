@@ -119,9 +119,9 @@ export class Component<S extends AnyComponentSpec> {
   apply(): BuildableComponent<S> {
     const applied = projectComponent(this);
 
-    const value: BuildPlan<S> = {
+    const value: BuildPlan = {
       compile: (config: CompileConfig = {}) => styleComponent(this, config),
-      component: this
+      component: this as AnyComponent
     };
 
     Object.defineProperty(applied, buildPlan, {
