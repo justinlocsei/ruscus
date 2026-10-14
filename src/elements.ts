@@ -7,12 +7,11 @@ import type {
   AnyElementSpec,
   EmptyElementSpec,
   NestedContext,
-  NestedDefinitions,
+  NestedProvider,
   PatchElementSpec,
   VariantProvider,
   VariantsFromProvider
 } from './types/elements.ts';
-import type { RelativeFragmentFactory } from './types/fragments.ts';
 import type { Thunkable } from './types/utils.ts';
 import { resolve } from './utils.ts';
 
@@ -87,19 +86,11 @@ type VariantContext<S extends AnyElementSpec> = NestedContext<
 >;
 
 /**
- * A provider for nested element definitions
- */
-type NestedElementProvider<C extends NestedContext = NestedContext> = (
-  s: RelativeFragmentFactory,
-  ctx: C
-) => NestedDefinitions;
-
-/**
  * The current state of an element
  */
 type ElementState = {
   children: NamedElements;
-  nested: NestedElementProvider[];
+  nested: NestedProvider[];
   styles: Styles;
   variants?: VariantProvider<NestedContext>;
 };
@@ -173,7 +164,7 @@ export class Element<S extends AnyElementSpec> extends Builder<ElementState> {
    * Define nested styles for the element
    */
   nested(
-    provider: NestedElementProvider<
+    provider: NestedProvider<
       NestedContext<S['children'], S['variants']>
     >
   ): Element<S> {
