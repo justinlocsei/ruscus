@@ -1,6 +1,7 @@
 import { assert, describe, it } from 'vitest';
 
 import { defineComponent } from './components.ts';
+import { useIdentifier } from './identifiers.ts';
 import { projectComponent } from './projection.ts';
 import { T } from './tests.ts';
 
@@ -46,8 +47,8 @@ describe('projectComponent', () => {
         .elements(e => ({ body: e() }))
     );
 
-    assert.equal(ids('alfaBeta'), 'card--alfa-beta');
-    assert.equal(ids('bravo'), '--card--bravo');
+    assert.equal(useIdentifier(ids, 'alfaBeta'), 'card--alfa-beta');
+    assert.equal(useIdentifier(ids, 'bravo'), '--card--bravo');
 
     assert.equal(ids.root, 'card');
     assert.equal(ids.body, 'card__body');
@@ -71,6 +72,6 @@ describe('projectComponent', () => {
     applied.title;
 
     // @ts-expect-error unknown identifier
-    applied('bravo');
+    useIdentifier(applied, 'bravo');
   });
 });

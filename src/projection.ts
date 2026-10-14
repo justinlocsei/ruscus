@@ -1,9 +1,13 @@
 import type { Component } from './components.ts';
-import type { Element, NamedElements } from './elements.ts';
-import { buildIdentifiersContext } from './identifiers.ts';
+import { asProperty } from './css.ts';
+import type { AnyElement, NamedElements } from './elements.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
-import type { AnyComponentSpec } from './types/components.ts';
+import type {
+  AnyComponentSpec,
+  IdentifierValues,
+  IdentifierValuesFor
+} from './types/components.ts';
 import type { VariantProvider } from './types/elements.ts';
 import type {
   ApplicableComponent,
@@ -18,8 +22,6 @@ export function projectComponent<S extends AnyComponentSpec>(
   component: Component<S>,
   { naming }: { naming?: NamingScheme } = {}
 ): ApplicableComponent<S> {
-  type Applied = ApplicableComponent<S>;
-
   const name = useNaming(component, naming);
 
   const root = projectNode(
@@ -33,18 +35,28 @@ export function projectComponent<S extends AnyComponentSpec>(
     name
   ) as ElementProjectors<S['els']>;
 
-  const ids = buildIdentifiersContext(
-    component.id,
-    component.current.identifiers
-  ).ids as Record<keyof S['ids'], string>;
+  return {
+    ...elements,
+    root
+  };
+}
 
-  if (Object.keys(ids).length === 0) {
-    return { ...elements, root } as Applied;
-  }
+/**
+ * Project a component's identifiers as a map of labels to values
+ */
+export function projectIdentifiers<S extends AnyComponentSpec>(
+  component: Component<S>
+): IdentifierValuesFor<S> {
+  return Object.fromEntries(
+    Object.entries(component.current.identifiers).map(([name, type]) => {
+      const scoped = `${component.id}--${asProperty(name)}`;
 
-  const applied = ((name: keyof S['ids']) => ids[name]) as Applied;
-
-  return Object.assign(applied, { ...elements, root }) as Applied;
+      return [
+        name,
+        type === 'variable' ? `--${scoped}` : scoped
+      ];
+    })
+  ) as IdentifierValuesFor<S>;
 }
 
 /**
@@ -78,7 +90,7 @@ function projectElements(
  */
 function projectElement(
   path: string[],
-  element: Element,
+  element: AnyElement,
   name: NameGenerator
 ): unknown {
   const root = projectNode(

@@ -7,10 +7,9 @@ import type {
   ProvidersToSpecs
 } from './elements.ts';
 import { defineElement, resolveElements } from './elements.ts';
-import { buildIdentifiersContext } from './identifiers.ts';
-import type { BuildableComponent, BuildPlan } from './internal.ts';
-import { buildPlan } from './internal.ts';
-import { projectComponent } from './projection.ts';
+import type { InternalComponent } from './internal.ts';
+import { annotateComponent } from './internal.ts';
+import { projectComponent, projectIdentifiers } from './projection.ts';
 import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
 import { applyTraits } from './traits.ts';
@@ -118,22 +117,14 @@ export class Component<S extends AnyComponentSpec>
   /**
    * Project the component into class names and identifiers
    */
-  apply(): BuildableComponent<S> {
-    const applied = projectComponent(this);
-
-    const value: BuildPlan = {
-      compile: (config: CompileConfig = {}) => styleComponent(this, config),
-      component: this as AnyComponent
-    };
-
-    Object.defineProperty(applied, buildPlan, {
-      configurable: false,
-      enumerable: false,
-      value,
-      writable: false
+  apply(): InternalComponent<S> {
+    return annotateComponent(projectComponent(this), {
+      buildPlan: {
+        compile: (config: CompileConfig = {}) => styleComponent(this, config),
+        component: this as AnyComponent
+      },
+      identifiers: projectIdentifiers(this)
     });
-
-    return applied as BuildableComponent<S>;
   }
 
   /**
@@ -167,7 +158,7 @@ export class Component<S extends AnyComponentSpec>
     this.current.elements = resolveElements(
       provider(
         defineElement,
-        buildIdentifiersContext(this.id, this.current.identifiers)
+        { ids: projectIdentifiers(this) }
       )
     );
 
