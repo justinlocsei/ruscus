@@ -8,7 +8,7 @@ import {
   type ComponentFactory,
   type Component
 } from '../src/index.ts';
-import { extractBuildable } from '../src/internal.ts';
+import { extractBuildPlan } from '../src/internal.ts';
 
 const TESTS_DIR = dirname(fileURLToPath(import.meta.url));
 
@@ -21,7 +21,7 @@ export function compareStyles(
 ): void {
   test(name, async () => {
     const applied = define(component).apply();
-    const output = `${extractBuildable(applied).compile().trimEnd()}\n`;
+    const output = `${extractBuildPlan(applied).compile().trimEnd()}\n`;
 
     await expect(output).toMatchFileSnapshot(
       join(TESTS_DIR, `${name}.css`)
