@@ -1,62 +1,41 @@
-import type { Fragment, RelativeFragmentFactory } from './fragments.ts';
 import { defineRelativeFragment } from './fragments.ts';
 import { mergeStyles } from './styles.ts';
-import type { NestedDefinitions, NestedProvider, Styles } from './types.ts';
+import type { Styles } from './types/css.ts';
+import type { NestedProvider } from './types/elements.ts';
+import type { Fragment, RelativeFragmentFactory } from './types/fragments.ts';
 
 /**
- * A reusable bundle of styles and optional nested rules
+ * A trait that can be applied to a target
  */
-export type Trait = (
-  s: RelativeFragmentFactory
-) => Fragment<'relative'>;
+export type Trait = Fragment<'relative'>;
 
 /**
- * Define a trait from a fragment factory callback
+ * Define a trait
  */
-export function defineTrait(build: Trait): Trait {
-  return build;
+export function defineTrait(
+  build: (s: RelativeFragmentFactory) => Trait
+): Trait {
+  return build(defineRelativeFragment);
 }
 
 /**
- * Resolve a trait to a fragment
+ * A target to which traits can be applied
  */
-export function resolveTrait(trait: Trait): Fragment<'relative'> {
-  return trait(defineRelativeFragment);
-}
-
-/**
- * A target for trait styles and nested providers
- */
-export type TraitTarget = {
+type TraitTarget = {
   nested: NestedProvider[];
   styles: Styles;
 };
 
 /**
- * Apply a trait's styles and nested rules to a style target
+ * Apply a trait's styles to a target
  */
 export function applyTrait(
   target: TraitTarget,
-  trait: Trait
+  { styles }: Trait
 ): void {
-  const fragment = resolveTrait(trait);
+  target.styles = mergeStyles(target.styles, styles.root);
 
-  target.styles = mergeStyles(target.styles, fragment.current.styles);
-
-  const { nested } = fragment.current;
-
-  if (Object.keys(nested).length > 0) {
-    target.nested.push(
-      nestedProviderFrom(nested as NestedDefinitions)
-    );
+  if (Object.keys(styles.nested).length > 0) {
+    target.nested.push(() => styles.nested);
   }
-}
-
-/**
- * Build a nested provider from eager definitions
- */
-export function nestedProviderFrom(
-  definitions: NestedDefinitions
-): NestedProvider {
-  return () => definitions;
 }
