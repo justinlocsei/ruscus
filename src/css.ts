@@ -6,17 +6,17 @@ import {
 } from './blocks.ts';
 import type { Component } from './components.ts';
 import type { Element } from './elements.ts';
-import type { Fragment, FragmentScope } from './fragments.ts';
 import { asProperty, buildIdentifiersContext } from './identifiers.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
+import type { AnyComponentSpec } from './types/components.ts';
+import type { Declarations } from './types/css.ts';
+import type { NestedContext, VariantProvider } from './types/elements.ts';
 import type {
-  AnyComponentSpec,
-  Declarations,
-  FragmentDefinitions,
-  NestedContext,
-  VariantProvider
-} from './types.ts';
+  Fragment,
+  Scope as FragmentScope,
+  ScopedFragments
+} from './types/fragments.ts';
 
 /**
  * Options for compiling a component's CSS
@@ -189,7 +189,7 @@ class ComponentCompiler {
   /**
    * Add global fragment rules
    */
-  private addGlobalFragmentRules(definitions: FragmentDefinitions): void {
+  private addGlobalFragmentRules(definitions: ScopedFragments): void {
     for (const [key, fragment] of Object.entries(definitions)) {
       const rule = this.formatFragmentRules(
         this.selectorForFragmentKey('', key, fragment.scope),
@@ -207,7 +207,7 @@ class ComponentCompiler {
    */
   private addScopedFragmentRules(
     anchor: string,
-    definitions: FragmentDefinitions
+    definitions: ScopedFragments
   ): void {
     for (const [key, fragment] of Object.entries(definitions)) {
       const rule = this.formatFragmentRules(
@@ -243,7 +243,7 @@ class ComponentCompiler {
     parentSelector: string,
     fragment: Fragment
   ): string | undefined {
-    const { nested, styles } = fragment.current;
+    const { nested, root: styles } = fragment.styles;
     const nestedEntries = Object.entries(nested);
 
     if (nestedEntries.length === 0) {
