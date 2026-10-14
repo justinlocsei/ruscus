@@ -1,11 +1,10 @@
-import type { Component } from './components.ts';
+import type { AnyComponent, Component } from './components.ts';
 import { asProperty } from './css.ts';
 import type { AnyElement, NamedElements } from './elements.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
 import type {
   AnyComponentSpec,
-  IdentifierValues,
   IdentifierValuesFor
 } from './types/components.ts';
 import type { VariantProvider } from './types/elements.ts';
@@ -22,7 +21,7 @@ export function projectComponent<S extends AnyComponentSpec>(
   component: Component<S>,
   { naming }: { naming?: NamingScheme } = {}
 ): ApplicableComponent<S> {
-  const name = useNaming(component, naming);
+  const name = useNaming(component as unknown as AnyComponent, naming);
 
   const root = projectNode(
     name([component.id]),
@@ -38,7 +37,7 @@ export function projectComponent<S extends AnyComponentSpec>(
   return {
     ...elements,
     root
-  };
+  } as ApplicableComponent<S>;
 }
 
 /**
