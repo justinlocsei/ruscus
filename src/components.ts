@@ -115,6 +115,27 @@ export class Component<
   }
 
   /**
+   * Project the component into class names and identifiers
+   */
+  apply(): BuildableComponent<S> {
+    const applied = projectComponent(this);
+
+    const value: BuildPlan<S> = {
+      compile: (config: CompileConfig = {}) => styleComponent(this, config),
+      component: this
+    };
+
+    Object.defineProperty(applied, buildPlan, {
+      configurable: false,
+      enumerable: false,
+      value,
+      writable: false
+    });
+
+    return applied as BuildableComponent<S>;
+  }
+
+  /**
    * Apply styles to the component root
    */
   css(styles: Styles): Component<S> {
@@ -192,27 +213,6 @@ export class Component<
     this.updateState('variants', provider);
 
     return this as WithVariants<S, P>;
-  }
-
-  /**
-   * Project the component into class names and identifiers
-   */
-  apply(): BuildableComponent<S> {
-    const applied = projectComponent(this);
-
-    const value: BuildPlan = {
-      compile: (config: CompileConfig = {}) => styleComponent(this, config),
-      component: this
-    };
-
-    Object.defineProperty(applied, buildPlan, {
-      configurable: false,
-      enumerable: false,
-      value,
-      writable: false
-    });
-
-    return applied as BuildableComponent<S>;
   }
 
   /**
