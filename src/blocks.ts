@@ -2,7 +2,6 @@ import type { NamedElements } from './elements.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 import { ELEMENT_ROOT } from './identifiers.ts';
 import type { NameGenerator } from './naming.ts';
-import { createVerboseNameGenerator } from './naming.ts';
 import type {
   AnySelectors,
   Block,
@@ -21,16 +20,17 @@ import type {
  * Build a context for defining nested rules
  */
 type NestedContextOptions = {
-  name?: NameGenerator;
+  name: NameGenerator;
   root?: string;
 };
 
 export function buildNestedContext(
   namespace: string[],
   children: NamedElements,
-  { name = createVerboseNameGenerator(), root = '&' }: NestedContextOptions = {}
+  { name, root = '&' }: NestedContextOptions
 ): NestedContext {
   const rootClass = name(namespace);
+
   const els: Selectors = {
     root: `.${rootClass}`,
     ...buildSelectors(namespace, children, name)
