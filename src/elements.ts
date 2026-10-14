@@ -1,3 +1,4 @@
+import Builder from './builder.ts';
 import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
 import { applyTraits } from './traits.ts';
@@ -123,18 +124,16 @@ type WithVariants<
   PatchElementSpec<S, { variants: VariantsFromProvider<P> }>
 >;
 
-export class Element<S extends AnyElementSpec> {
-  current: ElementState;
-
+export class Element<S extends AnyElementSpec> extends Builder<ElementState> {
   /**
    * Create an element
    */
   constructor() {
-    this.current = {
+    super({
       children: {},
       nested: [],
       styles: {}
-    };
+    });
   }
 
   /**
@@ -143,7 +142,7 @@ export class Element<S extends AnyElementSpec> {
   children<T extends ElementProviders>(
     definitions: Thunkable<T>
   ): WithChildren<S, T> {
-    this.updateState(
+    this.setStateField(
       'children',
       resolveElements(resolve(definitions))
     );
@@ -189,37 +188,11 @@ export class Element<S extends AnyElementSpec> {
   variants<P extends VariantProvider<VariantContext<S>>>(
     provider: P
   ): WithVariants<S, P> {
-    this.updateState(
+    this.setStateField(
       'variants',
       provider as VariantProvider<NestedContext>
     );
 
     return this as WithVariants<S, P>;
-  }
-
-  /**
-   * Update a field in the current state
-   *
-   * @throws if the field already has a value
-   */
-  private updateState<T extends keyof ElementState>(
-    field: T,
-    value: ElementState[T]
-  ): void {
-    const current = this.current[field];
-
-    let isSet: boolean;
-
-    if (current !== undefined) {
-      isSet = typeof current !== 'object' || Object.keys(current).length > 0;
-    } else {
-      isSet = false;
-    }
-
-    if (isSet) {
-      throw new Error(`${field} may only be called once`);
-    }
-
-    this.current[field] = value;
   }
 }

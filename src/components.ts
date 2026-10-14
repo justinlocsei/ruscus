@@ -1,3 +1,4 @@
+import Builder from './builder.ts';
 import type { CompileConfig } from './css.ts';
 import { styleComponent } from './css.ts';
 import type {
@@ -86,8 +87,9 @@ type WithVariants<
   PatchComponentSpec<S, { variants: VariantsFromProvider<P> }>
 >;
 
-export class Component<S extends AnyComponentSpec> {
-  current: ComponentState<S>;
+export class Component<S extends AnyComponentSpec>
+  extends Builder<ComponentState<S>>
+{
   id: string;
 
   private name: string;
@@ -97,16 +99,16 @@ export class Component<S extends AnyComponentSpec> {
    * Create a component
    */
   constructor(name: string, options: ComponentOptions = {}) {
-    this.name = name;
-    this.options = options;
-
-    this.current = {
+    super({
       elements: {},
       global: [],
       identifiers: {},
       nested: [],
       styles: {}
-    };
+    });
+
+    this.name = name;
+    this.options = options;
 
     this.id = [this.options.namespace, this.name]
       .filter(Boolean)
@@ -148,7 +150,7 @@ export class Component<S extends AnyComponentSpec> {
    * Define component-specific identifiers
    */
   identifiers<I extends NamedIdentifiers>(types: I): WithIdentifiers<S, I> {
-    this.updateState('identifiers', types);
+    this.setStateField('identifiers', types);
 
     return cast<WithIdentifiers<S, I>>(this);
   }
@@ -209,31 +211,9 @@ export class Component<S extends AnyComponentSpec> {
   variants<P extends VariantProvider<ContextFor<S>>>(
     provider: P
   ): WithVariants<S, P> {
-    this.updateState('variants', provider);
+    this.setStateField('variants', provider);
 
     return cast<WithVariants<S, P>>(this);
-  }
-
-  /**
-   * Update a field in the current state
-   *
-   * @throws if the field already has a value
-   */
-  private updateState<T extends keyof ComponentState<S>>(
-    field: T,
-    value: ComponentState<S>[T]
-  ): void {
-    const current = this.current[field];
-
-    if (field === 'variants') {
-      if (current !== undefined) {
-        throw new Error(`${field} may only be called once`);
-      }
-    } else if (Object.keys(current as object).length) {
-      throw new Error(`${field} may only be called once`);
-    }
-
-    this.current[field] = value;
   }
 }
 

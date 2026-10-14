@@ -89,7 +89,7 @@ describe('Element', () => {
 
       assert.throws(
         () => element.children({ bravo: e({ color: 'red' }) }),
-        'children may only be called once'
+        'children may only be set once'
       );
     });
   });
@@ -247,7 +247,7 @@ describe('Element', () => {
 
       assert.throws(
         () => element.variants(s => ({ spacer: s({ marginTop: '1rem' }) })),
-        'variants may only be called once'
+        'variants may only be set once'
       );
     });
   });

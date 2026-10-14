@@ -126,7 +126,7 @@ describe('Component', () => {
 
       assert.throws(
         () => instance.identifiers({ bravo: 'variable' }),
-        'identifiers may only be called once'
+        'identifiers may only be set once'
       );
     });
   });
@@ -266,7 +266,7 @@ describe('Component', () => {
 
       assert.throws(
         () => instance.variants(s => ({ large: s({ padding: '2rem' }) })),
-        'variants may only be called once'
+        'variants may only be set once'
       );
     });
   });
