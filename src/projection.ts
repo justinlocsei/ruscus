@@ -2,7 +2,7 @@ import type { Component } from './components.ts';
 import type { Element, NamedElements } from './elements.ts';
 import { buildIdentifiersContext } from './identifiers.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
-import { createVerboseNameGenerator, useNaming } from './naming.ts';
+import { useNaming } from './naming.ts';
 import type {
   AnyComponentSpec,
   Applied,
@@ -16,16 +16,6 @@ import type {
 export type ProjectConfig = {
   naming?: NamingScheme;
 };
-
-/**
- * Build class names from component and element path segments
- */
-export function buildClassName(
-  levels: readonly string[],
-  name: NameGenerator = createVerboseNameGenerator()
-): string {
-  return name(levels);
-}
 
 /**
  * Project a component into class names and identifier accessors
