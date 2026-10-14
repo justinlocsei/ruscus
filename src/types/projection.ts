@@ -1,4 +1,4 @@
-import type { AnyComponentSpec, NamedIdentifiers } from './components.ts';
+import type { AnyComponentSpec } from './components.ts';
 import type {
   AnyElementSpec,
   EmptyElementSpecs,
@@ -11,8 +11,7 @@ import type { HasVariants } from './utils.ts';
  */
 export type ApplicableComponent<S extends AnyComponentSpec> =
   & { root: ProjectElement<S> }
-  & ElementProjectors<S['els']>
-  & IDProjector<S['ids']>;
+  & ElementProjectors<S['els']>;
 
 /**
  * Project an element as class names
@@ -30,14 +29,6 @@ export type ElementProjectors<
 > = {
   [K in keyof E]: ElementProjector<E[K]>;
 };
-
-/**
- * Project a component identifier as a concrete string
- */
-export type IDProjector<I extends NamedIdentifiers> = [
-  keyof I
-] extends [never] ? Record<never, never>
-  : (name: keyof I) => string;
 
 /**
  * Project a single element as a class name
