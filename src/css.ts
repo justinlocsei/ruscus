@@ -4,13 +4,16 @@ import {
   resolveNestedProvider,
   resolveVariantProvider
 } from './blocks.ts';
-import type { Component } from './components.ts';
 import type { Element } from './elements.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
-import type { AnyComponentSpec } from './types/components.ts';
+import type { ComponentDefinition } from './types/components.ts';
 import type { Declarations } from './types/css.ts';
-import type { NestedContext, VariantsProvider } from './types/elements.ts';
+import type {
+  ElementDefinition,
+  NestedContext,
+  VariantsProvider
+} from './types/elements.ts';
 import type {
   Fragment,
   Scope as FragmentScope,
@@ -38,19 +41,16 @@ export function asProperty(camel: string): string {
 /**
  * Generate CSS for a component's styles
  */
-export function styleComponent<S extends AnyComponentSpec>(
-  component: Component<S>,
+export function styleComponent(
+  component: ComponentDefinition,
   config: CompileConfig = {}
 ): string {
-  return new ComponentCompiler(
-    component as Component<AnyComponentSpec>,
-    config
-  ).compile();
+  return new ComponentCompiler(component, config).compile();
 }
 
 class ComponentCompiler {
   private blocks: string[];
-  private component: Component<AnyComponentSpec>;
+  private component: ComponentDefinition;
   private config: Required<Omit<CompileConfig, 'naming'>>;
   private name: NameGenerator;
 
@@ -58,7 +58,7 @@ class ComponentCompiler {
    * Create a compiler for a component's styles
    */
   constructor(
-    component: Component<AnyComponentSpec>,
+    component: ComponentDefinition,
     config: CompileConfig
   ) {
     this.blocks = [];
@@ -72,36 +72,37 @@ class ComponentCompiler {
    * Produce CSS for the component's styles
    */
   compile(): string {
-    const { current } = this.component;
+    const { component } = this;
+    const { elements, variants } = component;
     const root = this.buildSelector();
 
     const styleContext = {
-      ...buildNestedContext([this.component.id], current.elements, {
+      ...buildNestedContext([this.component.id], elements, {
         name: this.name
       }),
       ...buildIdentifiersContext(
         this.component.id,
-        current.identifiers
+        component.identifiers
       )
     } satisfies NestedContext;
 
-    this.addRule(root, current.styles);
+    this.addRule(root, component.styles);
 
-    if (current.variants) {
+    if (variants) {
       this.addVariantFragmentRules(
         root,
-        current.variants,
+        variants,
         styleContext
       );
     }
 
     for (
-      const [name, element] of Object.entries(current.elements)
+      const [name, element] of Object.entries(elements)
     ) {
       this.addElementStyles([name], element);
     }
 
-    for (const provider of current.nested) {
+    for (const provider of component.nested) {
       this.addScopedFragmentRules(
         root,
         resolveNestedProvider(provider, styleContext)
@@ -109,12 +110,12 @@ class ComponentCompiler {
     }
 
     for (
-      const [name, element] of Object.entries(current.elements)
+      const [name, element] of Object.entries(elements)
     ) {
       this.addElementNested([name], element);
     }
 
-    for (const provider of current.global) {
+    for (const provider of component.global) {
       this.addGlobalFragmentRules(
         resolveGlobalProvider(provider, styleContext)
       );
@@ -126,27 +127,27 @@ class ComponentCompiler {
   /**
    * Add base styles for a component's elements
    */
-  private addElementStyles(path: string[], element: Element): void {
-    const { current } = element;
+  private addElementStyles(path: string[], element: ElementDefinition): void {
+    const { children, variants } = element;
     const selector = this.buildSelector(...path);
 
-    this.addRule(selector, current.styles);
+    this.addRule(selector, element.styles);
 
     const elementContext = buildNestedContext(
       [this.component.id, ...path],
-      current.children,
+      children,
       { name: this.name }
     );
 
-    if (current.variants) {
+    if (variants) {
       this.addVariantFragmentRules(
         selector,
-        current.variants,
+        variants,
         elementContext
       );
     }
 
-    for (const [name, child] of Object.entries(current.children)) {
+    for (const [name, child] of Object.entries(children)) {
       this.addElementStyles([...path, name], child);
     }
   }
@@ -154,24 +155,24 @@ class ComponentCompiler {
   /**
    * Add nested rules for a component's elements
    */
-  private addElementNested(path: string[], element: Element): void {
-    const { current } = element;
+  private addElementNested(path: string[], element: ElementDefinition): void {
+    const { children } = element;
     const selector = this.buildSelector(...path);
 
     const elementContext = buildNestedContext(
       [this.component.id, ...path],
-      current.children,
+      children,
       { name: this.name }
     );
 
-    for (const provider of current.nested) {
+    for (const provider of element.nested) {
       this.addScopedFragmentRules(
         selector,
         resolveNestedProvider(provider, elementContext)
       );
     }
 
-    for (const [name, child] of Object.entries(current.children)) {
+    for (const [name, child] of Object.entries(children)) {
       this.addElementNested([...path, name], child);
     }
   }
