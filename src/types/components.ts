@@ -47,21 +47,21 @@ export type ComponentSpec<
 /**
  * Elements available in a context
  */
-type ContextElements<E extends ElementSpecs> = {
+export type ContextElements<E extends ElementSpecs> = {
   els: Selectors<E>;
 };
 
 /**
  * Identifiers available in a context
  */
-type ContextIdentifiers<I extends string> = {
+export type ContextIdentifiers<I extends string> = {
   ids: IdentifierValues<I>;
 };
 
 /**
  * Variants available in a context
  */
-type ContextVariants<V extends string> = {
+export type ContextVariants<V extends string> = {
   variants: VariantSelector<V>;
 };
 
