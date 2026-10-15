@@ -1,3 +1,4 @@
+import type { Styles } from './css.ts';
 import type { RelativeFragmentFactory, ScopedFragments } from './fragments.ts';
 import type { ElementRoot } from './ids.ts';
 import type { EmptyObject, HasVariants, Patch } from './utils.ts';
@@ -14,6 +15,21 @@ type ChildSelectors<C extends NamedElements<C>> = {
   [K in ElementRoot | keyof C]: K extends ElementRoot ? string
     : SelectorForSpec<C[Extract<K, keyof C>]>;
 };
+
+/**
+ * The data that fully defines an element
+ */
+export type ElementDefinition = {
+  children: ElementDefinitions;
+  nested: NestedProvider[];
+  styles: Styles;
+  variants?: VariantProvider;
+};
+
+/**
+ * A mapping of element names to definitions
+ */
+type ElementDefinitions = Record<string, ElementDefinition>;
 
 /**
  * A specification for an element
