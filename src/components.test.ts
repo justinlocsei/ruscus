@@ -71,8 +71,8 @@ describe('Component', () => {
         title: e().css({ color: 'red' })
       }));
 
-      assert.deepEqual(elements.title?.current.styles, { color: 'red' });
-      assert.deepEqual(elements.body?.current.styles, { margin: '0' });
+      assert.deepEqual(elements.title?.styles, { color: 'red' });
+      assert.deepEqual(elements.body?.styles, { margin: '0' });
     });
 
     it('supports lazy element providers', () => {
@@ -80,7 +80,7 @@ describe('Component', () => {
         title: () => e().css({ fontWeight: '700' })
       }));
 
-      assert.deepEqual(current.elements.title?.current.styles, {
+      assert.deepEqual(current.elements.title?.styles, {
         fontWeight: '700'
       });
     });
@@ -92,7 +92,7 @@ describe('Component', () => {
           body: e({ animationName: ids.alfa, gap: `var(${ids.bravo})` })
         }));
 
-      assert.deepEqual(instance.current.elements.body?.current.styles, {
+      assert.deepEqual(instance.current.elements.body?.styles, {
         animationName: 'testing--alfa',
         gap: 'var(--testing--bravo)'
       });
@@ -148,12 +148,12 @@ describe('Component', () => {
         styleContext(instance)
       );
       assert.equal(definitions['.card']?.scope, 'absolute');
-      assert.deepEqual(definitions['.card']?.current.styles, { color: 'red' });
+      assert.deepEqual(definitions['.card']?.styles.root, { color: 'red' });
 
       assert.deepEqual(
-        definitions['@media (min-width: 768px)']?.current.nested['.card']
-          ?.current
-          .styles,
+        definitions['@media (min-width: 768px)']?.styles.nested['.card']
+          ?.styles
+          .root,
         { display: 'block' }
       );
     });
@@ -203,11 +203,11 @@ describe('Component', () => {
 
       assert.equal(definitions['&:hover']?.scope, 'relative');
       assert.deepEqual(
-        definitions['&:hover']?.current.styles,
+        definitions['&:hover']?.styles.root,
         { opacity: '0.5' }
       );
 
-      assert.deepEqual(definitions.a?.current.styles, { color: 'red' });
+      assert.deepEqual(definitions.a?.styles.root, { color: 'red' });
     });
 
     it('can reference child elements', () => {
