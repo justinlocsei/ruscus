@@ -7,7 +7,7 @@ import type {
   AnyComponentSpec,
   IdentifierValuesFor
 } from './types/components.ts';
-import type { VariantProvider } from './types/elements.ts';
+import type { VariantsProvider } from './types/elements.ts';
 import type {
   ApplicableComponent,
   ElementProjectors,
@@ -109,7 +109,7 @@ function projectElement(
  */
 function projectNode(
   name: string,
-  variants?: VariantProvider
+  variants?: VariantsProvider
 ): VariantProjector<string> | string {
   return variants
     ? (...vs: string[]) => [name, ...vs.map(v => `is-${v}`)].join(' ')

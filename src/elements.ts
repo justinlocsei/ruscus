@@ -11,8 +11,8 @@ import type {
   NestedContext,
   NestedProvider,
   PatchElementSpec,
-  VariantProvider,
-  VariantsFromProvider
+  VariantsFromProvider,
+  VariantsProvider
 } from './types/elements.ts';
 import type { Thunkable } from './types/utils.ts';
 import { resolve } from './utils.ts';
@@ -102,7 +102,7 @@ type WithChildren<
  */
 type WithVariants<
   S extends AnyElementSpec,
-  P extends VariantProvider<VariantContext<S>>
+  P extends VariantsProvider<VariantContext<S>>
 > = Element<
   PatchElementSpec<S, { variants: VariantsFromProvider<P> }>
 >;
@@ -170,12 +170,12 @@ export class Element<S extends AnyElementSpec>
   /**
    * Define variants for the element
    */
-  variants<P extends VariantProvider<VariantContext<S>>>(
+  variants<P extends VariantsProvider<VariantContext<S>>>(
     provider: P
   ): WithVariants<S, P> {
     this.setStateField(
       'variants',
-      provider as VariantProvider<NestedContext>
+      provider as VariantsProvider<NestedContext>
     );
 
     return this as WithVariants<S, P>;

@@ -22,8 +22,8 @@ import type { Styles } from './types/css.ts';
 import type {
   NestedContext,
   NestedProvider,
-  VariantProvider,
-  VariantsFromProvider
+  VariantsFromProvider,
+  VariantsProvider
 } from './types/elements.ts';
 import { cast } from './utils.ts';
 
@@ -66,7 +66,7 @@ type WithIdentifiers<
  */
 type WithVariants<
   S extends AnyComponentSpec,
-  P extends VariantProvider<ContextFor<S>>
+  P extends VariantsProvider<ContextFor<S>>
 > = Component<
   PatchComponentSpec<S, { variants: VariantsFromProvider<P> }>
 >;
@@ -184,7 +184,7 @@ export class Component<S extends AnyComponentSpec>
   /**
    * Define variants for the component root
    */
-  variants<P extends VariantProvider<ContextFor<S>>>(
+  variants<P extends VariantsProvider<ContextFor<S>>>(
     provider: P
   ): WithVariants<S, P> {
     this.setStateField('variants', provider);

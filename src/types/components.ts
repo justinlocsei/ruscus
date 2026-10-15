@@ -5,7 +5,7 @@ import type {
   EmptyElementSpecs,
   NestedContext,
   NestedProvider,
-  VariantProvider
+  VariantsProvider
 } from './elements.ts';
 import type { AbsoluteFragmentFactory, ScopedFragments } from './fragments.ts';
 import type { EmptyObject, HasVariants, Patch } from './utils.ts';
@@ -28,7 +28,7 @@ export type ComponentDefinition = {
   identifiers: NamedIdentifiers;
   nested: NestedProvider[];
   styles: Styles;
-  variants?: VariantProvider;
+  variants?: VariantsProvider;
 };
 
 /**

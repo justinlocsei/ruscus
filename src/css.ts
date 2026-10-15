@@ -10,7 +10,7 @@ import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
 import type { AnyComponentSpec } from './types/components.ts';
 import type { Declarations } from './types/css.ts';
-import type { NestedContext, VariantProvider } from './types/elements.ts';
+import type { NestedContext, VariantsProvider } from './types/elements.ts';
 import type {
   Fragment,
   Scope as FragmentScope,
@@ -181,7 +181,7 @@ class ComponentCompiler {
    */
   private addVariantFragmentRules<C extends NestedContext>(
     anchor: string,
-    provider: VariantProvider<C>,
+    provider: VariantsProvider<C>,
     ctx: C
   ): void {
     const definitions = resolveVariantProvider(provider, ctx);
