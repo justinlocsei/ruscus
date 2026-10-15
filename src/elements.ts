@@ -5,6 +5,8 @@ import { applyTraits } from './traits.ts';
 import type { Styles } from './types/css.ts';
 import type {
   AnyElementSpec,
+  ElementDefinition,
+  ElementDefinitions,
   EmptyElementSpec,
   NestedContext,
   NestedProvider,
@@ -67,10 +69,10 @@ export type ElementFactory = typeof defineElement;
  */
 export function resolveElements(
   providers: ElementProviders
-): NamedElements {
-  return Object.entries(providers).reduce<NamedElements>(
+): ElementDefinitions {
+  return Object.entries(providers).reduce<ElementDefinitions>(
     (els, [name, provider]) => {
-      els[name] = resolve(provider);
+      els[name] = resolve(provider).current;
       return els;
     },
     {}
@@ -84,16 +86,6 @@ type VariantContext<S extends AnyElementSpec> = NestedContext<
   S['children'],
   never
 >;
-
-/**
- * The current state of an element
- */
-type ElementState = {
-  children: NamedElements;
-  nested: NestedProvider[];
-  styles: Styles;
-  variants?: VariantProvider<NestedContext>;
-};
 
 /**
  * Apply child constraints to an element
@@ -115,7 +107,9 @@ type WithVariants<
   PatchElementSpec<S, { variants: VariantsFromProvider<P> }>
 >;
 
-export class Element<S extends AnyElementSpec> extends Builder<ElementState> {
+export class Element<S extends AnyElementSpec>
+  extends Builder<ElementDefinition>
+{
   /**
    * Create an element
    */
