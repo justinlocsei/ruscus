@@ -20,16 +20,30 @@ export type AnyComponentSpec = ComponentSpec<
 >;
 
 /**
+ * The most inclusive form of a derived context
+ */
+export type AnyDerivedContext = DerivedContext<
+  ElementSpecs,
+  string,
+  string
+>;
+
+/**
+ * The most inclusive form of a variants context
+ */
+export type AnyVariantsContext = VariantsContext<ElementSpecs, string>;
+
+/**
  * The data that fully defines a component
  */
 export type ComponentDefinition = {
   elements: ElementDefinitions;
-  global: GlobalProvider[];
+  global: GlobalProvider<AnyDerivedContext>[];
   id: string;
   identifiers: NamedIdentifiers;
-  nested: NestedProvider[];
+  nested: NestedProvider<AnyDerivedContext>[];
   styles: Styles;
-  variants?: VariantsProvider;
+  variants?: VariantsProvider<AnyVariantsContext>;
 };
 
 /**
