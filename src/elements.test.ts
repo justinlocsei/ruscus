@@ -34,8 +34,8 @@ describe('Element', () => {
         title: e().css({ color: 'red' })
       });
 
-      assert.deepEqual(children.body?.current.styles, { margin: '0' });
-      assert.deepEqual(children.title?.current.styles, { color: 'red' });
+      assert.deepEqual(children.body?.styles, { margin: '0' });
+      assert.deepEqual(children.title?.styles, { color: 'red' });
     });
 
     it('supports lazy child providers', () => {
@@ -43,7 +43,7 @@ describe('Element', () => {
         title: () => e().css({ fontWeight: '700' })
       });
 
-      assert.deepEqual(result.current.children.title?.current.styles, {
+      assert.deepEqual(result.current.children.title?.styles, {
         fontWeight: '700'
       });
     });
@@ -53,7 +53,7 @@ describe('Element', () => {
         title: e().css({ fontWeight: '700' })
       }));
 
-      assert.deepEqual(result.current.children.title?.current.styles, {
+      assert.deepEqual(result.current.children.title?.styles, {
         fontWeight: '700'
       });
     });
@@ -66,7 +66,7 @@ describe('Element', () => {
       });
 
       assert.deepEqual(
-        parent.current.children.content?.current.children.text?.current.styles,
+        parent.current.children.content?.children.text?.styles,
         { color: 'red' }
       );
     });
@@ -262,7 +262,7 @@ describe('resolveElements', () => {
       title: () => defineElement({ color: 'red' })
     });
 
-    assert.strictEqual(resolved.root, root);
-    assert.deepEqual(resolved.title?.current.styles, { color: 'red' });
+    assert.strictEqual(resolved.root, root.current);
+    assert.deepEqual(resolved.title?.styles, { color: 'red' });
   });
 });
