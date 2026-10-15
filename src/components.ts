@@ -11,6 +11,7 @@ import type { Trait } from './traits.ts';
 import { applyTraits } from './traits.ts';
 import type {
   AnyComponentSpec,
+  AnyVariantsContext,
   ComponentDefinition,
   DerivedContext,
   ElementsContext,
@@ -180,7 +181,10 @@ export class Component<S extends AnyComponentSpec>
   variants<P extends VariantsProvider<VariantsContext<S['els'], S['ids']>>>(
     provider: P
   ): WithVariants<S, P> {
-    this.setStateField('variants', provider as VariantsProvider);
+    this.setStateField(
+      'variants',
+      provider as VariantsProvider<AnyVariantsContext>
+    );
 
     return cast<WithVariants<S, P>>(this);
   }
