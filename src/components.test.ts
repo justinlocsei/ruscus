@@ -21,6 +21,7 @@ describe('Component', () => {
     assert.deepEqual(component().current, {
       elements: {},
       global: [],
+      id: 'testing',
       identifiers: {},
       nested: [],
       styles: {}
