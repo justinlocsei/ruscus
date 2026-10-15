@@ -1,11 +1,7 @@
 import Builder from './builder.ts';
 import type { CompileConfig } from './css.ts';
 import { styleComponent } from './css.ts';
-import type {
-  ElementProviders,
-  NamedElements,
-  ProvidersToSpecs
-} from './elements.ts';
+import type { ElementProviders, ProvidersToSpecs } from './elements.ts';
 import { defineElement, resolveElements } from './elements.ts';
 import type { InternalComponent } from './internal.ts';
 import { annotateComponent } from './internal.ts';
@@ -15,6 +11,7 @@ import type { Trait } from './traits.ts';
 import { applyTraits } from './traits.ts';
 import type {
   AnyComponentSpec,
+  ComponentDefinition,
   EmptyComponentSpec,
   GlobalProvider,
   IdentifiersContext,
@@ -43,18 +40,6 @@ type ComponentOptions = {
 type ContextFor<S extends AnyComponentSpec> =
   & NestedContext<S['els'], S['variants']>
   & IdentifiersContext<S['ids']>;
-
-/**
- * The current state of a component
- */
-type ComponentState<S extends AnyComponentSpec = AnyComponentSpec> = {
-  elements: NamedElements;
-  global: GlobalProvider[];
-  identifiers: NamedIdentifiers;
-  nested: NestedProvider[];
-  styles: Styles;
-  variants?: VariantProvider<ContextFor<S>>;
-};
 
 /**
  * Apply element constraints to a component
@@ -87,7 +72,7 @@ type WithVariants<
 >;
 
 export class Component<S extends AnyComponentSpec>
-  extends Builder<ComponentState<S>>
+  extends Builder<ComponentDefinition>
 {
   id: string;
 
