@@ -68,27 +68,24 @@ export class Component<S extends AnyComponentSpec>
 {
   id: string;
 
-  private name: string;
-  private options: ComponentOptions;
-
   /**
    * Create a component
    */
   constructor(name: string, options: ComponentOptions = {}) {
+    const id = [options.namespace, name]
+      .filter(Boolean)
+      .join('--');
+
     super({
       elements: {},
       global: [],
+      id,
       identifiers: {},
       nested: [],
       styles: {}
     });
 
-    this.name = name;
-    this.options = options;
-
-    this.id = [this.options.namespace, this.name]
-      .filter(Boolean)
-      .join('--');
+    this.id = id;
   }
 
   /**

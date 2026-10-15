@@ -25,6 +25,7 @@ export type AnyComponentSpec = ComponentSpec<
 export type ComponentDefinition = {
   elements: ElementDefinitions;
   global: GlobalProvider[];
+  id: string;
   identifiers: NamedIdentifiers;
   nested: NestedProvider[];
   styles: Styles;
