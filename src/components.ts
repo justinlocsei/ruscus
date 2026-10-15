@@ -12,19 +12,18 @@ import { applyTraits } from './traits.ts';
 import type {
   AnyComponentSpec,
   ComponentDefinition,
+  DerivedContext,
+  ElementsContext,
   EmptyComponentSpec,
   GlobalProvider,
-  IdentifiersContext,
   NamedIdentifiers,
-  PatchComponentSpec
+  NestedProvider,
+  PatchComponentSpec,
+  VariantsContext,
+  VariantsProvider
 } from './types/components.ts';
 import type { Styles } from './types/css.ts';
-import type {
-  NestedContext,
-  NestedProvider,
-  VariantsFromProvider,
-  VariantsProvider
-} from './types/elements.ts';
+import type { VariantsFromProvider } from './types/elements.ts';
 import { cast } from './utils.ts';
 
 /**
@@ -33,13 +32,6 @@ import { cast } from './utils.ts';
 type ComponentOptions = {
   namespace?: string;
 };
-
-/**
- * Define the context available to providers of derived component styles
- */
-type ContextFor<S extends AnyComponentSpec> =
-  & NestedContext<S['els'], S['variants']>
-  & IdentifiersContext<S['ids']>;
 
 /**
  * Apply element constraints to a component
@@ -58,7 +50,7 @@ type WithIdentifiers<
   S extends AnyComponentSpec,
   I extends NamedIdentifiers
 > = Component<
-  PatchComponentSpec<S, { ids: I }>
+  PatchComponentSpec<S, { ids: keyof I & string }>
 >;
 
 /**
@@ -66,7 +58,7 @@ type WithIdentifiers<
  */
 type WithVariants<
   S extends AnyComponentSpec,
-  P extends VariantsProvider<ContextFor<S>>
+  P extends VariantsProvider<VariantsContext<S['els'], S['ids']>>
 > = Component<
   PatchComponentSpec<S, { variants: VariantsFromProvider<P> }>
 >;
@@ -137,7 +129,7 @@ export class Component<S extends AnyComponentSpec>
   elements<T extends ElementProviders>(
     provider: (
       e: typeof defineElement,
-      ctx: IdentifiersContext<S['ids']>
+      ctx: ElementsContext<S['ids']>
     ) => T
   ): WithElements<S, T> {
     this.current.elements = resolveElements(
@@ -162,10 +154,12 @@ export class Component<S extends AnyComponentSpec>
   /**
    * Define global styles for the component
    */
-  global(definitions: GlobalProvider<ContextFor<S>>): Component<S> {
-    this.current.global.push(
-      definitions as GlobalProvider
-    );
+  global(
+    definitions: GlobalProvider<
+      DerivedContext<S['els'], S['variants'], S['ids']>
+    >
+  ): Component<S> {
+    this.current.global.push(definitions as GlobalProvider);
 
     return this;
   }
@@ -173,10 +167,12 @@ export class Component<S extends AnyComponentSpec>
   /**
    * Define nested styles for the component
    */
-  nested(definitions: NestedProvider<ContextFor<S>>): Component<S> {
-    this.current.nested.push(
-      definitions as NestedProvider
-    );
+  nested(
+    definitions: NestedProvider<
+      DerivedContext<S['els'], S['variants'], S['ids']>
+    >
+  ): Component<S> {
+    this.current.nested.push(definitions as NestedProvider);
 
     return this;
   }
@@ -184,10 +180,10 @@ export class Component<S extends AnyComponentSpec>
   /**
    * Define variants for the component root
    */
-  variants<P extends VariantsProvider<ContextFor<S>>>(
+  variants<P extends VariantsProvider<VariantsContext<S['els'], S['ids']>>>(
     provider: P
   ): WithVariants<S, P> {
-    this.setStateField('variants', provider);
+    this.setStateField('variants', provider as VariantsProvider);
 
     return cast<WithVariants<S, P>>(this);
   }

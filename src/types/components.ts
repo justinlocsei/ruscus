@@ -8,7 +8,7 @@ import type {
   VariantSelector
 } from './elements.ts';
 import type { DerivedFragmentProvider } from './fragments.ts';
-import type { EmptyObject, HasVariants, Patch } from './utils.ts';
+import type { HasVariants, Patch } from './utils.ts';
 
 /**
  * The most inclusive form of a component spec
@@ -16,7 +16,7 @@ import type { EmptyObject, HasVariants, Patch } from './utils.ts';
 export type AnyComponentSpec = ComponentSpec<
   ElementSpecs,
   string,
-  NamedIdentifiers
+  string
 >;
 
 /**
@@ -37,10 +37,31 @@ export type ComponentDefinition = {
 export type ComponentSpec<
   E extends ElementSpecs,
   V extends string,
-  I extends NamedIdentifiers
+  I extends string
 > = HasVariants<V> & {
   els: E;
   ids: I;
+};
+
+/**
+ * Elements available in a context
+ */
+type ContextElements<E extends ElementSpecs> = {
+  els: Selectors<E>;
+};
+
+/**
+ * Identifiers available in a context
+ */
+type ContextIdentifiers<I extends string> = {
+  ids: IdentifierValues<I>;
+};
+
+/**
+ * Variants available in a context
+ */
+type ContextVariants<V extends string> = {
+  variants: VariantSelector<V>;
 };
 
 /**
@@ -50,11 +71,12 @@ export type DerivedContext<
   E extends NamedElements<E> = EmptyElementSpecs,
   V extends string = never,
   I extends string = never
-> = {
-  els: Selectors<E>;
-  ids: IdentifierValues<I>;
-  variants: VariantSelector<V>;
-};
+> = ContextElements<E> & ContextIdentifiers<I> & ContextVariants<V>;
+
+/**
+ * The context available when defining elements
+ */
+export type ElementsContext<I extends string = never> = ContextIdentifiers<I>;
 
 /**
  * An empty component spec
@@ -62,13 +84,8 @@ export type DerivedContext<
 export type EmptyComponentSpec = ComponentSpec<
   EmptyElementSpecs,
   never,
-  EmptyIdentifierTypes
+  never
 >;
-
-/**
- * An empty set of identifier types
- */
-export type EmptyIdentifierTypes = EmptyObject;
 
 /**
  * A provider of global styles
@@ -96,14 +113,8 @@ export type IdentifierValues<T extends string = string> = Record<T, string>;
  * Get the identifier values for a component spec
  */
 export type IdentifierValuesFor<S extends AnyComponentSpec> = IdentifierValues<
-  keyof S['ids'] & string
+  S['ids']
 >;
-
-/**
- * A context that exposes a component's identifiers
- */
-export type IdentifiersContext<I extends NamedIdentifiers = NamedIdentifiers> =
-  { ids: IdentifierValues<keyof I & string> };
 
 /**
  * A mapping of identifier names to their types
@@ -124,10 +135,7 @@ export type PatchComponentSpec<
 export type VariantsContext<
   E extends NamedElements<E> = EmptyElementSpecs,
   I extends string = never
-> = {
-  els: Selectors<E>;
-  ids: IdentifierValues<I>;
-};
+> = ContextElements<E> & ContextIdentifiers<I>;
 
 /**
  * A provider of variant styles
