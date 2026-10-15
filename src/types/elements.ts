@@ -1,5 +1,5 @@
 import type { Styles } from './css.ts';
-import type { RelativeFragmentFactory, ScopedFragments } from './fragments.ts';
+import type { DerivedFragmentProvider } from './fragments.ts';
 import type { ElementRoot } from './ids.ts';
 import type { EmptyObject, HasVariants, Patch } from './utils.ts';
 
@@ -23,7 +23,7 @@ export type ElementDefinition = {
   children: ElementDefinitions;
   nested: NestedProvider[];
   styles: Styles;
-  variants?: VariantProvider;
+  variants?: VariantsProvider;
 };
 
 /**
@@ -78,17 +78,10 @@ export type NestedContext<
 };
 
 /**
- * Nested rule definitions keyed by selector
- */
-export type NestedDefinitions = ScopedFragments<'relative'>;
-
-/**
  * A provider of nested styles
  */
-export type NestedProvider<C extends NestedContext = NestedContext> = (
-  s: RelativeFragmentFactory,
-  ctx: C
-) => NestedDefinitions;
+export type NestedProvider<C extends NestedContext = NestedContext> =
+  DerivedFragmentProvider<C, 'relative'>;
 
 /**
  * Replace selected fields in an element spec
@@ -116,31 +109,30 @@ type SelectorForSpec<S extends AnyElementSpec> = [
   : never;
 
 /**
- * Definitions for variant styles
- */
-export type VariantDefinitions = ScopedFragments<'relative'>;
-
-/**
- * A provider of variant styles
- */
-export type VariantProvider<C extends NestedContext = NestedContext> = (
-  s: RelativeFragmentFactory,
-  ctx: C
-) => VariantDefinitions;
-
-/**
- * Extract variant names from a provider
- */
-export type VariantsFromProvider<P> = P extends (
-  s: RelativeFragmentFactory,
-  ctx: infer _C
-) => infer R ? R extends VariantDefinitions ? Extract<keyof R, string>
-  : never
-  : never;
-
-/**
  * A projector for a selector that uses one or more variants
  */
 export type VariantSelector<V extends string> = <T extends V>(
   ...names: T[]
 ) => string;
+
+/**
+ * The context available to variant definitions
+ */
+export type VariantsContext<
+  E extends NamedElements<E> = EmptyElementSpecs
+> = {
+  els: Selectors<E>;
+};
+
+/**
+ * Extract variant names from a provider of nested styles
+ */
+export type VariantsFromProvider<P> = P extends NestedProvider<infer C>
+  ? C['variants'] extends VariantSelector<infer V> ? V : never
+  : never;
+
+/**
+ * A provider of variants
+ */
+export type VariantsProvider<C extends VariantsContext = VariantsContext> =
+  DerivedFragmentProvider<C, 'relative'>;
