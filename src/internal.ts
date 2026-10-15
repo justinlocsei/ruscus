@@ -42,19 +42,20 @@ export function annotateComponent<S extends AnyComponentSpec>(
     identifiers: IdentifierValuesFor<S>;
   }
 ): InternalComponent<S> {
-  const props: Annotations<S> = {
-    [build]: annotations.buildPlan,
-    [identifiers]: annotations.identifiers
-  };
-
-  for (const [key, value] of Object.entries(props)) {
+  const annotate = <K extends keyof Annotations<S>>(
+    key: K,
+    value: Annotations<S>[K]
+  ) => {
     Object.defineProperty(component, key, {
       configurable: false,
       enumerable: false,
       value,
       writable: false
     });
-  }
+  };
+
+  annotate(build, annotations.buildPlan);
+  annotate(identifiers, annotations.identifiers);
 
   return component as InternalComponent<S>;
 }
