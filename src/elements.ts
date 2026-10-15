@@ -11,6 +11,7 @@ import type {
   NestedContext,
   NestedProvider,
   PatchElementSpec,
+  VariantsContext,
   VariantsFromProvider,
   VariantsProvider
 } from './types/elements.ts';
@@ -80,14 +81,6 @@ export function resolveElements(
 }
 
 /**
- * The context available when defining variants
- */
-type VariantContext<S extends AnyElementSpec> = NestedContext<
-  S['children'],
-  never
->;
-
-/**
  * Apply child constraints to an element
  */
 type WithChildren<
@@ -102,7 +95,7 @@ type WithChildren<
  */
 type WithVariants<
   S extends AnyElementSpec,
-  P extends VariantsProvider<VariantContext<S>>
+  P extends VariantsProvider
 > = Element<
   PatchElementSpec<S, { variants: VariantsFromProvider<P> }>
 >;
@@ -170,12 +163,12 @@ export class Element<S extends AnyElementSpec>
   /**
    * Define variants for the element
    */
-  variants<P extends VariantsProvider<VariantContext<S>>>(
+  variants<P extends VariantsProvider<VariantsContext<S['children']>>>(
     provider: P
   ): WithVariants<S, P> {
     this.setStateField(
       'variants',
-      provider as VariantsProvider<NestedContext>
+      provider as VariantsProvider
     );
 
     return this as WithVariants<S, P>;

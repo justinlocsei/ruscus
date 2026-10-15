@@ -125,10 +125,10 @@ export type VariantsContext<
 };
 
 /**
- * Extract variant names from a provider of nested styles
+ * Extract variant names from a provider
  */
-export type VariantsFromProvider<P> = P extends NestedProvider<infer C>
-  ? C['variants'] extends VariantSelector<infer V> ? V : never
+export type VariantsFromProvider<P> = P extends VariantsProvider
+  ? keyof ReturnType<P>
   : never;
 
 /**
