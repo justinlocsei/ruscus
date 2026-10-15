@@ -1,8 +1,7 @@
 import { assert, describe, it } from 'vitest';
 
 import { defineComponent } from './components.ts';
-import { useIdentifier } from './identifiers.ts';
-import { projectComponent } from './projection.ts';
+import { projectComponent, projectIdentifiers } from './projection.ts';
 import { T } from './tests.ts';
 
 describe('projectComponent', () => {
@@ -40,20 +39,6 @@ describe('projectComponent', () => {
     assert.equal(els.body('compact'), 'card__body is-compact');
   });
 
-  it('projects identifiers', () => {
-    const ids = projectComponent(
-      defineComponent('card')
-        .identifiers({ alfaBeta: 'string', bravo: 'variable' })
-        .elements(e => ({ body: e() }))
-    );
-
-    assert.equal(useIdentifier(ids, 'alfaBeta'), 'card--alfa-beta');
-    assert.equal(useIdentifier(ids, 'bravo'), '--card--bravo');
-
-    assert.equal(ids.root, 'card');
-    assert.equal(ids.body, 'card__body');
-  });
-
   it('uses narrow element types on the projection', () => {
     const applied = projectComponent(
       defineComponent('card')
@@ -70,8 +55,18 @@ describe('projectComponent', () => {
 
     // @ts-expect-error unknown element
     applied.title;
+  });
+});
 
-    // @ts-expect-error unknown identifier
-    useIdentifier(applied, 'bravo');
+describe('projectIdentifiers', () => {
+  it('projects identifiers', () => {
+    const ids = projectIdentifiers(
+      defineComponent('card')
+        .identifiers({ alfaBeta: 'string', bravo: 'variable' })
+        .elements(e => ({ body: e() }))
+    );
+
+    assert.equal(ids.alfaBeta, 'card--alfa-beta');
+    assert.equal(ids.bravo, '--card--bravo');
   });
 });

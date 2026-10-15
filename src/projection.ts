@@ -1,13 +1,17 @@
-import type { AnyComponent, Component } from './components.ts';
+import type { Component } from './components.ts';
 import { asProperty } from './css.ts';
-import type { AnyElement, NamedElements } from './elements.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
 import type {
   AnyComponentSpec,
+  VariantsProvider as ComponentVariantsProvider,
   IdentifierValuesFor
 } from './types/components.ts';
-import type { VariantsProvider } from './types/elements.ts';
+import type {
+  ElementDefinition,
+  ElementDefinitions,
+  VariantsProvider as ElementVariantsProvider
+} from './types/elements.ts';
 import type {
   ApplicableComponent,
   ElementProjectors,
@@ -21,7 +25,7 @@ export function projectComponent<S extends AnyComponentSpec>(
   component: Component<S>,
   { naming }: { naming?: NamingScheme } = {}
 ): ApplicableComponent<S> {
-  const name = useNaming(component as unknown as AnyComponent, naming);
+  const name = useNaming(component.current, naming);
 
   const root = projectNode(
     name([component.id]),
@@ -63,7 +67,7 @@ export function projectIdentifiers<S extends AnyComponentSpec>(
  */
 function projectElements(
   namespace: string[],
-  elements: NamedElements,
+  elements: ElementDefinitions,
   name: NameGenerator
 ): Record<string, unknown> {
   return Object.entries(elements).reduce<Record<string, unknown>>(
@@ -89,15 +93,15 @@ function projectElements(
  */
 function projectElement(
   path: string[],
-  element: AnyElement,
+  element: ElementDefinition,
   name: NameGenerator
 ): unknown {
   const root = projectNode(
     name(path),
-    element.current.variants
+    element.variants
   );
 
-  const { children } = element.current;
+  const { children } = element;
 
   return Object.keys(children).length
     ? { root, ...projectElements(path, children, name) }
@@ -109,7 +113,7 @@ function projectElement(
  */
 function projectNode(
   name: string,
-  variants?: VariantsProvider
+  variants?: ComponentVariantsProvider | ElementVariantsProvider
 ): VariantProjector<string> | string {
   return variants
     ? (...vs: string[]) => [name, ...vs.map(v => `is-${v}`)].join(' ')
