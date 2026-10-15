@@ -121,7 +121,7 @@ export class Component<S extends AnyComponentSpec>
     return annotateComponent(projectComponent(this), {
       buildPlan: {
         compile: (config: CompileConfig = {}) => styleComponent(this, config),
-        component: this as AnyComponent
+        component: this.current
       },
       identifiers: projectIdentifiers(this)
     });

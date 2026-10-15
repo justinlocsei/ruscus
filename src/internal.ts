@@ -1,7 +1,7 @@
-import type { AnyComponent } from './components.ts';
 import type { CompileConfig } from './css.ts';
 import type {
   AnyComponentSpec,
+  ComponentDefinition,
   IdentifierValuesFor
 } from './types/components.ts';
 import type { ApplicableComponent } from './types/projection.ts';
@@ -29,7 +29,7 @@ export type InternalComponent<S extends AnyComponentSpec> =
  */
 export type BuildPlan = {
   compile: (config?: CompileConfig) => string;
-  component: AnyComponent;
+  component: ComponentDefinition;
 };
 
 /**
