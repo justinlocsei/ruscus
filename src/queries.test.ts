@@ -85,13 +85,15 @@ describe('defineQueries', () => {
     });
 
     const output = styleComponent(
-      new Component('card').global(s => ({
-        ...queries({
-          mobile: {
-            '.card': s({ color: 'black' })
-          }
-        })
-      }))
+      new Component('card')
+        .global(s => ({
+          ...queries({
+            mobile: {
+              '.card': s({ color: 'black' })
+            }
+          })
+        }))
+        .current
     );
 
     assert.equal(
