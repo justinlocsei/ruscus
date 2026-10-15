@@ -1,5 +1,5 @@
-import type { AnyComponent } from './components.ts';
-import type { NamedElements } from './elements.ts';
+import type { ComponentDefinition } from './types/components.ts';
+import type { ElementDefinitions } from './types/elements.ts';
 
 /**
  * A generator for class names
@@ -29,7 +29,7 @@ function hash(value: string): string {
  * Create a name generator for a component
  */
 export function useNaming(
-  component: AnyComponent,
+  component: ComponentDefinition,
   scheme: NamingScheme = 'verbose'
 ): NameGenerator {
   switch (scheme) {
@@ -44,9 +44,11 @@ export function useNaming(
 /**
  * Build a generator for compact class names
  */
-function createCompactNameGenerator(component: AnyComponent): NameGenerator {
+function createCompactNameGenerator(
+  component: ComponentDefinition
+): NameGenerator {
   const prefix = hash(component.id);
-  const suffixByPath = buildPathSuffixMap(component.current.elements);
+  const suffixByPath = buildPathSuffixMap(component.elements);
 
   return levels => classNameForLevels(levels, prefix, suffixByPath);
 }
@@ -71,7 +73,7 @@ function encodeSuffix(index: number): string {
  * Map each element path to a compact suffix (stable depth-first, sorted keys)
  */
 function buildPathSuffixMap(
-  elements: NamedElements
+  elements: ElementDefinitions
 ): ReadonlyMap<string, string> {
   const paths = collectElementPaths(elements).sort(comparePaths);
   const suffixByPath = new Map<string, string>();
@@ -104,7 +106,7 @@ function classNameForLevels(
 }
 
 function collectElementPaths(
-  elements: NamedElements,
+  elements: ElementDefinitions,
   base: readonly string[] = []
 ): string[][] {
   const paths: string[][] = [];
@@ -118,7 +120,7 @@ function collectElementPaths(
 
     const path = [...base, name];
     paths.push(path);
-    paths.push(...collectElementPaths(element.current.children, path));
+    paths.push(...collectElementPaths(element.children, path));
   }
 
   return paths;
