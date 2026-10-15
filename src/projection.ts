@@ -4,13 +4,11 @@ import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
 import type {
   AnyComponentSpec,
-  VariantsProvider as ComponentVariantsProvider,
   IdentifierValuesFor
 } from './types/components.ts';
 import type {
   ElementDefinition,
-  ElementDefinitions,
-  VariantsProvider as ElementVariantsProvider
+  ElementDefinitions
 } from './types/elements.ts';
 import type {
   ApplicableComponent,
@@ -25,16 +23,17 @@ export function projectComponent<S extends AnyComponentSpec>(
   component: Component<S>,
   { naming }: { naming?: NamingScheme } = {}
 ): ApplicableComponent<S> {
-  const name = useNaming(component.current, naming);
+  const { current } = component;
+  const name = useNaming(current, naming);
 
   const root = projectNode(
     name([component.id]),
-    component.current.variants
+    current.variants !== undefined
   );
 
   const elements = projectElements(
     [component.id],
-    component.current.elements,
+    current.elements,
     name
   ) as ElementProjectors<S['els']>;
 
@@ -98,7 +97,7 @@ function projectElement(
 ): unknown {
   const root = projectNode(
     name(path),
-    element.variants
+    element.variants !== undefined
   );
 
   const { children } = element;
@@ -113,9 +112,9 @@ function projectElement(
  */
 function projectNode(
   name: string,
-  variants?: ComponentVariantsProvider | ElementVariantsProvider
+  hasVariants: boolean
 ): VariantProjector<string> | string {
-  return variants
+  return hasVariants
     ? (...vs: string[]) => [name, ...vs.map(v => `is-${v}`)].join(' ')
     : name;
 }
