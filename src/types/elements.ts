@@ -29,7 +29,7 @@ export type ElementDefinition = {
 /**
  * A mapping of element names to definitions
  */
-type ElementDefinitions = Record<string, ElementDefinition>;
+export type ElementDefinitions = Record<string, ElementDefinition>;
 
 /**
  * A specification for an element
