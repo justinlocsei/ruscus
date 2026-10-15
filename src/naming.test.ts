@@ -9,7 +9,7 @@ describe('useNaming', () => {
       body: e()
     }));
 
-    const name = useNaming(component);
+    const name = useNaming(component.current);
 
     assert.equal(name(['card']), 'card');
     assert.equal(name(['card', 'body']), 'card__body');
@@ -18,8 +18,8 @@ describe('useNaming', () => {
   it('uses a hashed prefix for compact root names', () => {
     const component = defineComponent('very-long-name');
 
-    const verbose = useNaming(component, 'verbose');
-    const compact = useNaming(component, 'compact');
+    const verbose = useNaming(component.current, 'verbose');
+    const compact = useNaming(component.current, 'compact');
 
     assert.isAbove(
       verbose([component.id]).length,
@@ -33,7 +33,7 @@ describe('useNaming', () => {
       body: e()
     }));
 
-    const name = useNaming(component, 'compact');
+    const name = useNaming(component.current, 'compact');
 
     assert.match(name([component.id, 'body']), /_a$/);
     assert.match(name([component.id, 'title']), /_b$/);
