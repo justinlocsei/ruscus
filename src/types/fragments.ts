@@ -6,6 +6,17 @@ import type { Styles } from './css.ts';
 export type AbsoluteFragmentFactory = IsFragmentFactory<'absolute'>;
 
 /**
+ * A provider of fragments derived from a context
+ */
+export type DerivedFragmentProvider<
+  C extends object,
+  S extends Scope
+> = (
+  defineFragment: IsFragmentFactory<S>,
+  context: C
+) => ScopedFragments<S>;
+
+/**
  * A styled fragment
  */
 export type Fragment<S extends Scope = Scope> = {
