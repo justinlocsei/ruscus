@@ -1,7 +1,11 @@
+import type { Styles } from './css.ts';
 import type {
+  ElementDefinitions,
   ElementSpecs,
   EmptyElementSpecs,
-  NestedContext
+  NestedContext,
+  NestedProvider,
+  VariantProvider
 } from './elements.ts';
 import type { AbsoluteFragmentFactory, ScopedFragments } from './fragments.ts';
 import type { EmptyObject, HasVariants, Patch } from './utils.ts';
@@ -14,6 +18,18 @@ export type AnyComponentSpec = ComponentSpec<
   string,
   NamedIdentifiers
 >;
+
+/**
+ * The data that fully defines a component
+ */
+export type ComponentDefinition = {
+  elements: ElementDefinitions;
+  global: GlobalProvider[];
+  identifiers: NamedIdentifiers;
+  nested: NestedProvider[];
+  styles: Styles;
+  variants?: VariantProvider;
+};
 
 /**
  * A specification for a component
