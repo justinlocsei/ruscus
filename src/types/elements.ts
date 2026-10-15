@@ -9,6 +9,16 @@ import type { EmptyObject, HasVariants, Patch } from './utils.ts';
 export type AnyElementSpec = ElementSpec<ElementSpecs, string>;
 
 /**
+ * The most inclusive form of a nested context
+ */
+export type AnyNestedContext = NestedContext<ElementSpecs, string>;
+
+/**
+ * The most inclusive form of a variants context
+ */
+export type AnyVariantsContext = VariantsContext<ElementSpecs>;
+
+/**
  * Get selectors for an element with children
  */
 type ChildSelectors<C extends NamedElements<C>> = {
@@ -21,9 +31,9 @@ type ChildSelectors<C extends NamedElements<C>> = {
  */
 export type ElementDefinition = {
   children: ElementDefinitions;
-  nested: NestedProvider[];
+  nested: NestedProvider<AnyNestedContext>[];
   styles: Styles;
-  variants?: VariantsProvider;
+  variants?: VariantsProvider<AnyVariantsContext>;
 };
 
 /**
