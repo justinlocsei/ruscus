@@ -155,7 +155,7 @@ export class Element<S extends AnyElementSpec>
       NestedContext<S['children'], S['variants']>
     >
   ): Element<S> {
-    this.current.nested.push(provider);
+    this.current.nested.push(provider as NestedProvider);
 
     return this;
   }
