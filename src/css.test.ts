@@ -1,21 +1,27 @@
 import { assert, describe, it } from 'vitest';
 
+import type { AnyComponent } from './components.ts';
 import { Component } from './components.ts';
+import type { CompileConfig, } from './css.ts';
 import { styleComponent } from './css.ts';
 import { css } from './tests.ts';
 
+function checkOutput(
+  component: AnyComponent,
+  expected: string,
+  config: CompileConfig = {}
+): void {
+  assert.equal(styleComponent(component.current, config), expected);
+}
+
 describe('styleComponent', () => {
   it('returns empty CSS for a component with no styles', () => {
-    assert.equal(styleComponent(new Component('empty')), '');
+    checkOutput(new Component('empty'), '');
   });
 
   it('emits root styles', () => {
-    const output = styleComponent(
-      new Component('card').css({ color: 'black', display: 'block' })
-    );
-
-    assert.equal(
-      output,
+    checkOutput(
+      new Component('card').css({ color: 'black', display: 'block' }),
       css`
         .card {
           color: black;
@@ -26,17 +32,13 @@ describe('styleComponent', () => {
   });
 
   it('emits element styles', () => {
-    const output = styleComponent(
+    checkOutput(
       new Component('card')
         .css({ color: 'black' })
         .elements(e => ({
           body: e({ margin: '0' }),
           title: e().css({ color: 'red' })
-        }))
-    );
-
-    assert.equal(
-      output,
+        })),
       css`
         .card {
           color: black;
@@ -54,17 +56,13 @@ describe('styleComponent', () => {
   });
 
   it('emits styles for element variants', () => {
-    const output = styleComponent(
+    checkOutput(
       new Component('card').elements(e => ({
         line: e({ marginTop: '0' }).variants(s => ({
           bold: s({ fontWeight: '700' }),
           spacer: s({ marginTop: '1rem' })
         }))
-      }))
-    );
-
-    assert.equal(
-      output,
+      })),
       css`
         .card__line {
           margin-top: 0;
@@ -82,7 +80,7 @@ describe('styleComponent', () => {
   });
 
   it('emits nested styles for the component', () => {
-    const output = styleComponent(
+    checkOutput(
       new Component('card')
         .css({ display: 'block' })
         .elements(e => ({
@@ -98,11 +96,7 @@ describe('styleComponent', () => {
           [els.title]: s({ color: 'red' }),
           [els.header.root]: s({ color: 'black' }),
           [els.header.title]: s({ color: 'blue' })
-        }))
-    );
-
-    assert.equal(
-      output,
+        })),
       css`
         .card {
           display: block;
@@ -132,18 +126,14 @@ describe('styleComponent', () => {
   });
 
   it('supports deeply nested styles', () => {
-    const output = styleComponent(
+    checkOutput(
       new Component('card').elements(e => ({
         title: e(),
         body: e()
       })).nested((s, { els }) => ({
         [els.title]: s().nested({ a: s({ color: 'red' }) }),
         [els.body]: s({ fontWeight: '700' })
-      }))
-    );
-
-    assert.equal(
-      output,
+      })),
       css`
         .card .card__title {
           a {
@@ -159,17 +149,13 @@ describe('styleComponent', () => {
   });
 
   it('emits global styles', () => {
-    const output = styleComponent(
+    checkOutput(
       new Component('card').global(s => ({
         '.card': s({ color: 'black' }),
         '@media (min-width: 768px)': s().nested({
           '.card__title': s({ fontSize: '1rem' })
         })
-      }))
-    );
-
-    assert.equal(
-      output,
+      })),
       css`
         .card {
           color: black;
@@ -185,16 +171,12 @@ describe('styleComponent', () => {
   });
 
   it('provides identifiers to nested component styles', () => {
-    const output = styleComponent(
+    checkOutput(
       new Component('card')
         .identifiers({ alfa: 'string' })
         .nested((s, { ids }) => ({
           '&:hover': s({ animationName: ids.alfa })
-        }))
-    );
-
-    assert.equal(
-      output,
+        })),
       css`
         .card:hover {
           animation-name: card--alfa;
@@ -204,7 +186,7 @@ describe('styleComponent', () => {
   });
 
   it('emits nested rules for variant combinations', () => {
-    const output = styleComponent(
+    checkOutput(
       new Component('card').elements(e => ({
         body: e({ display: 'block' })
           .variants(s => ({
@@ -215,11 +197,7 @@ describe('styleComponent', () => {
             [v('compact')]: s({ gap: '0.25rem' }),
             [v('compact', 'large')]: s({ gap: '1rem' })
           }))
-      }))
-    );
-
-    assert.equal(
-      output,
+      })),
       css`
         .card__body {
           display: block;
@@ -245,7 +223,7 @@ describe('styleComponent', () => {
   });
 
   it('emits nested rules for an element', () => {
-    const output = styleComponent(
+    checkOutput(
       new Component('card').elements(e => ({
         body: e({ display: 'block' })
           .children({ title: e() })
@@ -253,11 +231,7 @@ describe('styleComponent', () => {
             '&:hover': s({ opacity: '0.9' }),
             [els.title]: s({ color: 'red' })
           }))
-      }))
-    );
-
-    assert.equal(
-      output,
+      })),
       css`
         .card__body {
           display: block;
@@ -275,16 +249,12 @@ describe('styleComponent', () => {
   });
 
   it('emits nested element styles', () => {
-    const output = styleComponent(
+    checkOutput(
       new Component('hero').elements(e => ({
         title: e().children({
           text: e({ color: 'red' })
         })
-      }))
-    );
-
-    assert.equal(
-      output,
+      })),
       css`
         .hero__title__text {
           color: red;
@@ -294,17 +264,13 @@ describe('styleComponent', () => {
   });
 
   it('emits styles for root variants', () => {
-    const output = styleComponent(
+    checkOutput(
       new Component('card')
         .css({ padding: '1rem' })
         .variants(s => ({
           compact: s({ padding: '0.5rem' }),
           large: s({ padding: '2rem' })
-        }))
-    );
-
-    assert.equal(
-      output,
+        })),
       css`
         .card {
           padding: 1rem;
@@ -322,31 +288,23 @@ describe('styleComponent', () => {
   });
 
   it('respects custom indentation', () => {
-    const output = styleComponent(
+    checkOutput(
       new Component('card').css({ color: 'black' }),
-      { indentation: 4 }
-    );
-
-    assert.equal(
-      output,
       css`
         .card {
             color: black;
         }
-      `
+      `,
+      { indentation: 4 }
     );
   });
 
   it('projects camelCase properties to kebab-case', () => {
-    const output = styleComponent(
+    checkOutput(
       new Component('card').css({
         backgroundColor: 'white',
         fontSize: '1rem'
-      })
-    );
-
-    assert.equal(
-      output,
+      }),
       css`
         .card {
           background-color: white;
@@ -357,12 +315,8 @@ describe('styleComponent', () => {
   });
 
   it('uses the full component ID', () => {
-    const output = styleComponent(
-      new Component('card', { namespace: 'ui' }).css({ color: 'black' })
-    );
-
-    assert.equal(
-      output,
+    checkOutput(
+      new Component('card', { namespace: 'ui' }).css({ color: 'black' }),
       css`
         .ui--card {
           color: black;
