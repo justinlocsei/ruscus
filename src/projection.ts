@@ -1,7 +1,7 @@
 import type { Component } from './components.ts';
-import { asProperty } from './css.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
+import { asProperty } from './styles.ts';
 import type {
   AnyComponentSpec,
   IdentifierValuesFor
