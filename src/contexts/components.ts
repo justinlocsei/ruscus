@@ -53,7 +53,7 @@ export function buildDerivedContext(
 /**
  * Build a variants context for component styles
  */
-export function buildComponentVariantsContext(
+export function buildVariantsContext(
   component: ComponentDefinition,
   name: NameGenerator
 ): AnyVariantsContext {
