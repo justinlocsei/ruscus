@@ -1,23 +1,8 @@
 import { assert, describe, it } from 'vitest';
 
 import { Component } from './components.ts';
-import { asProperty, styleComponent } from './css.ts';
-import { checkConversion, css } from './tests.ts';
-
-describe('asProperty', () => {
-  it('projects camel-cased values as CSS properties', () => {
-    checkConversion<string, string>(
-      (id, property, message) => {
-        assert.equal(property, asProperty(id), message);
-      },
-      [
-        ['color', 'color'],
-        ['backgroundColor', 'background-color'],
-        ['WebkitLineClamp', '-webkit-line-clamp']
-      ]
-    );
-  });
-});
+import { styleComponent } from './css.ts';
+import { css } from './tests.ts';
 
 describe('styleComponent', () => {
   it('returns empty CSS for a component with no styles', () => {

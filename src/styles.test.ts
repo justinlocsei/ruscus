@@ -1,7 +1,23 @@
 import { assert, describe, it } from 'vitest';
 
-import { mergeStyles } from './styles.ts';
+import { asProperty, mergeStyles } from './styles.ts';
+import { checkConversion } from './tests.ts';
 import type { Styles } from './types/css.ts';
+
+describe('asProperty', () => {
+  it('projects camel-cased values as CSS properties', () => {
+    checkConversion<string, string>(
+      (id, property, message) => {
+        assert.equal(property, asProperty(id), message);
+      },
+      [
+        ['color', 'color'],
+        ['backgroundColor', 'background-color'],
+        ['WebkitLineClamp', '-webkit-line-clamp']
+      ]
+    );
+  });
+});
 
 describe('mergeStyles', () => {
   it('merges styles on top of a base', () => {
