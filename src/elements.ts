@@ -1,3 +1,4 @@
+import type { BuilderState } from './builder.ts';
 import Builder from './builder.ts';
 import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
@@ -17,6 +18,11 @@ import type {
 } from './types/elements.ts';
 import type { Thunkable } from './types/utils.ts';
 import { resolve } from './utils.ts';
+
+/**
+ * A wide, data-only form of an element class
+ */
+type AnyElement = BuilderState<ElementDefinition>;
 
 /**
  * An eager or lazy element definition
@@ -45,11 +51,6 @@ type SpecFromProvider<P extends ElementProvider> = P extends
 export type ProvidersToSpecs<T extends ElementProviders> = {
   [P in keyof T]: SpecFromProvider<T[P]>;
 };
-
-/**
- * The most inclusive form of an element class
- */
-export type AnyElement = Element<AnyElementSpec>;
 
 /**
  * Define an element

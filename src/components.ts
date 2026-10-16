@@ -1,3 +1,4 @@
+import type { BuilderState } from './builder.ts';
 import Builder from './builder.ts';
 import type { CompileConfig } from './css.ts';
 import { styleComponent } from './css.ts';
@@ -28,12 +29,9 @@ import type { VariantsFromProvider } from './types/elements.ts';
 import { cast } from './utils.ts';
 
 /**
- * Any component builder instance, regardless of spec narrowing
+ * A wide, data-only form of a component class
  */
-export type AnyComponent = {
-  current: ComponentDefinition;
-  id: string;
-};
+export type AnyComponent = BuilderState<ComponentDefinition>;
 
 /**
  * Options for creating a component
@@ -197,11 +195,6 @@ export class Component<S extends AnyComponentSpec>
     return cast<WithVariants<S, P>>(this);
   }
 }
-
-/**
- * The most inclusive form of a component class
- */
-export type AnyComponent = Component<AnyComponentSpec>;
 
 /**
  * Define a component
