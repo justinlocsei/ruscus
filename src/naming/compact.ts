@@ -88,7 +88,7 @@ export class CompactNaming extends Naming {
 }
 
 /**
- * Encode a 1-based index as a series of lowercase letter
+ * Encode a 1-based index as a series of lowercase letters
  */
 function indexToLetters(index: number): string {
   let remaining = index;
