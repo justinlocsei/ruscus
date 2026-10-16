@@ -29,6 +29,11 @@ export type AnyDerivedContext = DerivedContext<
 >;
 
 /**
+ * The most inclusive form of an elements context
+ */
+export type AnyElementsContext = ElementsContext<string>;
+
+/**
  * The most inclusive form of a variants context
  */
 export type AnyVariantsContext = VariantsContext<ElementSpecs, string>;
