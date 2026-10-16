@@ -20,7 +20,7 @@ export function buildElementSelectors(
   const root = name(namespace);
 
   return {
-    root: `.${root}`,
+    [ELEMENT_ROOT]: `.${root}`,
     ...buildSelectors(namespace, children, name)
   };
 }
