@@ -2,6 +2,7 @@ import type { NameGenerator } from '../naming.ts';
 import { asProperty } from '../styles.ts';
 import type {
   AnyDerivedContext,
+  AnyElementsContext,
   AnyVariantsContext,
   ComponentDefinition,
   ContextIdentifiers
@@ -29,7 +30,7 @@ function buildContextIdentifiers(
 }
 
 /**
- * Build a derived context for component styles
+ * Build a context for derived component styles
  */
 export function buildDerivedContext(
   component: ComponentDefinition,
@@ -51,7 +52,16 @@ export function buildDerivedContext(
 }
 
 /**
- * Build a variants context for component styles
+ * Build a context for defining a component's elements
+ */
+export function buildElementsContext(
+  component: ComponentDefinition
+): AnyElementsContext {
+  return buildContextIdentifiers(component);
+}
+
+/**
+ * Build a context for defining a component's variants
  */
 export function buildVariantsContext(
   component: ComponentDefinition,
