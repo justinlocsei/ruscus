@@ -2,7 +2,7 @@ import type { BuilderState } from './builder.ts';
 import Builder from './builder.ts';
 import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
-import { applyTraits } from './traits.ts';
+import { mergeTraits } from './traits.ts';
 import type { Styles } from './types/css.ts';
 import type {
   AnyElementSpec,
@@ -143,7 +143,13 @@ export class Element<S extends AnyElementSpec>
    * Apply traits to the element
    */
   is(...traits: Trait[]): Element<S> {
-    applyTraits(this.current, traits);
+    const { nested, root } = mergeTraits(...traits);
+
+    this.current.styles = mergeStyles(this.current.styles, root);
+
+    if (Object.keys(nested).length > 0) {
+      this.current.nested.push(() => nested);
+    }
 
     return this;
   }

@@ -9,7 +9,7 @@ import { annotateComponent } from './internal.ts';
 import { projectComponent, projectIdentifiers } from './projection.ts';
 import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
-import { applyTraits } from './traits.ts';
+import { mergeTraits } from './traits.ts';
 import type {
   AnyComponentSpec,
   AnyVariantsContext,
@@ -150,7 +150,13 @@ export class Component<S extends AnyComponentSpec>
    * Apply reusable trait styles and nested rules
    */
   is(...traits: Trait[]): Component<S> {
-    applyTraits(this.current, traits);
+    const { nested, root } = mergeTraits(...traits);
+
+    this.current.styles = mergeStyles(this.current.styles, root);
+
+    if (Object.keys(nested).length > 0) {
+      this.current.nested.push(() => nested);
+    }
 
     return this;
   }

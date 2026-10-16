@@ -1,8 +1,10 @@
 import { defineRelativeFragment } from './fragments.ts';
 import { mergeStyles } from './styles.ts';
-import type { Styles } from './types/css.ts';
-import type { NestedProvider } from './types/elements.ts';
-import type { Fragment, RelativeFragmentFactory } from './types/fragments.ts';
+import type {
+  Fragment,
+  FragmentStyles,
+  RelativeFragmentFactory
+} from './types/fragments.ts';
 
 /**
  * A trait that can be applied to a target
@@ -10,27 +12,18 @@ import type { Fragment, RelativeFragmentFactory } from './types/fragments.ts';
 export type Trait = Fragment<'relative'>;
 
 /**
- * A target to which traits can be applied
+ * Merge traits into a collection of styles
  */
-export type HasTraits = {
-  nested: NestedProvider[];
-  styles: Styles;
-};
+export function mergeTraits(...traits: Trait[]): FragmentStyles {
+  return traits.reduce<FragmentStyles>(
+    (previous, { styles }) => {
+      previous.root = mergeStyles(previous.root, styles.root);
+      Object.assign(previous.nested, styles.nested);
 
-/**
- * Apply a trait's styles to a target
- */
-export function applyTraits(
-  target: HasTraits,
-  traits: Trait[]
-): void {
-  for (const { styles } of traits) {
-    target.styles = mergeStyles(target.styles, styles.root);
-
-    if (Object.keys(styles.nested).length > 0) {
-      target.nested.push(() => styles.nested);
-    }
-  }
+      return previous;
+    },
+    { nested: {}, root: {} }
+  );
 }
 
 /**

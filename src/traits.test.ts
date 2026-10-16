@@ -1,31 +1,6 @@
 import { assert, describe, it } from 'vitest';
 
-import type { HasTraits } from './traits.ts';
-import { applyTraits, defineTrait } from './traits.ts';
-
-describe('applyTraits', () => {
-  it('applies traits to a target', () => {
-    const target: HasTraits = { styles: {}, nested: [] };
-
-    const traits = [
-      defineTrait(s => s({ color: 'blue' })),
-      defineTrait(s =>
-        s({ padding: '1em' }).nested({
-          '&:hover': s({ textDecoration: 'underline' })
-        })
-      )
-    ];
-
-    applyTraits(target, traits);
-
-    assert.deepEqual(target.styles, {
-      color: 'blue',
-      padding: '1em'
-    });
-
-    assert.isFunction(target.nested[0]);
-  });
-});
+import { defineTrait, mergeTraits } from './traits.ts';
 
 describe('defineTrait', () => {
   it('resolves to a relative fragment', () => {
@@ -41,5 +16,43 @@ describe('defineTrait', () => {
       link.styles.nested['&:hover']?.styles.root,
       { textDecoration: 'underline' }
     );
+  });
+});
+
+describe('mergeTraits', () => {
+  it('merges root styles', () => {
+    const styles = mergeTraits(
+      defineTrait(s => s({ color: 'blue' })),
+      defineTrait(s => s({ padding: '1em' }))
+    );
+
+    assert.deepEqual(styles.root, {
+      color: 'blue',
+      padding: '1em'
+    });
+  });
+
+  it('merges nested styles', () => {
+    const styles = mergeTraits(
+      defineTrait(s => s().nested({ '&:focus': s({ outline: 'none' }) })),
+      defineTrait(s =>
+        s().nested({ '&:hover': s({ textDecoration: 'underline' }) })
+      )
+    );
+
+    assert.deepEqual(
+      styles.nested['&:focus']?.styles.root,
+      { outline: 'none' }
+    );
+
+    assert.deepEqual(
+      styles.nested['&:hover']?.styles.root,
+      { textDecoration: 'underline' }
+    );
+  });
+
+  it('returns empty styles when given no traits', () => {
+    assert.deepEqual(mergeTraits().root, {});
+    assert.deepEqual(mergeTraits().nested, {});
   });
 });
