@@ -104,9 +104,9 @@ function indexToLetters(index: number): string {
 }
 
 /**
- * Build a short hash for a value
+ * Build a short hash for a value using a 32-bit FNV-1a algorithm
  */
-function hash(value: string): string {
+function hash(value: string, length = 6): string {
   let hash = 2_166_136_261;
 
   for (const character of value) {
@@ -114,5 +114,8 @@ function hash(value: string): string {
     hash = Math.imul(hash, 16_777_619);
   }
 
-  return (hash >>> 0).toString(36).slice(0, 4).padStart(4, '0');
+  return (hash >>> 0)
+    .toString(36)
+    .slice(0, length)
+    .padStart(length, '0');
 }
