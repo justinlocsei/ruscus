@@ -1,7 +1,7 @@
 import { assert, describe, it } from 'vitest';
 
+import { styleComponent } from './compilation.ts';
 import { Component } from './components.ts';
-import { styleComponent } from './css.ts';
 import { defineAbsoluteFragment } from './fragments.ts';
 import { defineQueries } from './queries.ts';
 import { css, T } from './tests.ts';

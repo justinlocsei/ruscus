@@ -1,9 +1,9 @@
 import { assert, describe, it } from 'vitest';
 
+import type { CompileConfig } from './compilation.ts';
+import { styleComponent } from './compilation.ts';
 import type { AnyComponent } from './components.ts';
 import { Component } from './components.ts';
-import type { CompileConfig } from './css.ts';
-import { styleComponent } from './css.ts';
 import { css } from './tests.ts';
 
 function checkOutput(

@@ -1,4 +1,4 @@
-import type { CompileConfig } from './css.ts';
+import type { CompileConfig } from './compilation.ts';
 import type {
   AnyComponentSpec,
   ComponentDefinition,

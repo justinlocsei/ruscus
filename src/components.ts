@@ -1,7 +1,7 @@
 import type { BuilderState } from './builder.ts';
 import Builder from './builder.ts';
-import type { CompileConfig } from './css.ts';
-import { styleComponent } from './css.ts';
+import type { CompileConfig } from './compilation.ts';
+import { styleComponent } from './compilation.ts';
 import type { ElementProviders, ProvidersToSpecs } from './elements.ts';
 import { defineElement, resolveElements } from './elements.ts';
 import type { InternalComponent } from './internal.ts';
