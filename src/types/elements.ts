@@ -103,7 +103,7 @@ export type PatchElementSpec<
 > = Patch<AnyElementSpec, S, U>;
 
 /**
- * Produce Class selectors for a set of nested elements
+ * Produce class selectors for a set of elements
  */
 export type Selectors<E extends NamedElements<E> = EmptyElementSpecs> =
   & { [ELEMENT_ROOT]: string }
