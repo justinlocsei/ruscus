@@ -1,6 +1,7 @@
 import type { Styles } from './css.ts';
 import type { DerivedFragmentProvider } from './fragments.ts';
 import type { ElementRoot } from './ids.ts';
+import { ELEMENT_ROOT } from './ids.ts';
 import type { EmptyObject, HasVariants, Patch } from './utils.ts';
 
 /**
@@ -105,7 +106,7 @@ export type PatchElementSpec<
  * Produce Class selectors for a set of nested elements
  */
 export type Selectors<E extends NamedElements<E> = EmptyElementSpecs> =
-  & { root: string }
+  & { [ELEMENT_ROOT]: string }
   & { [K in keyof E]: SelectorForSpec<E[K]> };
 
 /**

@@ -4,13 +4,14 @@ import type {
   EmptyElementSpecs,
   NamedElements
 } from './elements.ts';
+import { ELEMENT_ROOT } from './ids.ts';
 import type { HasVariants } from './utils.ts';
 
 /**
  * A component that can be applied to the DOM
  */
 export type ApplicableComponent<S extends AnyComponentSpec> =
-  & { root: ProjectElement<S> }
+  & { [ELEMENT_ROOT]: ProjectElement<S> }
   & ElementProjectors<S['els']>;
 
 /**
@@ -19,7 +20,7 @@ export type ApplicableComponent<S extends AnyComponentSpec> =
 export type ElementProjector<S extends AnyElementSpec> = [
   keyof S['children']
 ] extends [never] ? ProjectElement<S>
-  : { root: ProjectElement<S> } & ElementProjectors<S['children']>;
+  : { [ELEMENT_ROOT]: ProjectElement<S> } & ElementProjectors<S['children']>;
 
 /**
  * Project an element tree as class names
