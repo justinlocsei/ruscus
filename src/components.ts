@@ -101,7 +101,8 @@ export class Component<S extends AnyComponentSpec>
   apply(): InternalComponent<S> {
     return annotateComponent(projectComponent(this), {
       buildPlan: {
-        compile: (config: CompileConfig = {}) => styleComponent(this, config),
+        compile: (config: CompileConfig = {}) =>
+          styleComponent(this.current, config),
         component: this.current
       },
       identifiers: projectIdentifiers(this)
