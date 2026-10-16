@@ -2,13 +2,12 @@ import type { NameGenerator } from '../naming.ts';
 import type { AnySelectors } from '../types/css.ts';
 import type {
   AnyNestedContext,
+  AnyVariantsContext,
   ElementDefinitions,
   Selectors,
   VariantSelector
 } from '../types/elements.ts';
 import { ELEMENT_ROOT } from '../types/ids.ts';
-
-const defaultName: NameGenerator = levels => levels.join('__');
 
 /**
  * Build class selectors for all elements under a namespace
@@ -38,20 +37,33 @@ export function buildVariantSelector(
 /**
  * Build a context for defining nested element styles
  */
-export function buildElementDerivedContext(
+export function buildNestedContext(
   namespace: string[],
   children: ElementDefinitions,
   {
     anchor = '&',
-    name = defaultName
+    name
   }: {
     anchor?: string;
-    name?: NameGenerator;
-  } = {}
+    name: NameGenerator;
+  }
 ): AnyNestedContext {
   return {
     els: buildElementSelectors(namespace, children, { name }),
     variants: buildVariantSelector(anchor)
+  };
+}
+
+/**
+ * Build a context for defining element variants
+ */
+export function buildVariantsContext(
+  namespace: string[],
+  children: ElementDefinitions,
+  { name }: { name: NameGenerator }
+): AnyVariantsContext {
+  return {
+    els: buildElementSelectors(namespace, children, { name })
   };
 }
 
