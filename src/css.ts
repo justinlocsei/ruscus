@@ -1,17 +1,17 @@
-import {
-  buildNestedContext,
-  resolveGlobalProvider,
-  resolveNestedProvider,
-  resolveVariantProvider
-} from './blocks.ts';
-import type { Element } from './elements.ts';
+import * as components from './contexts/components.ts';
+import * as elements from './contexts/elements.ts';
+import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
-import type { ComponentDefinition } from './types/components.ts';
+import { asProperty } from './styles.ts';
+import type {
+  ComponentDefinition,
+  VariantsContext as ComponentVariantsContext
+} from './types/components.ts';
 import type { Declarations } from './types/css.ts';
 import type {
   ElementDefinition,
-  NestedContext,
+  VariantsContext as ElementVariantsContext,
   VariantsProvider
 } from './types/elements.ts';
 import type {
@@ -27,16 +27,6 @@ export type CompileConfig = {
   indentation?: number;
   naming?: NamingScheme;
 };
-
-/**
- * Project a camel-cased value as a CSS property name
- */
-export function asProperty(camel: string): string {
-  return camel.replace(
-    /[A-Z]/g,
-    l => `-${l.toLowerCase()}`
-  );
-}
 
 /**
  * Generate CSS for a component's styles
@@ -76,23 +66,17 @@ class ComponentCompiler {
     const { elements, variants } = component;
     const root = this.buildSelector();
 
-    const styleContext = {
-      ...buildNestedContext([this.component.id], elements, {
-        name: this.name
-      }),
-      ...buildIdentifiersContext(
-        this.component.id,
-        component.identifiers
-      )
-    } satisfies NestedContext;
+    const derivedContext = components.buildDerivedContext(component, {
+      name: this.name
+    });
 
     this.addRule(root, component.styles);
 
     if (variants) {
-      this.addVariantFragmentRules(
+      this.addVariantRules(
         root,
         variants,
-        styleContext
+        components.buildVariantsContext(component, this.name)
       );
     }
 
@@ -105,7 +89,7 @@ class ComponentCompiler {
     for (const provider of component.nested) {
       this.addScopedFragmentRules(
         root,
-        resolveNestedProvider(provider, styleContext)
+        provider(defineRelativeFragment, derivedContext)
       );
     }
 
@@ -117,7 +101,7 @@ class ComponentCompiler {
 
     for (const provider of component.global) {
       this.addGlobalFragmentRules(
-        resolveGlobalProvider(provider, styleContext)
+        provider(defineAbsoluteFragment, derivedContext)
       );
     }
 
@@ -133,17 +117,15 @@ class ComponentCompiler {
 
     this.addRule(selector, element.styles);
 
-    const elementContext = buildNestedContext(
-      [this.component.id, ...path],
-      children,
-      { name: this.name }
-    );
-
     if (variants) {
-      this.addVariantFragmentRules(
+      this.addVariantRules(
         selector,
         variants,
-        elementContext
+        elements.buildNestedContext(
+          [this.component.id, ...path],
+          children,
+          { name: this.name }
+        )
       );
     }
 
@@ -159,7 +141,7 @@ class ComponentCompiler {
     const { children } = element;
     const selector = this.buildSelector(...path);
 
-    const elementContext = buildNestedContext(
+    const elementContext = elements.buildNestedContext(
       [this.component.id, ...path],
       children,
       { name: this.name }
@@ -168,7 +150,7 @@ class ComponentCompiler {
     for (const provider of element.nested) {
       this.addScopedFragmentRules(
         selector,
-        resolveNestedProvider(provider, elementContext)
+        provider(defineRelativeFragment, elementContext)
       );
     }
 
@@ -178,14 +160,16 @@ class ComponentCompiler {
   }
 
   /**
-   * Add variant fragment rules anchored to a selector
+   * Add variant rules for component or element variants
    */
-  private addVariantFragmentRules<C extends NestedContext>(
+  private addVariantRules<
+    C extends ComponentVariantsContext | ElementVariantsContext
+  >(
     anchor: string,
     provider: VariantsProvider<C>,
     ctx: C
   ): void {
-    const definitions = resolveVariantProvider(provider, ctx);
+    const definitions = provider(defineRelativeFragment, ctx);
 
     for (const [name, fragment] of Object.entries(definitions)) {
       const rule = this.formatFragmentRules(`${anchor}.is-${name}`, fragment);
