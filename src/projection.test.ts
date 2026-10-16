@@ -1,7 +1,7 @@
 import { assert, describe, it } from 'vitest';
 
 import { defineComponent } from './components.ts';
-import { projectComponent, projectIdentifiers } from './projection.ts';
+import { projectComponent } from './projection.ts';
 import { T } from './tests.ts';
 
 describe('projectComponent', () => {
@@ -14,7 +14,7 @@ describe('projectComponent', () => {
             title: e()
           })
         }))
-    );
+    ).classNames();
 
     assert.equal(els.root, 'card');
     assert.equal(els.header, 'card__header');
@@ -33,10 +33,21 @@ describe('projectComponent', () => {
         .variants(s => ({
           active: s({ color: 'red' })
         }))
-    );
+    ).classNames();
 
     assert.equal(els.root('active'), 'card is-active');
     assert.equal(els.body('compact'), 'card__body is-compact');
+  });
+
+  it('projects identifiers', () => {
+    const ids = projectComponent(
+      defineComponent('card')
+        .identifiers({ alfaBeta: 'string', bravo: 'variable' })
+        .elements(e => ({ body: e() }))
+    ).identifiers();
+
+    assert.equal(ids.alfaBeta, 'card--alfa-beta');
+    assert.equal(ids.bravo, '--card--bravo');
   });
 
   it('uses narrow element types on the projection', () => {
@@ -45,7 +56,7 @@ describe('projectComponent', () => {
         .identifiers({ alfa: 'string' })
         .elements(e => ({ body: e() }))
         .variants(s => ({ compact: s({}) }))
-    );
+    ).classNames();
 
     T.assert<T.Equivalent<typeof applied.root, (name: 'compact') => string>>(
       true
@@ -55,18 +66,5 @@ describe('projectComponent', () => {
 
     // @ts-expect-error unknown element
     applied.title;
-  });
-});
-
-describe('projectIdentifiers', () => {
-  it('projects identifiers', () => {
-    const ids = projectIdentifiers(
-      defineComponent('card')
-        .identifiers({ alfaBeta: 'string', bravo: 'variable' })
-        .elements(e => ({ body: e() }))
-    );
-
-    assert.equal(ids.alfaBeta, 'card--alfa-beta');
-    assert.equal(ids.bravo, '--card--bravo');
   });
 });

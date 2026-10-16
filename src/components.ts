@@ -6,7 +6,7 @@ import type { ElementProviders, ProvidersToSpecs } from './elements.ts';
 import { defineElement, resolveElements } from './elements.ts';
 import type { InternalComponent } from './internal.ts';
 import { annotateComponent } from './internal.ts';
-import { projectComponent, projectIdentifiers } from './projection.ts';
+import { projectComponent } from './projection.ts';
 import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
 import { mergeTraits } from './traits.ts';
@@ -99,13 +99,15 @@ export class Component<S extends AnyComponentSpec>
    * Project the component into class names and identifiers
    */
   apply(): InternalComponent<S> {
-    return annotateComponent(projectComponent(this), {
+    const projection = projectComponent(this);
+
+    return annotateComponent(projection.classNames(), {
       buildPlan: {
         compile: (config: CompileConfig = {}) =>
           styleComponent(this.current, config),
         component: this.current
       },
-      identifiers: projectIdentifiers(this)
+      identifiers: projection.identifiers()
     });
   }
 
@@ -140,7 +142,7 @@ export class Component<S extends AnyComponentSpec>
     this.current.elements = resolveElements(
       provider(
         defineElement,
-        { ids: projectIdentifiers(this) }
+        { ids: projectComponent(this).identifiers() }
       )
     );
 
