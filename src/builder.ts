@@ -1,4 +1,16 @@
-export default abstract class Builder<T extends Record<string, unknown>> {
+/**
+ * A builder's internal state
+ */
+type State = Record<string, unknown>;
+
+/**
+ * The exposed state of a builder
+ */
+export type BuilderState<T extends State> = {
+  current: T;
+};
+
+export default abstract class Builder<T extends State> {
   current: T;
 
   /**
