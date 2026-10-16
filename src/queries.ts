@@ -28,7 +28,7 @@ type QueryProvider<Q extends NamedQueries> =
   & QueryApplicator<Q>;
 
 /**
- * Global definitions for query rules
+ * Rules scoped to a query
  */
 type QueryRules = ScopedFragments<'absolute'>;
 
