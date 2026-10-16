@@ -3,7 +3,7 @@ import { assert, describe, it } from 'vitest';
 import { defineTrait, mergeTraits } from './traits.ts';
 
 describe('defineTrait', () => {
-  it('resolves to a relative fragment', () => {
+  it('defines a trait', () => {
     const link = defineTrait(s =>
       s({ color: 'blue' }).nested({
         '&:hover': s({ textDecoration: 'underline' })
@@ -52,7 +52,9 @@ describe('mergeTraits', () => {
   });
 
   it('returns empty styles when given no traits', () => {
-    assert.deepEqual(mergeTraits().root, {});
-    assert.deepEqual(mergeTraits().nested, {});
+    const empty = mergeTraits();
+
+    assert.deepEqual(empty.root, {});
+    assert.deepEqual(empty.nested, {});
   });
 });

@@ -7,7 +7,7 @@ import type {
 } from './types/fragments.ts';
 
 /**
- * A trait that can be applied to a target
+ * A trait that can be applied to a component or element
  */
 export type Trait = Fragment<'relative'>;
 
