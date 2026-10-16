@@ -40,7 +40,7 @@ describe('useNaming', () => {
 
     const name = useNaming(component.current, 'compact');
 
-    assert.match(name([component.id, 'body']), /_a$/);
-    assert.match(name([component.id, 'title']), /_b$/);
+    assert.match(name([component.id, 'body']), /_0$/);
+    assert.match(name([component.id, 'title']), /_1$/);
   });
 });

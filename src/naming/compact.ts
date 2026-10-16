@@ -55,7 +55,7 @@ export class CompactNaming extends Naming {
     const suffixes: Suffixes = new Map();
 
     for (const [index, path] of paths.entries()) {
-      suffixes.set(path, indexToLetters(index + 1));
+      suffixes.set(path, index.toString(36));
     }
 
     return suffixes;
@@ -85,22 +85,6 @@ export class CompactNaming extends Naming {
 
     return paths;
   }
-}
-
-/**
- * Encode a 1-based index as a series of lowercase letters
- */
-function indexToLetters(index: number): string {
-  let remaining = index;
-  let encoded = '';
-
-  while (remaining > 0) {
-    remaining -= 1;
-    encoded = String.fromCharCode(97 + (remaining % 26)) + encoded;
-    remaining = Math.floor(remaining / 26);
-  }
-
-  return encoded;
 }
 
 /**
