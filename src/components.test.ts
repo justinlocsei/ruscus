@@ -1,21 +1,17 @@
 import { assert, describe, it } from 'vitest';
 
-import {
-  buildNestedContext,
-  resolveGlobalProvider,
-  resolveNestedProvider
-} from './blocks.ts';
+import type { AnyComponent } from './components.ts';
 import { Component } from './components.ts';
-import { defineAbsoluteFragment } from './fragments.ts';
-import { buildIdentifiersContext } from './identifiers.ts';
+import { buildDerivedContext } from './contexts/components.ts';
+import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 
 describe('Component', () => {
   const component = () => new Component('testing');
 
-  const styleContext = (instance: Component) => ({
-    ...buildNestedContext([], instance.current.elements),
-    ...buildIdentifiersContext(instance.id, instance.current.identifiers)
-  });
+  const styleContext = (instance: AnyComponent) =>
+    buildDerivedContext(instance.current, {
+      name: levels => levels.join('__')
+    });
 
   it('starts with an empty state', () => {
     assert.deepEqual(component().current, {
@@ -144,10 +140,8 @@ describe('Component', () => {
       const global = instance.current.global[0];
       assert.isDefined(global);
 
-      const definitions = resolveGlobalProvider(
-        global,
-        styleContext(instance)
-      );
+      const context = styleContext(instance);
+      const definitions = global(defineAbsoluteFragment, context);
       assert.equal(definitions['.card']?.scope, 'absolute');
       assert.deepEqual(definitions['.card']?.styles.root, { color: 'red' });
 
@@ -197,10 +191,8 @@ describe('Component', () => {
       const nested = instance.current.nested[0];
       assert.isDefined(nested);
 
-      const definitions = resolveNestedProvider(
-        nested,
-        styleContext(instance)
-      );
+      const context = styleContext(instance);
+      const definitions = nested(defineRelativeFragment, context);
 
       assert.equal(definitions['&:hover']?.scope, 'relative');
       assert.deepEqual(
