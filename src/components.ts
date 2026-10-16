@@ -28,6 +28,14 @@ import type { VariantsFromProvider } from './types/elements.ts';
 import { cast } from './utils.ts';
 
 /**
+ * Any component builder instance, regardless of spec narrowing
+ */
+export type AnyComponent = {
+  current: ComponentDefinition;
+  id: string;
+};
+
+/**
  * Options for creating a component
  */
 type ComponentOptions = {
