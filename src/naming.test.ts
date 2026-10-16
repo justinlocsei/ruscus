@@ -25,6 +25,11 @@ describe('useNaming', () => {
       verbose([component.id]).length,
       compact([component.id]).length
     );
+
+    assert.equal(
+      compact([component.id]),
+      compact([component.id])
+    );
   });
 
   it('uses short suffixes for child elements', () => {
