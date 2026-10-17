@@ -16,18 +16,12 @@ import type {
  */
 export function buildDerivedContext(
   component: ComponentDefinition,
-  {
-    anchor = '&',
-    name
-  }: {
-    anchor?: string;
-    name: NameGenerator;
-  }
+  { name }: { name: NameGenerator }
 ): AnyDerivedContext {
   return {
     ...buildVariantsContext(component, name),
     ...buildElementsContext(component),
-    variants: projectVariantSelector(anchor)
+    variants: projectVariantSelector('&')
   };
 }
 
