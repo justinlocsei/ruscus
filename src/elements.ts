@@ -27,7 +27,7 @@ type AnyElement = BuilderState<ElementDefinition>;
 /**
  * An eager or lazy element definition
  */
-export type ElementProvider = Thunkable<AnyElement>;
+type ElementProvider = Thunkable<AnyElement>;
 
 /**
  * A mapping of element names to providers
