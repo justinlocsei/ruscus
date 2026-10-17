@@ -24,12 +24,10 @@ export function buildDerivedContext(
     name: NameGenerator;
   }
 ): AnyDerivedContext {
-  const namespace = [component.id];
-
   return {
-    els: projectElementSelectors(namespace, component.elements, { name }),
-    variants: projectVariantSelector(anchor),
-    ids: projectIdentifiers(component)
+    ...buildVariantsContext(component, name),
+    ...buildElementsContext(component),
+    variants: projectVariantSelector(anchor)
   };
 }
 
@@ -39,7 +37,9 @@ export function buildDerivedContext(
 export function buildElementsContext(
   component: ComponentDefinition
 ): AnyElementsContext {
-  return { ids: projectIdentifiers(component) };
+  return {
+    ids: projectIdentifiers(component)
+  };
 }
 
 /**
@@ -50,7 +50,7 @@ export function buildVariantsContext(
   name: NameGenerator
 ): AnyVariantsContext {
   return {
-    els: projectElementSelectors([component.id], component.elements, { name }),
-    ids: projectIdentifiers(component)
+    ...buildElementsContext(component),
+    els: projectElementSelectors([component.id], component.elements, { name })
   };
 }
