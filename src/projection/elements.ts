@@ -14,13 +14,20 @@ import type { VariantProjector } from '../types/projection.ts';
 type ProjectionFormat = 'names' | 'selectors';
 
 /**
+ * Options for projecting an element
+ */
+type ProjectElementOptions = {
+  format: ProjectionFormat;
+  name: NameGenerator;
+};
+
+/**
  * Project an element tree
  */
 export function projectElements(
   namespace: string[],
   elements: ElementDefinitions,
-  name: NameGenerator,
-  format: ProjectionFormat
+  { format, name }: ProjectElementOptions
 ): Record<string, unknown> {
   return Object.entries(elements).reduce<Record<string, unknown>>(
     (previous, [key, element]) => {
@@ -31,8 +38,7 @@ export function projectElements(
       previous[key] = projectElement(
         [...namespace, key],
         element,
-        name,
-        format
+        { format, name }
       );
 
       return previous;
@@ -63,15 +69,20 @@ function formatName(className: string, format: ProjectionFormat): string {
 function projectElement(
   path: string[],
   element: ElementDefinition,
-  name: NameGenerator,
-  format: ProjectionFormat
+  options: ProjectElementOptions
 ): unknown {
-  const className = name(path);
-  const root = projectNode(className, element.variants !== undefined, format);
+  const className = options.name(path);
+  const root = projectNode(className, {
+    format: options.format,
+    hasVariants: element.variants !== undefined
+  });
   const { children } = element;
 
   return Object.keys(children).length
-    ? { [ELEMENT_ROOT]: root, ...projectElements(path, children, name, format) }
+    ? {
+      [ELEMENT_ROOT]: root,
+      ...projectElements(path, children, options)
+    }
     : root;
 }
 
@@ -80,8 +91,13 @@ function projectElement(
  */
 export function projectNode(
   className: string,
-  hasVariants: boolean,
-  format: ProjectionFormat
+  {
+    format,
+    hasVariants
+  }: {
+    format: ProjectionFormat;
+    hasVariants: boolean;
+  }
 ): VariantProjector<string> | string {
   if (format === 'selectors') {
     return formatName(className, format);
@@ -98,10 +114,10 @@ export function projectNode(
 export function projectElementSelectors(
   namespace: string[],
   elements: ElementDefinitions,
-  name: NameGenerator
+  { name }: { name: NameGenerator }
 ): Selectors {
   return {
     [ELEMENT_ROOT]: formatName(name(namespace), 'selectors'),
-    ...projectElements(namespace, elements, name, 'selectors')
+    ...projectElements(namespace, elements, { format: 'selectors', name })
   } as Selectors;
 }

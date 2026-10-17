@@ -27,7 +27,7 @@ export function buildDerivedContext(
   const namespace = [component.id];
 
   return {
-    els: projectElementSelectors(namespace, component.elements, name),
+    els: projectElementSelectors(namespace, component.elements, { name }),
     variants: projectVariantSelector(anchor),
     ids: projectIdentifiers(component)
   };
@@ -50,7 +50,7 @@ export function buildVariantsContext(
   name: NameGenerator
 ): AnyVariantsContext {
   return {
-    els: projectElementSelectors([component.id], component.elements, name),
+    els: projectElementSelectors([component.id], component.elements, { name }),
     ids: projectIdentifiers(component)
   };
 }

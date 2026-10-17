@@ -18,13 +18,11 @@ export function projectComponent<S extends AnyComponentSpec>(
     ...projectElements(
       [component.id],
       current.elements,
-      name,
-      'names'
+      { format: 'names', name }
     ),
-    [ELEMENT_ROOT]: projectNode(
-      name([component.id]),
-      current.variants !== undefined,
-      'names'
-    )
+    [ELEMENT_ROOT]: projectNode(name([component.id]), {
+      format: 'names',
+      hasVariants: current.variants !== undefined
+    })
   } as ApplicableComponent<S>;
 }

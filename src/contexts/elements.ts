@@ -18,7 +18,7 @@ export function buildElementSelectors(
   children: ElementDefinitions,
   { name }: { name: NameGenerator }
 ): Selectors {
-  return projectElementSelectors(namespace, children, name);
+  return projectElementSelectors(namespace, children, { name });
 }
 
 /**
@@ -36,7 +36,7 @@ export function buildNestedContext(
   }
 ): AnyNestedContext {
   return {
-    els: projectElementSelectors(namespace, children, name),
+    els: projectElementSelectors(namespace, children, { name }),
     variants: projectVariantSelector(anchor)
   };
 }
@@ -50,6 +50,6 @@ export function buildVariantsContext(
   { name }: { name: NameGenerator }
 ): AnyVariantsContext {
   return {
-    els: projectElementSelectors(namespace, children, name)
+    els: projectElementSelectors(namespace, children, { name })
   };
 }
