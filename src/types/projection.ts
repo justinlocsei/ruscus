@@ -2,7 +2,8 @@ import type { AnyComponentSpec } from './components.ts';
 import type {
   AnyElementSpec,
   EmptyElementSpecs,
-  NamedElements
+  NamedElements,
+  VariantProjector
 } from './elements.ts';
 import { ELEMENT_ROOT } from './ids.ts';
 import type { HasVariants } from './utils.ts';
@@ -36,11 +37,4 @@ export type ElementProjectors<
  */
 type ProjectElement<S extends HasVariants<string>> = [
   S['variants']
-] extends [never] ? string
-  : string extends S['variants'] ? string | VariantProjector<S['variants']>
-  : VariantProjector<S['variants']>;
-
-/**
- * A projector for variant class names
- */
-export type VariantProjector<V extends string> = (...names: V[]) => string;
+] extends [never] ? string : VariantProjector<S['variants']>;
