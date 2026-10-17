@@ -9,6 +9,13 @@ import type {
   ElementDefinitions
 } from '../types/elements.ts';
 
+/**
+ * Shared context options
+ */
+export type ContextOptions = {
+  name: NameGenerator;
+};
+
 export const variants = projectVariantSelector('&');
 
 /**
@@ -17,10 +24,10 @@ export const variants = projectVariantSelector('&');
 export function buildNestedContext(
   namespace: string[],
   children: ElementDefinitions,
-  { name }: { name: NameGenerator }
+  options: ContextOptions
 ): AnyNestedContext {
   return {
-    ...buildVariantsContext(namespace, children, { name }),
+    ...buildVariantsContext(namespace, children, options),
     variants
   };
 }
@@ -31,7 +38,7 @@ export function buildNestedContext(
 export function buildVariantsContext(
   namespace: string[],
   children: ElementDefinitions,
-  { name }: { name: NameGenerator }
+  { name }: ContextOptions
 ): AnyVariantsContext {
   return {
     els: projectElementSelectors(namespace, children, { name })

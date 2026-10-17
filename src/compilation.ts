@@ -76,7 +76,7 @@ class ComponentCompiler {
       this.addVariantRules(
         root,
         variants,
-        components.buildVariantsContext(component, this.name)
+        components.buildVariantsContext(component, { name: this.name })
       );
     }
 

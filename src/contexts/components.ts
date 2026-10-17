@@ -1,4 +1,3 @@
-import type { NameGenerator } from '../naming.ts';
 import { projectElementSelectors } from '../projection/elements.ts';
 import { projectIdentifiers } from '../projection/identifiers.ts';
 import type {
@@ -7,6 +6,7 @@ import type {
   AnyVariantsContext,
   ComponentDefinition
 } from '../types/components.ts';
+import type { ContextOptions } from './elements.ts';
 import { variants } from './elements.ts';
 
 /**
@@ -14,10 +14,10 @@ import { variants } from './elements.ts';
  */
 export function buildDerivedContext(
   component: ComponentDefinition,
-  { name }: { name: NameGenerator }
+  { name }: ContextOptions
 ): AnyDerivedContext {
   return {
-    ...buildVariantsContext(component, name),
+    ...buildVariantsContext(component, { name }),
     ...buildElementsContext(component),
     variants
   };
@@ -39,7 +39,7 @@ export function buildElementsContext(
  */
 export function buildVariantsContext(
   component: ComponentDefinition,
-  name: NameGenerator
+  { name }: ContextOptions
 ): AnyVariantsContext {
   return {
     ...buildElementsContext(component),
