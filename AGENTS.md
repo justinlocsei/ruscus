@@ -2,7 +2,29 @@
 
 Zero-runtime TypeScript library for orchestrating component styles: a component's elements and variants are defined as a typed tree that projects into class names, while the CSS itself is bring-your-own. Library source is `src/`.
 
-Public API: `src/index.ts`.  It is intentionally empty while the source tree is being scaffolded.
+Public API: `src/index.ts` (component factory, compile entry, queries).
+
+## Type architecture
+
+**Author-facing code** (component/element builders, `.apply()`, nested/global/variant style providers) should get **maximum precision**: preserve the fluent spec `S` (`els`, `variants`, `ids`) and project it into types. Do not widen to `Any*` at these boundaries unless there is a deliberate escape hatch.
+
+**Internal code** (definitions on disk, compile walks, stored providers) should get **maximum flexibility**: homogenous shapes and erasure so generics do not need to flow through the whole pipeline.
+
+| Layer | Role | Typing |
+| --- | --- | --- |
+| Builder / `.apply()` | TSX class names, narrow inference | `Component<S>`, `InternalComponent<S>`, `ApplicableComponent<S>` |
+| Style providers on the builder | Fragment keys, `els`, `variants()` | `DerivedContext<S['els'], S['variants'], S['ids']>`, `NestedContext<…>`, etc. |
+| `ComponentDefinition` / `ElementDefinition` | Stored tree + provider lists | `AnyNestedContext`, `AnyDerivedContext`, `AnyVariantsContext`, … |
+| `ComponentCompiler` | Emit CSS from definitions | `buildSelector` and fragment **keys are strings**; no projector dispatch in the compiler |
+| Context builders | Same selector strings authors expect | `projectElementSelectors` (shared with projection); `owner.variants` drives callable roots |
+
+**Variant projectors:** For a given node, types are **either** a plain `string` **or** `VariantProjector<V>` (conditional on `variants: never`), not `string | VariantProjector` on the same property. Authors with variants call `els.foo()` / `root()` in fragment keys; plain `els.foo` when the spec has no variants on that node. Avoid helper bridges that accept both.
+
+**`Any*` specs** (`AnyComponentSpec`, `AnyElementSpec`, …) are for **storage and internal provider signatures**, not for typing a normal `.apply()` result. `AnyComponentSpec` uses `variants: string` on the spec, so `ApplicableComponent<AnyComponentSpec>` over-types the root as always callable—fine for wide bounds, wrong for author ergonomics if used as the applied type. Prefer `InternalComponent<S>` or annotation-only symbols (e.g. build plan extraction) at internal boundaries instead of forcing `InternalComponent<AnyComponentSpec>`.
+
+**Provider variance:** Stored providers use `C extends object` (default `AnyDerivedContext` / `AnyVariantsContext`) so narrow author contexts do not have to be assignable to erased `els` shapes. Cast to erased provider types when pushing onto `ComponentDefinition`.
+
+**Generics:** Let `S` accrue on the fluent chain; do not thread `S` through compile/storage unless author precision truly requires it. That split is intentional complexity tradeoff: slightly awkward internal casts and `Any*` erasure vs. a fully generic compiler.
 
 ## Exports
 
