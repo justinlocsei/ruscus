@@ -9,6 +9,8 @@ import type {
   ElementDefinitions
 } from '../types/elements.ts';
 
+export const variants = projectVariantSelector('&');
+
 /**
  * Build a context for defining nested element styles
  */
@@ -19,7 +21,7 @@ export function buildNestedContext(
 ): AnyNestedContext {
   return {
     ...buildVariantsContext(namespace, children, { name }),
-    variants: projectVariantSelector('&')
+    variants
   };
 }
 

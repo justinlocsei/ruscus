@@ -1,8 +1,5 @@
 import type { NameGenerator } from '../naming.ts';
-import {
-  projectElementSelectors,
-  projectVariantSelector
-} from '../projection/elements.ts';
+import { projectElementSelectors } from '../projection/elements.ts';
 import { projectIdentifiers } from '../projection/identifiers.ts';
 import type {
   AnyDerivedContext,
@@ -10,6 +7,7 @@ import type {
   AnyVariantsContext,
   ComponentDefinition
 } from '../types/components.ts';
+import { variants } from './elements.ts';
 
 /**
  * Build a context for derived component styles
@@ -21,7 +19,7 @@ export function buildDerivedContext(
   return {
     ...buildVariantsContext(component, name),
     ...buildElementsContext(component),
-    variants: projectVariantSelector('&')
+    variants
   };
 }
 
