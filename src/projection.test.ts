@@ -1,20 +1,19 @@
 import { assert, describe, it } from 'vitest';
 
 import { defineComponent } from './components.ts';
+import { useNaming } from './naming.ts';
 import { projectComponent } from './projection.ts';
 import { T } from './tests.ts';
 
 describe('projectComponent', () => {
   it('projects root and element class names', () => {
-    const els = projectComponent(
-      defineComponent('card')
-        .elements(e => ({
-          header: e(),
-          body: e().children({
-            title: e()
-          })
-        }))
-    ).classNames();
+    const component = defineComponent('card').elements(e => ({
+      header: e(),
+      body: e().children({
+        title: e()
+      })
+    }));
+    const els = projectComponent(component, useNaming(component.current));
 
     assert.equal(els.root, 'card');
     assert.equal(els.header, 'card__header');
@@ -23,40 +22,27 @@ describe('projectComponent', () => {
   });
 
   it('projects root and element variants', () => {
-    const els = projectComponent(
-      defineComponent('card')
-        .elements(e => ({
-          body: e().variants(s => ({
-            compact: s({ padding: '0.5rem' })
-          }))
+    const component = defineComponent('card')
+      .elements(e => ({
+        body: e().variants(s => ({
+          compact: s({ padding: '0.5rem' })
         }))
-        .variants(s => ({
-          active: s({ color: 'red' })
-        }))
-    ).classNames();
+      }))
+      .variants(s => ({
+        active: s({ color: 'red' })
+      }));
+    const els = projectComponent(component, useNaming(component.current));
 
     assert.equal(els.root('active'), 'card is-active');
     assert.equal(els.body('compact'), 'card__body is-compact');
   });
 
-  it('projects identifiers', () => {
-    const ids = projectComponent(
-      defineComponent('card')
-        .identifiers({ alfaBeta: 'string', bravo: 'variable' })
-        .elements(e => ({ body: e() }))
-    ).identifiers();
-
-    assert.equal(ids.alfaBeta, 'card--alfa-beta');
-    assert.equal(ids.bravo, '--card--bravo');
-  });
-
   it('uses narrow element types on the projection', () => {
-    const applied = projectComponent(
-      defineComponent('card')
-        .identifiers({ alfa: 'string' })
-        .elements(e => ({ body: e() }))
-        .variants(s => ({ compact: s({}) }))
-    ).classNames();
+    const component = defineComponent('card')
+      .identifiers({ alfa: 'string' })
+      .elements(e => ({ body: e() }))
+      .variants(s => ({ compact: s({}) }));
+    const applied = projectComponent(component, useNaming(component.current));
 
     T.assert<T.Equivalent<typeof applied.root, (name: 'compact') => string>>(
       true
