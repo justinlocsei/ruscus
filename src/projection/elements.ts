@@ -51,7 +51,7 @@ export function projectElements(
  * Build a variant selector anchored to a compile-time root
  */
 export function projectVariantSelector(
-  anchor = '&'
+  anchor: string
 ): VariantSelector<string> {
   return (...vs) => `${anchor}${vs.map(v => `.is-${v}`).join('')}`;
 }
