@@ -6,6 +6,7 @@ import {
   extractBuildPlan,
   extractIdentifiers
 } from './internal.ts';
+import { useNaming } from './naming.ts';
 import { projectComponent } from './projection.ts';
 
 describe('annotateComponent', () => {
@@ -13,7 +14,7 @@ describe('annotateComponent', () => {
     const component = defineComponent('card').identifiers({ alfa: 'string' });
 
     const annotated = annotateComponent(
-      projectComponent(component).classNames(),
+      projectComponent(component, useNaming(component.current)),
       {
         buildPlan: {
           compile: () => 'compiled',
@@ -29,7 +30,12 @@ describe('annotateComponent', () => {
 
   it('does not enumerate internal annotations', () => {
     const component = defineComponent('card');
-    const projection = projectComponent(component).classNames();
+
+    const projection = projectComponent(
+      component,
+      useNaming(component.current)
+    );
+
     const keys = Object.keys(projection);
 
     annotateComponent(projection, {

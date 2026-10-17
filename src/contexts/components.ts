@@ -1,33 +1,15 @@
 import type { NameGenerator } from '../naming.ts';
-import { asProperty } from '../styles.ts';
+import {
+  projectElementSelectors,
+  projectVariantSelector
+} from '../projection/elements.ts';
+import { projectIdentifiers } from '../projection/identifiers.ts';
 import type {
   AnyDerivedContext,
   AnyElementsContext,
   AnyVariantsContext,
-  ComponentDefinition,
-  ContextIdentifiers
+  ComponentDefinition
 } from '../types/components.ts';
-import { buildElementSelectors, buildVariantSelector } from './elements.ts';
-
-/**
- * Build identifiers for use in context
- */
-function buildContextIdentifiers(
-  component: ComponentDefinition
-): ContextIdentifiers<string> {
-  const ids = Object.fromEntries(
-    Object.entries(component.identifiers).map(([name, type]) => {
-      const scoped = `${component.id}--${asProperty(name)}`;
-
-      return [
-        name,
-        type === 'variable' ? `--${scoped}` : scoped
-      ];
-    })
-  );
-
-  return { ids };
-}
 
 /**
  * Build a context for derived component styles
@@ -45,9 +27,9 @@ export function buildDerivedContext(
   const namespace = [component.id];
 
   return {
-    els: buildElementSelectors(namespace, component.elements, { name }),
-    variants: buildVariantSelector(anchor),
-    ...buildContextIdentifiers(component)
+    els: projectElementSelectors(namespace, component.elements, name),
+    variants: projectVariantSelector(anchor),
+    ids: projectIdentifiers(component)
   };
 }
 
@@ -57,7 +39,7 @@ export function buildDerivedContext(
 export function buildElementsContext(
   component: ComponentDefinition
 ): AnyElementsContext {
-  return buildContextIdentifiers(component);
+  return { ids: projectIdentifiers(component) };
 }
 
 /**
@@ -68,7 +50,7 @@ export function buildVariantsContext(
   name: NameGenerator
 ): AnyVariantsContext {
   return {
-    els: buildElementSelectors([component.id], component.elements, { name }),
-    ...buildContextIdentifiers(component)
+    els: projectElementSelectors([component.id], component.elements, name),
+    ids: projectIdentifiers(component)
   };
 }

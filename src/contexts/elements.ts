@@ -1,13 +1,14 @@
 import type { NameGenerator } from '../naming.ts';
-import type { AnySelectors } from '../types/css.ts';
+import {
+  projectElementSelectors,
+  projectVariantSelector
+} from '../projection/elements.ts';
 import type {
   AnyNestedContext,
   AnyVariantsContext,
   ElementDefinitions,
-  Selectors,
-  VariantSelector
+  Selectors
 } from '../types/elements.ts';
-import { ELEMENT_ROOT } from '../types/ids.ts';
 
 /**
  * Build class selectors for all elements under a namespace
@@ -17,21 +18,7 @@ export function buildElementSelectors(
   children: ElementDefinitions,
   { name }: { name: NameGenerator }
 ): Selectors {
-  const root = name(namespace);
-
-  return {
-    [ELEMENT_ROOT]: `.${root}`,
-    ...buildSelectors(namespace, children, name)
-  };
-}
-
-/**
- * Build a variant selector anchored to root
- */
-export function buildVariantSelector(
-  anchor = '&'
-): VariantSelector<string> {
-  return (...names) => `${anchor}${names.map(n => `.is-${n}`).join('')}`;
+  return projectElementSelectors(namespace, children, name);
 }
 
 /**
@@ -49,8 +36,8 @@ export function buildNestedContext(
   }
 ): AnyNestedContext {
   return {
-    els: buildElementSelectors(namespace, children, { name }),
-    variants: buildVariantSelector(anchor)
+    els: projectElementSelectors(namespace, children, name),
+    variants: projectVariantSelector(anchor)
   };
 }
 
@@ -63,36 +50,6 @@ export function buildVariantsContext(
   { name }: { name: NameGenerator }
 ): AnyVariantsContext {
   return {
-    els: buildElementSelectors(namespace, children, { name })
+    els: projectElementSelectors(namespace, children, name)
   };
-}
-
-/**
- * Build a selector for each item in an element tree
- */
-function buildSelectors(
-  namespace: string[],
-  elements: ElementDefinitions,
-  name: NameGenerator
-): AnySelectors {
-  return Object.entries(elements).reduce<AnySelectors>(
-    (previous, [key, element]) => {
-      if (element === undefined) {
-        return previous;
-      }
-
-      const path = [...namespace, key];
-      const { children } = element;
-
-      previous[key] = Object.keys(children).length === 0
-        ? `.${name(path)}`
-        : {
-          [ELEMENT_ROOT]: `.${name(path)}`,
-          ...buildSelectors(path, children, name)
-        };
-
-      return previous;
-    },
-    {}
-  );
 }

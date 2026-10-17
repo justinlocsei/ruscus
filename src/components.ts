@@ -6,6 +6,8 @@ import type { ElementProviders, ProvidersToSpecs } from './elements.ts';
 import { defineElement, resolveElements } from './elements.ts';
 import type { InternalComponent } from './internal.ts';
 import { annotateComponent } from './internal.ts';
+import { useNaming } from './naming.ts';
+import { projectIdentifiers } from './projection/identifiers.ts';
 import { projectComponent } from './projection.ts';
 import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
@@ -18,6 +20,7 @@ import type {
   ElementsContext,
   EmptyComponentSpec,
   GlobalProvider,
+  IdentifierValuesFor,
   NamedIdentifiers,
   NestedProvider,
   PatchComponentSpec,
@@ -99,15 +102,17 @@ export class Component<S extends AnyComponentSpec>
    * Project the component into class names and identifiers
    */
   apply(): InternalComponent<S> {
-    const projection = projectComponent(this);
+    const name = useNaming(this.current);
 
-    return annotateComponent(projection.classNames(), {
+    return annotateComponent(projectComponent(this, name), {
       buildPlan: {
         compile: (config: CompileConfig = {}) =>
           styleComponent(this.current, config),
         component: this.current
       },
-      identifiers: projection.identifiers()
+      identifiers: cast<IdentifierValuesFor<S>>(
+        projectIdentifiers(this.current)
+      )
     });
   }
 
@@ -142,7 +147,7 @@ export class Component<S extends AnyComponentSpec>
     this.current.elements = resolveElements(
       provider(
         defineElement,
-        { ids: projectComponent(this).identifiers() }
+        { ids: projectIdentifiers(this.current) }
       )
     );
 
