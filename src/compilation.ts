@@ -121,7 +121,7 @@ class ComponentCompiler {
       this.addVariantRules(
         selector,
         variants,
-        elements.buildNestedContext(
+        elements.buildVariantsContext(
           [this.component.id, ...path],
           children,
           { name: this.name }

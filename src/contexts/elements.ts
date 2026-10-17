@@ -24,7 +24,7 @@ export function buildNestedContext(
   }
 ): AnyNestedContext {
   return {
-    els: projectElementSelectors(namespace, children, { name }),
+    ...buildVariantsContext(namespace, children, { name }),
     variants: projectVariantSelector(anchor)
   };
 }
