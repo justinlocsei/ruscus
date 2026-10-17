@@ -63,8 +63,8 @@ export function annotateComponent<S extends AnyComponentSpec>(
 /**
  * Extract a build plan from a component
  */
-export function extractBuildPlan(
-  component: InternalComponent<AnyComponentSpec>
+export function extractBuildPlan<S extends AnyComponentSpec>(
+  component: InternalComponent<S>
 ): BuildPlan {
   return component[build];
 }
