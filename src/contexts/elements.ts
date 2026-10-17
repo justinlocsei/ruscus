@@ -15,17 +15,11 @@ import type {
 export function buildNestedContext(
   namespace: string[],
   children: ElementDefinitions,
-  {
-    anchor = '&',
-    name
-  }: {
-    anchor?: string;
-    name: NameGenerator;
-  }
+  { name }: { name: NameGenerator }
 ): AnyNestedContext {
   return {
     ...buildVariantsContext(namespace, children, { name }),
-    variants: projectVariantSelector(anchor)
+    variants: projectVariantSelector('&')
   };
 }
 
