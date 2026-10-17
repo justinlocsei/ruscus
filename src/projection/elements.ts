@@ -14,20 +14,43 @@ import type { VariantProjector } from '../types/projection.ts';
 type ProjectionFormat = 'names' | 'selectors';
 
 /**
- * Options for projecting an element
+ * Options for projecting an element tree
  */
-type ProjectElementOptions = {
+type ProjectElementTreeOptions = {
+  format: ProjectionFormat;
+  hasVariants: boolean;
+  name: NameGenerator;
+};
+
+/**
+ * Options for projecting child elements under a namespace
+ */
+type ProjectElementsOptions = {
   format: ProjectionFormat;
   name: NameGenerator;
 };
 
 /**
- * Project an element tree
+ * Project a root node and element tree
  */
-export function projectElements(
+export function projectElementTree(
   namespace: string[],
   elements: ElementDefinitions,
-  { format, name }: ProjectElementOptions
+  { format, hasVariants, name }: ProjectElementTreeOptions
+): Record<string, unknown> {
+  return {
+    [ELEMENT_ROOT]: projectNode(name(namespace), { format, hasVariants }),
+    ...projectElements(namespace, elements, { format, name })
+  };
+}
+
+/**
+ * Project child elements under a namespace
+ */
+function projectElements(
+  namespace: string[],
+  elements: ElementDefinitions,
+  { format, name }: ProjectElementsOptions
 ): Record<string, unknown> {
   return Object.entries(elements).reduce<Record<string, unknown>>(
     (previous, [key, element]) => {
@@ -69,21 +92,20 @@ function formatName(className: string, format: ProjectionFormat): string {
 function projectElement(
   path: string[],
   element: ElementDefinition,
-  options: ProjectElementOptions
+  options: ProjectElementsOptions
 ): unknown {
-  const className = options.name(path);
-  const root = projectNode(className, {
-    format: options.format,
-    hasVariants: element.variants !== undefined
-  });
   const { children } = element;
+  const hasVariants = element.variants !== undefined;
 
   return Object.keys(children).length
-    ? {
-      [ELEMENT_ROOT]: root,
-      ...projectElements(path, children, options)
-    }
-    : root;
+    ? projectElementTree(path, children, {
+      ...options,
+      hasVariants
+    })
+    : projectNode(options.name(path), {
+      ...options,
+      hasVariants
+    });
 }
 
 /**
@@ -116,8 +138,9 @@ export function projectElementSelectors(
   elements: ElementDefinitions,
   { name }: { name: NameGenerator }
 ): Selectors {
-  return {
-    [ELEMENT_ROOT]: formatName(name(namespace), 'selectors'),
-    ...projectElements(namespace, elements, { format: 'selectors', name })
-  } as Selectors;
+  return projectElementTree(namespace, elements, {
+    format: 'selectors',
+    hasVariants: false,
+    name
+  }) as Selectors;
 }
