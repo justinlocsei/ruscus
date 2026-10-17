@@ -16,7 +16,7 @@ Public API: `src/index.ts` (component factory, compile entry, queries).
 | Style providers on the builder | Fragment keys, `els`, `variants()` | `DerivedContext<S['els'], S['variants'], S['ids']>`, `NestedContext<…>`, etc. |
 | `ComponentDefinition` / `ElementDefinition` | Stored tree + provider lists | `AnyNestedContext`, `AnyDerivedContext`, `AnyVariantsContext`, … |
 | `ComponentCompiler` | Emit CSS from definitions | `buildSelector` and fragment **keys are strings**; no projector dispatch in the compiler |
-| Context builders | Same selector strings authors expect | `projectElementSelectors` (shared with projection); `owner.variants` drives callable roots |
+| Context builders | Same selector strings authors expect | `projectElementSelectors` (shared with projection); `hasVariants` on the tree root (from `component.variants` / `element.variants` at call sites) |
 
 **Variant projectors:** For a given node, types are **either** a plain `string` **or** `VariantProjector<V>` (conditional on `variants: never`), not `string | VariantProjector` on the same property. Authors with variants call `els.foo()` / `root()` in fragment keys; plain `els.foo` when the spec has no variants on that node. Avoid helper bridges that accept both.
 
