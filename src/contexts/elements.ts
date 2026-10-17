@@ -6,20 +6,8 @@ import {
 import type {
   AnyNestedContext,
   AnyVariantsContext,
-  ElementDefinitions,
-  Selectors
+  ElementDefinitions
 } from '../types/elements.ts';
-
-/**
- * Build class selectors for all elements under a namespace
- */
-export function buildElementSelectors(
-  namespace: string[],
-  children: ElementDefinitions,
-  { name }: { name: NameGenerator }
-): Selectors {
-  return projectElementSelectors(namespace, children, { name });
-}
 
 /**
  * Build a context for defining nested element styles
