@@ -1,5 +1,5 @@
 import type { Styles } from './css.ts';
-import type { DerivedFragmentProvider } from './fragments.ts';
+import type { DerivedStyles } from './fragments.ts';
 import type { ElementRoot } from './ids.ts';
 import { ELEMENT_ROOT } from './ids.ts';
 import type { EmptyObject, HasVariants } from './utils.ts';
@@ -10,16 +10,6 @@ import type { EmptyObject, HasVariants } from './utils.ts';
 export type AnyElementSpec = ElementSpec<ElementSpecs, string>;
 
 /**
- * The most inclusive form of a nested context
- */
-export type AnyNestedContext = NestedContext<ElementSpecs, string>;
-
-/**
- * The most inclusive form of a variants context
- */
-export type AnyVariantsContext = VariantsContext<ElementSpecs>;
-
-/**
  * Get selectors for an element with children
  */
 type ChildSelectors<C extends NamedElements<C>> = {
@@ -28,13 +18,30 @@ type ChildSelectors<C extends NamedElements<C>> = {
 };
 
 /**
+ * The context available when defining derived element styles
+ */
+export type DerivedElementContext<
+  S extends AnyElementSpec = AnyElementSpec
+> = {
+  els: Selectors<S['children']>;
+  variants: VariantProjector<S['variants']>;
+};
+
+/**
+ * A provider of styles derived from an element context
+ */
+export type DerivedElementStyles<
+  C extends object = DerivedElementContext
+> = DerivedStyles<'relative', C>;
+
+/**
  * The data that fully defines an element
  */
 export type ElementDefinition = {
   children: ElementDefinitions;
-  nested: NestedProvider<AnyNestedContext>[];
+  nested: DerivedElementStyles[];
   styles: Styles;
-  variants?: VariantsProvider<AnyVariantsContext>;
+  variants?: DerivedElementStyles;
 };
 
 /**
@@ -78,23 +85,6 @@ export type EmptyElementSpecs = EmptyObject;
 export type NamedElements<E> = { [K in keyof E]: AnyElementSpec };
 
 /**
- * The context available to nested element definitions
- */
-export type NestedContext<
-  E extends NamedElements<E> = EmptyElementSpecs,
-  V extends string = never
-> = {
-  els: Selectors<E>;
-  variants: VariantProjector<V>;
-};
-
-/**
- * A provider of nested styles
- */
-export type NestedProvider<C extends NestedContext = NestedContext> =
-  DerivedFragmentProvider<C, 'relative'>;
-
-/**
  * Produce class selectors for a set of elements
  */
 export type Selectors<E extends NamedElements<E> = EmptyElementSpecs> =
@@ -119,23 +109,8 @@ export type VariantProjector<V extends string> = <T extends V>(
 ) => string;
 
 /**
- * The context available to variant definitions
- */
-export type VariantsContext<
-  E extends NamedElements<E> = EmptyElementSpecs
-> = {
-  els: Selectors<E>;
-};
-
-/**
  * Extract variant names from a provider
  */
-export type VariantsFromProvider<P> = P extends VariantsProvider
+export type VariantsFromProvider<P> = P extends DerivedStyles
   ? keyof ReturnType<P>
   : never;
-
-/**
- * A provider of variants
- */
-export type VariantsProvider<C extends VariantsContext = VariantsContext> =
-  DerivedFragmentProvider<C, 'relative'>;
