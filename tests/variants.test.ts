@@ -26,6 +26,6 @@ compareStyles('variants', c =>
     .nested((s, { els, variants: v }) => ({
       [v('compact')]: s({ gap: '0.25rem' }),
       [v('compact', 'large')]: s({ gap: '1rem' }),
-      [els.root()]: s({ borderStyle: 'solid' }),
-      [els.title()]: s({ fontWeight: '700' })
+      [els.root]: s({ borderStyle: 'solid' }),
+      [els.title]: s({ fontWeight: '700' })
     })));
