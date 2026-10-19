@@ -14,18 +14,13 @@ import type { Trait } from './traits.ts';
 import { mergeTraits } from './traits.ts';
 import type {
   AnyComponentSpec,
-  AnyVariantsContext,
   ComponentDefinition,
   ComponentSpec,
-  DerivedContext,
-  ElementsContext,
+  DerivedComponentContext,
+  DerivedComponentStyles,
   EmptyComponentSpec,
-  GlobalProvider,
   IdentifierValuesFor,
-  NamedIdentifiers,
-  NestedProvider,
-  VariantsContext,
-  VariantsProvider
+  NamedIdentifiers
 } from './types/components.ts';
 import type { Styles } from './types/css.ts';
 import type { VariantsFromProvider } from './types/elements.ts';
@@ -113,7 +108,7 @@ export class Component<S extends AnyComponentSpec>
   elements<T extends ElementProviders>(
     provider: (
       e: typeof defineElement,
-      ctx: ElementsContext<S['ids']>
+      ctx: Pick<DerivedComponentContext<S>, 'ids'>
     ) => T
   ): Component<
     ComponentSpec<ProvidersToSpecs<T>, S['variants'], S['ids']>
@@ -148,11 +143,14 @@ export class Component<S extends AnyComponentSpec>
    * Define global styles for the component
    */
   global(
-    definitions: GlobalProvider<
-      DerivedContext<S['els'], S['variants'], S['ids']>
+    definitions: DerivedComponentStyles<
+      'absolute',
+      DerivedComponentContext<S>
     >
   ): Component<S> {
-    this.current.global.push(definitions as GlobalProvider);
+    this.current.global.push(
+      definitions as DerivedComponentStyles<'absolute'>
+    );
 
     return this;
   }
@@ -161,11 +159,11 @@ export class Component<S extends AnyComponentSpec>
    * Define nested styles for the component
    */
   nested(
-    definitions: NestedProvider<
-      DerivedContext<S['els'], S['variants'], S['ids']>
-    >
+    definitions: DerivedComponentStyles<'relative', DerivedComponentContext<S>>
   ): Component<S> {
-    this.current.nested.push(definitions as NestedProvider);
+    this.current.nested.push(
+      definitions as DerivedComponentStyles
+    );
 
     return this;
   }
@@ -173,14 +171,19 @@ export class Component<S extends AnyComponentSpec>
   /**
    * Define variants for the component root
    */
-  variants<P extends VariantsProvider<VariantsContext<S['els'], S['ids']>>>(
+  variants<
+    P extends DerivedComponentStyles<
+      'relative',
+      Omit<DerivedComponentContext<S>, 'variants'>
+    >
+  >(
     provider: P
   ): Component<
     ComponentSpec<S['els'], VariantsFromProvider<P>, S['ids']>
   > {
     this.setStateField(
       'variants',
-      provider as VariantsProvider<AnyVariantsContext>
+      provider as DerivedComponentStyles
     );
 
     // biome-ignore lint/suspicious/noExplicitAny: avoid a duplicate signature in a cast
