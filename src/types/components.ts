@@ -3,11 +3,10 @@ import type {
   ElementDefinitions,
   ElementSpecs,
   EmptyElementSpecs,
-  NamedElements,
   Selectors,
   VariantProjector
 } from './elements.ts';
-import type { DerivedFragmentProvider } from './fragments.ts';
+import type { DerivedStyles, Scope } from './fragments.ts';
 import type { HasVariants } from './utils.ts';
 
 /**
@@ -20,35 +19,35 @@ export type AnyComponentSpec = ComponentSpec<
 >;
 
 /**
- * The most inclusive form of a derived context
+ * The context available when defining derived component styles
  */
-export type AnyDerivedContext = DerivedContext<
-  ElementSpecs,
-  string,
-  string
->;
+export type DerivedComponentContext<
+  S extends AnyComponentSpec = AnyComponentSpec
+> = {
+  els: Selectors<S['els']>;
+  ids: IdentifierValues<S['ids']>;
+  variants: VariantProjector<S['variants']>;
+};
 
 /**
- * The most inclusive form of an elements context
+ * A provider of styles derived from a component context
  */
-export type AnyElementsContext = ElementsContext<string>;
-
-/**
- * The most inclusive form of a variants context
- */
-export type AnyVariantsContext = VariantsContext<ElementSpecs, string>;
+export type DerivedComponentStyles<
+  S extends Scope = 'relative',
+  C extends object = DerivedComponentContext
+> = DerivedStyles<S, C>;
 
 /**
  * The data that fully defines a component
  */
 export type ComponentDefinition = {
   elements: ElementDefinitions;
-  global: GlobalProvider<AnyDerivedContext>[];
+  global: DerivedComponentStyles<'absolute'>[];
   id: string;
   identifiers: NamedIdentifiers;
-  nested: NestedProvider<AnyDerivedContext>[];
+  nested: DerivedComponentStyles[];
   styles: Styles;
-  variants?: VariantsProvider<AnyVariantsContext>;
+  variants?: DerivedComponentStyles;
 };
 
 /**
@@ -64,26 +63,6 @@ export type ComponentSpec<
 };
 
 /**
- * The context available when defining derived styles
- */
-export type DerivedContext<
-  E extends NamedElements<E> = EmptyElementSpecs,
-  V extends string = never,
-  I extends string = never
-> = {
-  els: Selectors<E>;
-  ids: IdentifierValues<I>;
-  variants: VariantProjector<V>;
-};
-
-/**
- * The context available when defining elements
- */
-export type ElementsContext<I extends string = never> = {
-  ids: IdentifierValues<I>;
-};
-
-/**
  * An empty component spec
  */
 export type EmptyComponentSpec = ComponentSpec<
@@ -91,18 +70,6 @@ export type EmptyComponentSpec = ComponentSpec<
   never,
   never
 >;
-
-/**
- * A provider of global styles
- */
-export type GlobalProvider<C extends DerivedContext = DerivedContext> =
-  DerivedFragmentProvider<C, 'absolute'>;
-
-/**
- * A provider of nested styles
- */
-export type NestedProvider<C extends DerivedContext = DerivedContext> =
-  DerivedFragmentProvider<C, 'relative'>;
 
 /**
  * A type of a component-specific identifier
@@ -125,20 +92,3 @@ export type IdentifierValuesFor<S extends AnyComponentSpec> = IdentifierValues<
  * A mapping of identifier names to their types
  */
 export type NamedIdentifiers = Record<string, IdentifierType>;
-
-/**
- * The context available to variant definitions
- */
-export type VariantsContext<
-  E extends NamedElements<E> = EmptyElementSpecs,
-  I extends string = never
-> = {
-  els: Selectors<E>;
-  ids: IdentifierValues<I>;
-};
-
-/**
- * A provider of variant styles
- */
-export type VariantsProvider<C extends VariantsContext = VariantsContext> =
-  DerivedFragmentProvider<C, 'relative'>;
