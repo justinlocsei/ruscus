@@ -33,7 +33,7 @@ export type DerivedComponentContext<
  * A provider of styles derived from a component context
  */
 export type DerivedComponentStyles<
-  S extends Scope = 'relative',
+  S extends Scope = Scope,
   C extends object = DerivedComponentContext
 > = DerivedStyles<S, C>;
 
