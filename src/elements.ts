@@ -6,15 +6,13 @@ import { mergeTraits } from './traits.ts';
 import type { Styles } from './types/css.ts';
 import type {
   AnyElementSpec,
+  DerivedElementContext,
+  DerivedElementStyles,
   ElementDefinition,
   ElementDefinitions,
   ElementSpec,
   EmptyElementSpec,
-  NestedContext,
-  NestedProvider,
-  VariantsContext,
-  VariantsFromProvider,
-  VariantsProvider
+  VariantsFromProvider
 } from './types/elements.ts';
 import type { Thunkable } from './types/utils.ts';
 import { resolve } from './utils.ts';
@@ -139,11 +137,11 @@ export class Element<S extends AnyElementSpec>
    * Define nested styles for the element
    */
   nested(
-    provider: NestedProvider<
-      NestedContext<S['children'], S['variants']>
-    >
+    provider: DerivedElementStyles<DerivedElementContext<S>>
   ): Element<S> {
-    this.current.nested.push(provider as NestedProvider);
+    this.current.nested.push(
+      provider as DerivedElementStyles
+    );
 
     return this;
   }
@@ -151,12 +149,14 @@ export class Element<S extends AnyElementSpec>
   /**
    * Define variants for the element
    */
-  variants<P extends VariantsProvider<VariantsContext<S['children']>>>(
+  variants<
+    P extends DerivedElementStyles<Pick<DerivedElementContext<S>, 'els'>>
+  >(
     provider: P
   ): Element<ElementSpec<S['children'], VariantsFromProvider<P>>> {
     this.setStateField(
       'variants',
-      provider as VariantsProvider
+      provider as DerivedElementStyles
     );
 
     return this;
