@@ -15,7 +15,7 @@ import type {
 } from './types/elements.ts';
 import type {
   Fragment,
-  Scope as FragmentScope,
+  FragmentScope,
   ScopedFragments
 } from './types/fragments.ts';
 import { cast } from './utils.ts';

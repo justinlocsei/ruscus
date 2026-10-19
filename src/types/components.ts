@@ -6,7 +6,7 @@ import type {
   Selectors,
   VariantProjector
 } from './elements.ts';
-import type { DerivedStyles, Scope } from './fragments.ts';
+import type { DerivedStyles, FragmentScope } from './fragments.ts';
 import type { HasVariants } from './utils.ts';
 
 /**
@@ -24,7 +24,7 @@ export type DerivedComponentContext<
  * A provider of styles derived from a component context
  */
 export type DerivedComponentStyles<
-  S extends Scope = Scope,
+  S extends FragmentScope = FragmentScope,
   C extends object = DerivedComponentContext
 > = DerivedStyles<S, C>;
 

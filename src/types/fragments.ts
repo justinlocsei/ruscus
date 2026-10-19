@@ -9,7 +9,7 @@ export type AbsoluteFragmentFactory = IsFragmentFactory<'absolute'>;
  * A provider of styles derived from a context
  */
 export type DerivedStyles<
-  S extends Scope = 'relative',
+  S extends FragmentScope = 'relative',
   C extends object = object
 > = (
   defineFragment: IsFragmentFactory<S>,
@@ -19,7 +19,7 @@ export type DerivedStyles<
 /**
  * A styled fragment
  */
-export type Fragment<S extends Scope = Scope> = {
+export type Fragment<S extends FragmentScope = FragmentScope> = {
   nested: (definitions: ScopedFragments) => Fragment<S>;
   scope: S;
   styles: FragmentStyles;
@@ -28,7 +28,12 @@ export type Fragment<S extends Scope = Scope> = {
 /**
  * The most inclusive form of a fragment factory
  */
-export type FragmentFactory = IsFragmentFactory<Scope>;
+export type FragmentFactory = IsFragmentFactory<FragmentScope>;
+
+/**
+ * The scope of a fragment
+ */
+export type FragmentScope = 'absolute' | 'relative';
 
 /**
  * Styles bound to a fragment
@@ -41,7 +46,7 @@ export type FragmentStyles = {
 /**
  * Define a scoped fragment factory
  */
-export type IsFragmentFactory<S extends Scope> = (
+export type IsFragmentFactory<S extends FragmentScope> = (
   styles?: Styles
 ) => Fragment<S>;
 
@@ -51,14 +56,9 @@ export type IsFragmentFactory<S extends Scope> = (
 export type RelativeFragmentFactory = IsFragmentFactory<'relative'>;
 
 /**
- * The scope of a fragment
- */
-export type Scope = 'absolute' | 'relative';
-
-/**
  * Fragment definitions scoped by selector
  */
-export type ScopedFragments<S extends Scope = Scope> = Record<
+export type ScopedFragments<S extends FragmentScope = FragmentScope> = Record<
   string,
   Fragment<S>
 >;
