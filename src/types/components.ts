@@ -8,7 +8,7 @@ import type {
   VariantProjector
 } from './elements.ts';
 import type { DerivedFragmentProvider } from './fragments.ts';
-import type { HasVariants, Patch } from './utils.ts';
+import type { HasVariants } from './utils.ts';
 
 /**
  * The most inclusive form of a component spec
@@ -125,14 +125,6 @@ export type IdentifierValuesFor<S extends AnyComponentSpec> = IdentifierValues<
  * A mapping of identifier names to their types
  */
 export type NamedIdentifiers = Record<string, IdentifierType>;
-
-/**
- * Replace selected fields in a component spec
- */
-export type PatchComponentSpec<
-  S extends AnyComponentSpec,
-  U extends Partial<AnyComponentSpec>
-> = Patch<AnyComponentSpec, S, U>;
 
 /**
  * The context available to variant definitions

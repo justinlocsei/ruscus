@@ -2,7 +2,7 @@ import type { Styles } from './css.ts';
 import type { DerivedFragmentProvider } from './fragments.ts';
 import type { ElementRoot } from './ids.ts';
 import { ELEMENT_ROOT } from './ids.ts';
-import type { EmptyObject, HasVariants, Patch } from './utils.ts';
+import type { EmptyObject, HasVariants } from './utils.ts';
 
 /**
  * The most inclusive form of an element spec
@@ -93,14 +93,6 @@ export type NestedContext<
  */
 export type NestedProvider<C extends NestedContext = NestedContext> =
   DerivedFragmentProvider<C, 'relative'>;
-
-/**
- * Replace selected fields in an element spec
- */
-export type PatchElementSpec<
-  S extends AnyElementSpec,
-  U extends Partial<AnyElementSpec>
-> = Patch<AnyElementSpec, S, U>;
 
 /**
  * Produce class selectors for a set of elements
