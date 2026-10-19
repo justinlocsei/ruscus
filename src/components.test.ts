@@ -2,7 +2,7 @@ import { assert, describe, it } from 'vitest';
 
 import type { AnyComponent } from './components.ts';
 import { Component } from './components.ts';
-import { buildComponentContext } from './contexts/components.ts';
+import { buildComponentContext } from './contexts.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 
 describe('Component', () => {

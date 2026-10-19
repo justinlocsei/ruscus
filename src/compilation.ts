@@ -1,5 +1,4 @@
-import * as components from './contexts/components.ts';
-import * as elements from './contexts/elements.ts';
+import { buildComponentContext, buildElementContext } from './contexts.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
@@ -67,7 +66,7 @@ class ComponentCompiler {
     const { elements, variants } = component;
     const root = this.buildSelector();
 
-    const derivedContext = components.buildComponentContext(component, {
+    const derivedContext = buildComponentContext(component, {
       name: this.name
     });
 
@@ -82,7 +81,7 @@ class ComponentCompiler {
             DerivedComponentContext | DerivedElementContext
           >
         >(variants),
-        components.buildComponentContext(component, { name: this.name })
+        buildComponentContext(component, { name: this.name })
       );
     }
 
@@ -132,7 +131,7 @@ class ComponentCompiler {
             DerivedComponentContext | DerivedElementContext
           >
         >(variants),
-        elements.buildElementContext(
+        buildElementContext(
           [this.component.id, ...path],
           children,
           { name: this.name }
@@ -152,7 +151,7 @@ class ComponentCompiler {
     const { children } = element;
     const selector = this.buildSelector(...path);
 
-    const elementContext = elements.buildElementContext(
+    const elementContext = buildElementContext(
       [this.component.id, ...path],
       children,
       { name: this.name }
