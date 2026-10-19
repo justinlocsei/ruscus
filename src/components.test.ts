@@ -2,14 +2,14 @@ import { assert, describe, it } from 'vitest';
 
 import type { AnyComponent } from './components.ts';
 import { Component } from './components.ts';
-import { buildDerivedContext } from './contexts/components.ts';
+import { buildComponentContext } from './contexts/components.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 
 describe('Component', () => {
   const component = () => new Component('testing');
 
   const styleContext = (instance: AnyComponent) =>
-    buildDerivedContext(instance.current, {
+    buildComponentContext(instance.current, {
       name: levels => levels.join('__')
     });
 
