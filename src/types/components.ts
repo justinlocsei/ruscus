@@ -64,39 +64,24 @@ export type ComponentSpec<
 };
 
 /**
- * Elements available in a context
- */
-export type ContextElements<E extends ElementSpecs> = {
-  els: Selectors<E>;
-};
-
-/**
- * Identifiers available in a context
- */
-export type ContextIdentifiers<I extends string> = {
-  ids: IdentifierValues<I>;
-};
-
-/**
- * Variants available in a context
- */
-export type ContextVariants<V extends string> = {
-  variants: VariantProjector<V>;
-};
-
-/**
  * The context available when defining derived styles
  */
 export type DerivedContext<
   E extends NamedElements<E> = EmptyElementSpecs,
   V extends string = never,
   I extends string = never
-> = ContextElements<E> & ContextIdentifiers<I> & ContextVariants<V>;
+> = {
+  els: Selectors<E>;
+  ids: IdentifierValues<I>;
+  variants: VariantProjector<V>;
+};
 
 /**
  * The context available when defining elements
  */
-export type ElementsContext<I extends string = never> = ContextIdentifiers<I>;
+export type ElementsContext<I extends string = never> = {
+  ids: IdentifierValues<I>;
+};
 
 /**
  * An empty component spec
@@ -155,7 +140,10 @@ export type PatchComponentSpec<
 export type VariantsContext<
   E extends NamedElements<E> = EmptyElementSpecs,
   I extends string = never
-> = ContextElements<E> & ContextIdentifiers<I>;
+> = {
+  els: Selectors<E>;
+  ids: IdentifierValues<I>;
+};
 
 /**
  * A provider of variant styles
