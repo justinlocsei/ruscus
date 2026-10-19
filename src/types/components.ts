@@ -5,7 +5,7 @@ import type {
   EmptyElementSpecs,
   NamedElements,
   Selectors,
-  VariantSelector
+  VariantProjector
 } from './elements.ts';
 import type { DerivedFragmentProvider } from './fragments.ts';
 import type { HasVariants, Patch } from './utils.ts';
@@ -81,7 +81,7 @@ export type ContextIdentifiers<I extends string> = {
  * Variants available in a context
  */
 export type ContextVariants<V extends string> = {
-  variants: VariantSelector<V>;
+  variants: VariantProjector<V>;
 };
 
 /**

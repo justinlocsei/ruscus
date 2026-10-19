@@ -85,7 +85,7 @@ export type NestedContext<
   V extends string = never
 > = {
   els: Selectors<E>;
-  variants: VariantSelector<V>;
+  variants: VariantProjector<V>;
 };
 
 /**
@@ -122,7 +122,7 @@ type SelectorForSpec<S extends AnyElementSpec> = [
 /**
  * A projector for a selector that uses one or more variants
  */
-export type VariantSelector<V extends string> = <T extends V>(
+export type VariantProjector<V extends string> = <T extends V>(
   ...names: T[]
 ) => string;
 

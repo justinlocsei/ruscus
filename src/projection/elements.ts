@@ -3,10 +3,9 @@ import type {
   ElementDefinition,
   ElementDefinitions,
   Selectors,
-  VariantSelector
+  VariantProjector
 } from '../types/elements.ts';
 import { ELEMENT_ROOT } from '../types/ids.ts';
-import type { VariantProjector } from '../types/projection.ts';
 
 /**
  * The format for projected element resources
@@ -75,7 +74,7 @@ function projectElements(
  */
 export function projectVariantSelector(
   anchor: string
-): VariantSelector<string> {
+): VariantProjector<string> {
   return (...vs) => `${anchor}${vs.map(v => `.is-${v}`).join('')}`;
 }
 
