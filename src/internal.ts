@@ -1,7 +1,7 @@
 import type { CompileConfig } from './compilation.ts';
 import type {
-  AnyComponentSpec,
   ComponentDefinition,
+  ComponentSpec,
   IdentifierValuesFor
 } from './types/components.ts';
 import type { ApplicableComponent } from './types/projection.ts';
@@ -12,7 +12,7 @@ const identifiers = Symbol.for('ruscus/identifiers');
 /**
  * Internal annotations for a component
  */
-type Annotations<S extends AnyComponentSpec> = {
+type Annotations<S extends ComponentSpec> = {
   [build]: BuildPlan;
   [identifiers]: IdentifierValuesFor<S>;
 };
@@ -20,7 +20,7 @@ type Annotations<S extends AnyComponentSpec> = {
 /**
  * An applicable component that includes internal annotations
  */
-export type InternalComponent<S extends AnyComponentSpec> =
+export type InternalComponent<S extends ComponentSpec> =
   & ApplicableComponent<S>
   & Annotations<S>;
 
@@ -35,7 +35,7 @@ export type BuildPlan = {
 /**
  * Apply internal annotations to a component
  */
-export function annotateComponent<S extends AnyComponentSpec>(
+export function annotateComponent<S extends ComponentSpec>(
   component: ApplicableComponent<S>,
   annotations: {
     buildPlan: BuildPlan;
@@ -63,7 +63,7 @@ export function annotateComponent<S extends AnyComponentSpec>(
 /**
  * Extract a build plan from a component
  */
-export function extractBuildPlan<S extends AnyComponentSpec>(
+export function extractBuildPlan<S extends ComponentSpec>(
   component: InternalComponent<S>
 ): BuildPlan {
   return component[build];
@@ -72,7 +72,7 @@ export function extractBuildPlan<S extends AnyComponentSpec>(
 /**
  * Extract identifiers from a component
  */
-export function extractIdentifiers<S extends AnyComponentSpec>(
+export function extractIdentifiers<S extends ComponentSpec>(
   component: InternalComponent<S>
 ): IdentifierValuesFor<S> {
   return component[identifiers];

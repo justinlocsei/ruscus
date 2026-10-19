@@ -10,19 +10,10 @@ import type { DerivedStyles, Scope } from './fragments.ts';
 import type { HasVariants } from './utils.ts';
 
 /**
- * The most inclusive form of a component spec
- */
-export type AnyComponentSpec = ComponentSpec<
-  ElementSpecs,
-  string,
-  string
->;
-
-/**
  * The context available when defining derived component styles
  */
 export type DerivedComponentContext<
-  S extends AnyComponentSpec = AnyComponentSpec
+  S extends ComponentSpec = ComponentSpec
 > = {
   els: Selectors<S['els']>;
   ids: IdentifierValues<S['ids']>;
@@ -54,9 +45,9 @@ export type ComponentDefinition = {
  * A specification for a component
  */
 export type ComponentSpec<
-  E extends ElementSpecs,
-  V extends string,
-  I extends string
+  E extends ElementSpecs = ElementSpecs,
+  V extends string = string,
+  I extends string = string
 > = HasVariants<V> & {
   els: E;
   ids: I;
@@ -84,7 +75,7 @@ export type IdentifierValues<T extends string = string> = Record<T, string>;
 /**
  * Get the identifier values for a component spec
  */
-export type IdentifierValuesFor<S extends AnyComponentSpec> = IdentifierValues<
+export type IdentifierValuesFor<S extends ComponentSpec> = IdentifierValues<
   S['ids']
 >;
 

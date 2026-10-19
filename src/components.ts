@@ -13,7 +13,6 @@ import { mergeStyles } from './styles.ts';
 import type { Trait } from './traits.ts';
 import { mergeTraits } from './traits.ts';
 import type {
-  AnyComponentSpec,
   ComponentDefinition,
   ComponentSpec,
   DerivedComponentContext,
@@ -38,7 +37,7 @@ type ComponentOptions = {
   namespace?: string;
 };
 
-export class Component<S extends AnyComponentSpec>
+export class Component<S extends ComponentSpec = ComponentSpec>
   extends Builder<ComponentDefinition>
 {
   id: string;

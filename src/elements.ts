@@ -5,7 +5,6 @@ import type { Trait } from './traits.ts';
 import { mergeTraits } from './traits.ts';
 import type { Styles } from './types/css.ts';
 import type {
-  AnyElementSpec,
   DerivedElementContext,
   DerivedElementStyles,
   ElementDefinition,
@@ -79,7 +78,7 @@ export function resolveElements(
   );
 }
 
-export class Element<S extends AnyElementSpec>
+export class Element<S extends ElementSpec = ElementSpec>
   extends Builder<ElementDefinition>
 {
   /**

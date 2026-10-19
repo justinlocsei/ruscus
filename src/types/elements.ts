@@ -5,11 +5,6 @@ import { ELEMENT_ROOT } from './ids.ts';
 import type { EmptyObject, HasVariants } from './utils.ts';
 
 /**
- * The most inclusive form of an element spec
- */
-export type AnyElementSpec = ElementSpec<ElementSpecs, string>;
-
-/**
  * Get selectors for an element with children
  */
 type ChildSelectors<C extends NamedElements<C>> = {
@@ -21,7 +16,7 @@ type ChildSelectors<C extends NamedElements<C>> = {
  * The context available when defining derived element styles
  */
 export type DerivedElementContext<
-  S extends AnyElementSpec = AnyElementSpec
+  S extends ElementSpec = ElementSpec
 > = {
   els: Selectors<S['children']>;
   variants: VariantProjector<S['variants']>;
@@ -53,8 +48,8 @@ export type ElementDefinitions = Record<string, ElementDefinition>;
  * A specification for an element
  */
 export type ElementSpec<
-  C extends ElementSpecs,
-  V extends string
+  C extends ElementSpecs = ElementSpecs,
+  V extends string = string
 > = HasVariants<V> & {
   children: C;
 };
@@ -82,7 +77,7 @@ export type EmptyElementSpecs = EmptyObject;
 /**
  * A constraint on element specs that preserves each element's type
  */
-export type NamedElements<E> = { [K in keyof E]: AnyElementSpec };
+export type NamedElements<E> = { [K in keyof E]: ElementSpec };
 
 /**
  * Produce class selectors for a set of elements
@@ -94,7 +89,7 @@ export type Selectors<E extends NamedElements<E> = EmptyElementSpecs> =
 /**
  * Resolve the selector type for an element spec
  */
-type SelectorForSpec<S extends AnyElementSpec> = [
+type SelectorForSpec<S extends ElementSpec> = [
   keyof S['children']
 ] extends [never] ? string
   : S['children'] extends NamedElements<S['children']>

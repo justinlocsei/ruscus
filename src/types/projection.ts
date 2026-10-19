@@ -1,6 +1,6 @@
-import type { AnyComponentSpec } from './components.ts';
+import type { ComponentSpec } from './components.ts';
 import type {
-  AnyElementSpec,
+  ElementSpec,
   EmptyElementSpecs,
   NamedElements,
   VariantProjector
@@ -11,14 +11,14 @@ import type { HasVariants } from './utils.ts';
 /**
  * A component that can be applied to the DOM
  */
-export type ApplicableComponent<S extends AnyComponentSpec> =
+export type ApplicableComponent<S extends ComponentSpec> =
   & { [ELEMENT_ROOT]: ProjectElement<S> }
   & ElementProjectors<S['els']>;
 
 /**
  * Project an element as class names
  */
-export type ElementProjector<S extends AnyElementSpec> = [
+export type ElementProjector<S extends ElementSpec> = [
   keyof S['children']
 ] extends [never] ? ProjectElement<S>
   : { [ELEMENT_ROOT]: ProjectElement<S> } & ElementProjectors<S['children']>;
