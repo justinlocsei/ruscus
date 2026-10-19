@@ -1,11 +1,4 @@
 /**
- * A generic shape for nested selectors
- */
-export type AnySelectors = {
-  [name: string]: AnySelectors | string;
-};
-
-/**
  * A block containing either declarations or nested rules
  */
 export type Block = Declarations | RuleBlock;
