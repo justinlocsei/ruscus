@@ -17,6 +17,14 @@ export type DerivedFragmentProvider<
 ) => ScopedFragments<S>;
 
 /**
+ * A provider of styles derived from a context
+ */
+export type DerivedStyles<
+  S extends Scope = 'relative',
+  C extends object = object
+> = DerivedFragmentProvider<C, S>;
+
+/**
  * A styled fragment
  */
 export type Fragment<S extends Scope = Scope> = {
