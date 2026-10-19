@@ -18,7 +18,7 @@ export type ApplicableComponent<S extends ComponentSpec> =
 /**
  * Project an element as class names
  */
-export type ElementProjector<S extends ElementSpec> = [
+type ElementProjector<S extends ElementSpec> = [
   keyof S['children']
 ] extends [never] ? ProjectElement<S>
   : { [ELEMENT_ROOT]: ProjectElement<S> } & ElementProjectors<S['children']>;
@@ -26,7 +26,7 @@ export type ElementProjector<S extends ElementSpec> = [
 /**
  * Project an element tree as class names
  */
-export type ElementProjectors<
+type ElementProjectors<
   E extends NamedElements<E> = EmptyElementSpecs
 > = {
   [K in keyof E]: ElementProjector<E[K]>;
