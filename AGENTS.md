@@ -13,8 +13,8 @@ Public API: `src/index.ts` (component factory, compile entry, queries).
 | Layer | Role | Typing |
 | --- | --- | --- |
 | Builder / `.apply()` | TSX class names, narrow inference | `Component<S>`, `InternalComponent<S>`, `ApplicableComponent<S>` |
-| Style providers on the builder | Fragment keys, `els`, `variants()` | `DerivedContext<S['els'], S['variants'], S['ids']>`, `NestedContext<…>`, etc. |
-| `ComponentDefinition` / `ElementDefinition` | Stored tree + provider lists | `AnyNestedContext`, `AnyDerivedContext`, `AnyVariantsContext`, … |
+| Style providers on the builder | Fragment keys, `els`, `variants()` | `ComponentContext<S>`, `ElementContext<S>`, and `DerivedStyles` |
+| `ComponentDefinition` / `ElementDefinition` | Stored tree + provider lists | `ComponentContext`, `ElementContext` |
 | `ComponentCompiler` | Emit CSS from definitions | `buildSelector` and fragment **keys are strings**; no projector dispatch in the compiler |
 | Context builders | Same selector strings authors expect | `projectElementSelectors` (shared with projection); `hasVariants` on the tree root (from `component.variants` / `element.variants` at call sites) |
 
@@ -22,7 +22,7 @@ Public API: `src/index.ts` (component factory, compile entry, queries).
 
 **`Any*` specs** (`AnyComponentSpec`, `AnyElementSpec`, …) are for **storage and internal provider signatures**, not for typing a normal `.apply()` result. `AnyComponentSpec` uses `variants: string` on the spec, so `ApplicableComponent<AnyComponentSpec>` over-types the root as always callable—fine for wide bounds, wrong for author ergonomics if used as the applied type. Prefer `InternalComponent<S>` or annotation-only symbols (e.g. build plan extraction) at internal boundaries instead of forcing `InternalComponent<AnyComponentSpec>`.
 
-**Provider variance:** Stored providers use `C extends object` (default `AnyDerivedContext` / `AnyVariantsContext`) so narrow author contexts do not have to be assignable to erased `els` shapes. Cast to erased provider types when pushing onto `ComponentDefinition`.
+**Provider variance:** Stored providers use wide `ComponentContext` / `ElementContext` contexts. Cast narrow author providers to these erased types when pushing onto component or element definitions.
 
 **Generics:** Let `S` accrue on the fluent chain; do not thread `S` through compile/storage unless author precision truly requires it. That split is intentional complexity tradeoff: slightly awkward internal casts and `Any*` erasure vs. a fully generic compiler.
 
