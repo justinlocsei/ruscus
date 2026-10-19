@@ -4,7 +4,7 @@ import type {
   ComponentSpec,
   IdentifierValuesFor
 } from './types/components.ts';
-import type { ApplicableComponent } from './types/projection.ts';
+import type { ProjectedComponent } from './types/projection.ts';
 
 const build = Symbol.for('ruscus/build');
 const identifiers = Symbol.for('ruscus/identifiers');
@@ -21,7 +21,7 @@ type Annotations<S extends ComponentSpec> = {
  * An applicable component that includes internal annotations
  */
 export type InternalComponent<S extends ComponentSpec> =
-  & ApplicableComponent<S>
+  & ProjectedComponent<S>
   & Annotations<S>;
 
 /**
@@ -36,7 +36,7 @@ export type BuildPlan = {
  * Apply internal annotations to a component
  */
 export function annotateComponent<S extends ComponentSpec>(
-  component: ApplicableComponent<S>,
+  component: ProjectedComponent<S>,
   annotations: {
     buildPlan: BuildPlan;
     identifiers: IdentifierValuesFor<S>;

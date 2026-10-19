@@ -9,27 +9,27 @@ import { ELEMENT_ROOT } from './ids.ts';
 import type { HasVariants } from './utils.ts';
 
 /**
- * A component that can be applied to the DOM
+ * A component that is projected as class names
  */
-export type ApplicableComponent<S extends ComponentSpec> =
+export type ProjectedComponent<S extends ComponentSpec> =
   & { [ELEMENT_ROOT]: ProjectElement<S> }
-  & ElementProjectors<S['els']>;
+  & ProjectedElements<S['els']>;
 
 /**
- * Project an element as class names
+ * An element projected as class names
  */
-type ElementProjector<S extends ElementSpec> = [
+type ProjectedElement<S extends ElementSpec> = [
   keyof S['children']
 ] extends [never] ? ProjectElement<S>
-  : { [ELEMENT_ROOT]: ProjectElement<S> } & ElementProjectors<S['children']>;
+  : { [ELEMENT_ROOT]: ProjectElement<S> } & ProjectedElements<S['children']>;
 
 /**
- * Project an element tree as class names
+ * An element tree projected as class names
  */
-type ElementProjectors<
+type ProjectedElements<
   E extends NamedElements<E> = EmptyElementSpecs
 > = {
-  [K in keyof E]: ElementProjector<E[K]>;
+  [K in keyof E]: ProjectedElement<E[K]>;
 };
 
 /**

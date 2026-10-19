@@ -2,7 +2,7 @@ import type { Component } from './components.ts';
 import type { NameGenerator } from './naming.ts';
 import { projectElementTree } from './projection/elements.ts';
 import type { ComponentSpec } from './types/components.ts';
-import type { ApplicableComponent } from './types/projection.ts';
+import type { ProjectedComponent } from './types/projection.ts';
 
 /**
  * Project a component into applicable class names
@@ -10,7 +10,7 @@ import type { ApplicableComponent } from './types/projection.ts';
 export function projectComponent<S extends ComponentSpec>(
   component: Component<S>,
   name: NameGenerator
-): ApplicableComponent<S> {
+): ProjectedComponent<S> {
   const { current } = component;
 
   return projectElementTree(
@@ -21,5 +21,5 @@ export function projectComponent<S extends ComponentSpec>(
       hasVariants: current.variants !== undefined,
       name
     }
-  ) as ApplicableComponent<S>;
+  ) as ProjectedComponent<S>;
 }
