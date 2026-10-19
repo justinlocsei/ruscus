@@ -8,10 +8,10 @@ import type {
   AnyElementSpec,
   ElementDefinition,
   ElementDefinitions,
+  ElementSpec,
   EmptyElementSpec,
   NestedContext,
   NestedProvider,
-  PatchElementSpec,
   VariantsContext,
   VariantsFromProvider,
   VariantsProvider
@@ -81,26 +81,6 @@ export function resolveElements(
   );
 }
 
-/**
- * Apply child constraints to an element
- */
-type WithChildren<
-  S extends AnyElementSpec,
-  T extends ElementProviders
-> = Element<
-  PatchElementSpec<S, { children: ProvidersToSpecs<T> }>
->;
-
-/**
- * Apply variant constraints to an element
- */
-type WithVariants<
-  S extends AnyElementSpec,
-  P extends VariantsProvider
-> = Element<
-  PatchElementSpec<S, { variants: VariantsFromProvider<P> }>
->;
-
 export class Element<S extends AnyElementSpec>
   extends Builder<ElementDefinition>
 {
@@ -120,13 +100,14 @@ export class Element<S extends AnyElementSpec>
    */
   children<T extends ElementProviders>(
     definitions: Thunkable<T>
-  ): WithChildren<S, T> {
+  ): Element<ElementSpec<ProvidersToSpecs<T>, S['variants']>> {
     this.setStateField(
       'children',
       resolveElements(resolve(definitions))
     );
 
-    return this as WithChildren<S, T>;
+    // biome-ignore lint/suspicious/noExplicitAny: avoid a duplicate signature in a cast
+    return this as any;
   }
 
   /**
@@ -172,12 +153,12 @@ export class Element<S extends AnyElementSpec>
    */
   variants<P extends VariantsProvider<VariantsContext<S['children']>>>(
     provider: P
-  ): WithVariants<S, P> {
+  ): Element<ElementSpec<S['children'], VariantsFromProvider<P>>> {
     this.setStateField(
       'variants',
       provider as VariantsProvider
     );
 
-    return this as WithVariants<S, P>;
+    return this;
   }
 }

@@ -16,6 +16,7 @@ import type {
   AnyComponentSpec,
   AnyVariantsContext,
   ComponentDefinition,
+  ComponentSpec,
   DerivedContext,
   ElementsContext,
   EmptyComponentSpec,
@@ -23,7 +24,6 @@ import type {
   IdentifierValuesFor,
   NamedIdentifiers,
   NestedProvider,
-  PatchComponentSpec,
   VariantsContext,
   VariantsProvider
 } from './types/components.ts';
@@ -42,36 +42,6 @@ export type AnyComponent = BuilderState<ComponentDefinition>;
 type ComponentOptions = {
   namespace?: string;
 };
-
-/**
- * Apply element constraints to a component
- */
-type WithElements<
-  S extends AnyComponentSpec,
-  T extends ElementProviders
-> = Component<
-  PatchComponentSpec<S, { els: ProvidersToSpecs<T> }>
->;
-
-/**
- * Apply identifier constraints to a component
- */
-type WithIdentifiers<
-  S extends AnyComponentSpec,
-  I extends NamedIdentifiers
-> = Component<
-  PatchComponentSpec<S, { ids: keyof I & string }>
->;
-
-/**
- * Apply variant constraints to a component
- */
-type WithVariants<
-  S extends AnyComponentSpec,
-  P extends VariantsProvider<VariantsContext<S['els'], S['ids']>>
-> = Component<
-  PatchComponentSpec<S, { variants: VariantsFromProvider<P> }>
->;
 
 export class Component<S extends AnyComponentSpec>
   extends Builder<ComponentDefinition>
@@ -129,10 +99,12 @@ export class Component<S extends AnyComponentSpec>
   /**
    * Define component-specific identifiers
    */
-  identifiers<I extends NamedIdentifiers>(types: I): WithIdentifiers<S, I> {
+  identifiers<I extends NamedIdentifiers>(
+    types: I
+  ): Component<ComponentSpec<S['els'], S['variants'], keyof I & string>> {
     this.setStateField('identifiers', types);
 
-    return cast<WithIdentifiers<S, I>>(this);
+    return this;
   }
 
   /**
@@ -143,7 +115,9 @@ export class Component<S extends AnyComponentSpec>
       e: typeof defineElement,
       ctx: ElementsContext<S['ids']>
     ) => T
-  ): WithElements<S, T> {
+  ): Component<
+    ComponentSpec<ProvidersToSpecs<T>, S['variants'], S['ids']>
+  > {
     this.current.elements = resolveElements(
       provider(
         defineElement,
@@ -151,7 +125,8 @@ export class Component<S extends AnyComponentSpec>
       )
     );
 
-    return cast<WithElements<S, T>>(this);
+    // biome-ignore lint/suspicious/noExplicitAny: avoid a duplicate signature in a cast
+    return this as any;
   }
 
   /**
@@ -200,13 +175,16 @@ export class Component<S extends AnyComponentSpec>
    */
   variants<P extends VariantsProvider<VariantsContext<S['els'], S['ids']>>>(
     provider: P
-  ): WithVariants<S, P> {
+  ): Component<
+    ComponentSpec<S['els'], VariantsFromProvider<P>, S['ids']>
+  > {
     this.setStateField(
       'variants',
       provider as VariantsProvider<AnyVariantsContext>
     );
 
-    return cast<WithVariants<S, P>>(this);
+    // biome-ignore lint/suspicious/noExplicitAny: avoid a duplicate signature in a cast
+    return this as any;
   }
 }
 
