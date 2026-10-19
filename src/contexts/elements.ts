@@ -4,8 +4,7 @@ import {
   projectVariantSelector
 } from '../projection/elements.ts';
 import type {
-  AnyNestedContext,
-  AnyVariantsContext,
+  DerivedElementContext,
   ElementDefinitions
 } from '../types/elements.ts';
 
@@ -19,28 +18,15 @@ export type ContextOptions = {
 export const variants = projectVariantSelector('&');
 
 /**
- * Build a context for defining nested element styles
+ * Build a context for defining derived element styles
  */
-export function buildNestedContext(
+export function buildElementContext(
   namespace: string[],
   children: ElementDefinitions,
   options: ContextOptions
-): AnyNestedContext {
+): DerivedElementContext {
   return {
-    ...buildVariantsContext(namespace, children, options),
+    els: projectElementSelectors(namespace, children, options),
     variants
-  };
-}
-
-/**
- * Build a context for defining element variants
- */
-export function buildVariantsContext(
-  namespace: string[],
-  children: ElementDefinitions,
-  { name }: ContextOptions
-): AnyVariantsContext {
-  return {
-    els: projectElementSelectors(namespace, children, { name })
   };
 }
