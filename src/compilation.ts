@@ -6,19 +6,20 @@ import { useNaming } from './naming.ts';
 import { asProperty } from './styles.ts';
 import type {
   ComponentDefinition,
-  VariantsContext as ComponentVariantsContext
+  DerivedComponentContext,
+  DerivedComponentStyles
 } from './types/components.ts';
 import type { Declarations } from './types/css.ts';
 import type {
-  ElementDefinition,
-  VariantsContext as ElementVariantsContext,
-  VariantsProvider
+  DerivedElementContext,
+  ElementDefinition
 } from './types/elements.ts';
 import type {
   Fragment,
   Scope as FragmentScope,
   ScopedFragments
 } from './types/fragments.ts';
+import { cast } from './utils.ts';
 
 /**
  * Options for compiling a component's CSS
@@ -66,7 +67,7 @@ class ComponentCompiler {
     const { elements, variants } = component;
     const root = this.buildSelector();
 
-    const derivedContext = components.buildDerivedContext(component, {
+    const derivedContext = components.buildComponentContext(component, {
       name: this.name
     });
 
@@ -75,8 +76,13 @@ class ComponentCompiler {
     if (variants) {
       this.addVariantRules(
         root,
-        variants,
-        components.buildVariantsContext(component, { name: this.name })
+        cast<
+          DerivedComponentStyles<
+            'relative',
+            DerivedComponentContext | DerivedElementContext
+          >
+        >(variants),
+        components.buildComponentContext(component, { name: this.name })
       );
     }
 
@@ -120,8 +126,13 @@ class ComponentCompiler {
     if (variants) {
       this.addVariantRules(
         selector,
-        variants,
-        elements.buildVariantsContext(
+        cast<
+          DerivedComponentStyles<
+            'relative',
+            DerivedComponentContext | DerivedElementContext
+          >
+        >(variants),
+        elements.buildElementContext(
           [this.component.id, ...path],
           children,
           { name: this.name }
@@ -141,7 +152,7 @@ class ComponentCompiler {
     const { children } = element;
     const selector = this.buildSelector(...path);
 
-    const elementContext = elements.buildNestedContext(
+    const elementContext = elements.buildElementContext(
       [this.component.id, ...path],
       children,
       { name: this.name }
@@ -162,12 +173,13 @@ class ComponentCompiler {
   /**
    * Add variant rules for component or element variants
    */
-  private addVariantRules<
-    C extends ComponentVariantsContext | ElementVariantsContext
-  >(
+  private addVariantRules(
     anchor: string,
-    provider: VariantsProvider<C>,
-    ctx: C
+    provider: DerivedComponentStyles<
+      'relative',
+      DerivedComponentContext | DerivedElementContext
+    >,
+    ctx: DerivedComponentContext | DerivedElementContext
   ): void {
     const definitions = provider(defineRelativeFragment, ctx);
 
