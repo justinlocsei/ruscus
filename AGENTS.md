@@ -20,11 +20,11 @@ Public API: `src/index.ts` (component factory, compile entry, queries).
 
 **Variant projectors:** For a given node, types are **either** a plain `string` **or** `VariantProjector<V>` (conditional on `variants: never`), not `string | VariantProjector` on the same property. Authors with variants call `els.foo()` / `root()` in fragment keys; plain `els.foo` when the spec has no variants on that node. Avoid helper bridges that accept both.
 
-**`Any*` specs** (`AnyComponentSpec`, `AnyElementSpec`, …) are for **storage and internal provider signatures**, not for typing a normal `.apply()` result. `AnyComponentSpec` uses `variants: string` on the spec, so `ApplicableComponent<AnyComponentSpec>` over-types the root as always callable—fine for wide bounds, wrong for author ergonomics if used as the applied type. Prefer `InternalComponent<S>` or annotation-only symbols (e.g. build plan extraction) at internal boundaries instead of forcing `InternalComponent<AnyComponentSpec>`.
+**Wide spec defaults** (`ComponentSpec`, `ElementSpec`) are for **storage and internal provider signatures**, not for typing a normal `.apply()` result. Their defaults use `variants: string`, open elements/children, and open identifiers. `EmptyComponentSpec` / `EmptyElementSpec` are used only by `defineComponent` / `defineElement` to start the builder chain; the classes themselves default to the wide specs. A bare `ComponentSpec` passed to `ApplicableComponent` over-types the root as always callable—fine for wide bounds, wrong for author ergonomics. Prefer the narrowed `S` from the builder chain for applied types.
 
 **Provider variance:** Stored providers use wide `ComponentContext` / `ElementContext` contexts. Cast narrow author providers to these erased types when pushing onto component or element definitions.
 
-**Generics:** Let `S` accrue on the fluent chain; do not thread `S` through compile/storage unless author precision truly requires it. That split is intentional complexity tradeoff: slightly awkward internal casts and `Any*` erasure vs. a fully generic compiler.
+**Generics:** Let `S` accrue on the fluent chain; do not thread `S` through compile/storage unless author precision truly requires it. That split is intentional complexity tradeoff: slightly awkward internal casts and wide-spec erasure vs. a fully generic compiler.
 
 ## Exports
 
