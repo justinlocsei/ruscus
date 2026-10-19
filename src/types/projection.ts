@@ -28,9 +28,7 @@ type ProjectedElement<S extends ElementSpec> = [
  */
 type ProjectedElements<
   E extends NamedElements<E> = EmptyElementSpecs
-> = {
-  [K in keyof E]: ProjectedElement<E[K]>;
-};
+> = { [K in keyof E]: ProjectedElement<E[K]> };
 
 /**
  * Project a single element as a class name
