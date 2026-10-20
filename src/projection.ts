@@ -1,6 +1,6 @@
 import type { Component } from './components.ts';
 import type { NameGenerator } from './naming.ts';
-import { projectElementTree } from './projection/elements.ts';
+import { projectTree } from './projection/elements.ts';
 import type { ComponentSpec, ProjectedComponent } from './types/components.ts';
 
 /**
@@ -12,7 +12,7 @@ export function projectComponent<S extends ComponentSpec>(
 ): ProjectedComponent<S> {
   const { current } = component;
 
-  return projectElementTree(
+  return projectTree<S, S['els']>(
     [component.id],
     current.elements,
     {
@@ -20,5 +20,5 @@ export function projectComponent<S extends ComponentSpec>(
       hasVariants: current.variants !== undefined,
       name
     }
-  ) as ProjectedComponent<S>;
+  );
 }

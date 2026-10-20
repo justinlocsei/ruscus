@@ -1,8 +1,5 @@
 import type { NameGenerator } from './naming.ts';
-import {
-  projectElementSelectors,
-  projectVariantSelector
-} from './projection/elements.ts';
+import { projectTree, projectVariantSelector } from './projection/elements.ts';
 import { projectIdentifiers } from './projection/identifiers.ts';
 import type {
   ComponentDefinition,
@@ -30,10 +27,14 @@ export function buildComponentContext(
   { name }: ContextOptions
 ): DerivedComponentContext {
   return {
-    els: projectElementSelectors(
+    els: projectTree(
       [component.id],
       component.elements,
-      { hasVariants: component.variants !== undefined, name }
+      {
+        format: 'selectors',
+        hasVariants: component.variants !== undefined,
+        name
+      }
     ),
     ids: projectIdentifiers(component),
     variants
@@ -49,10 +50,15 @@ export function buildElementContext(
   { name }: ContextOptions
 ): DerivedElementContext {
   return {
-    els: projectElementSelectors(namespace, element.children, {
-      hasVariants: element.variants !== undefined,
-      name
-    }),
+    els: projectTree(
+      namespace,
+      element.children,
+      {
+        format: 'selectors',
+        hasVariants: element.variants !== undefined,
+        name
+      }
+    ),
     variants
   };
 }

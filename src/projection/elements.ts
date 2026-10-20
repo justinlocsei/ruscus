@@ -3,11 +3,14 @@ import type {
   ElementDefinition,
   ElementDefinitions,
   ElementSpec,
-  ElementSpecs,
+  NamedElements,
+  ProjectElement,
+  ProjectElements,
   ProjectTree,
   VariantProjector
 } from '../types/elements.ts';
 import { ELEMENT_ROOT } from '../types/ids.ts';
+import type { HasVariants } from '../types/utils.ts';
 
 /**
  * The format for projected element resources
@@ -24,88 +27,85 @@ type ProjectElementTreeOptions = {
 };
 
 /**
- * Options for projecting child elements under a namespace
+ * Options for projecting an element
  */
-type ProjectElementsOptions = {
+type ProjectElementOptions = {
   format: ProjectionFormat;
   name: NameGenerator;
 };
 
 /**
- * Project a root node and element tree
+ * Project a root node and its children
  */
-export function projectElementTree(
+export function projectTree<
+  R extends HasVariants<string>,
+  E extends NamedElements<E>
+>(
   namespace: string[],
   elements: ElementDefinitions,
   { format, hasVariants, name }: ProjectElementTreeOptions
-): Record<string, unknown> {
+): ProjectTree<R, E> {
   return {
-    [ELEMENT_ROOT]: projectNode(name(namespace), { format, hasVariants }),
-    ...projectElements(namespace, elements, { format, name })
-  };
+    ...projectElements(namespace, elements, { format, name }),
+    [ELEMENT_ROOT]: projectNode(name(namespace), {
+      format,
+      hasVariants
+    })
+  } as ProjectTree<R, E>;
 }
 
 /**
- * Project child elements under a namespace
+ * Project elements under a namespace
  */
-function projectElements(
+function projectElements<E extends NamedElements<E>>(
   namespace: string[],
   elements: ElementDefinitions,
-  { format, name }: ProjectElementsOptions
-): Record<string, unknown> {
-  return Object.entries(elements).reduce<Record<string, unknown>>(
+  { format, name }: ProjectElementOptions
+): ProjectElements<E> {
+  return Object.entries(elements).reduce<ProjectElements<E>>(
     (previous, [key, element]) => {
       if (element === undefined) {
         return previous;
       }
 
-      previous[key] = projectElement(
+      previous[key as keyof E] = projectElement(
         [...namespace, key],
         element,
         { format, name }
-      );
+      ) as ProjectElements<E>[keyof E];
 
       return previous;
     },
-    {} as Record<string, unknown>
+    {} as ProjectElements<E>
   );
-}
-
-/**
- * Build a variant selector anchored to a compile-time root
- */
-export function projectVariantSelector(
-  anchor: string
-): VariantProjector<string> {
-  return (...vs) => `${anchor}${vs.map(v => `.is-${v}`).join('')}`;
 }
 
 /**
  * Project an element as a class name, selector, or child tree
  */
-function projectElement(
+function projectElement<S extends ElementSpec>(
   path: string[],
   element: ElementDefinition,
-  options: ProjectElementsOptions
-): unknown {
+  options: ProjectElementOptions
+): ProjectElement<S> {
   const { children } = element;
   const hasVariants = element.variants !== undefined;
 
-  return Object.keys(children).length
-    ? projectElementTree(path, children, {
+  return (Object.keys(children).length
+    ? projectTree<S, S['children']>(path, children, {
       ...options,
       hasVariants
     })
     : projectNode(options.name(path), {
       ...options,
       hasVariants
-    });
+    })) as ProjectElement<S>;
 }
 
 /**
  * Project a node as a class name or variant projector
  */
-export function projectNode(
+function projectNode(
   className: string,
   {
     format,
@@ -129,16 +129,10 @@ export function projectNode(
 }
 
 /**
- * Project an element tree as CSS selectors
+ * Build a variant selector anchored to a compile-time root
  */
-export function projectElementSelectors(
-  namespace: string[],
-  elements: ElementDefinitions,
-  { hasVariants, name }: { hasVariants: boolean; name: NameGenerator }
-): ProjectTree<ElementSpec, ElementSpecs> {
-  return projectElementTree(namespace, elements, {
-    format: 'selectors',
-    hasVariants,
-    name
-  }) as ProjectTree<ElementSpec, ElementSpecs>;
+export function projectVariantSelector(
+  anchor: string
+): VariantProjector<string> {
+  return (...vs) => `${anchor}${vs.map(v => `.is-${v}`).join('')}`;
 }
