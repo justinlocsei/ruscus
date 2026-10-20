@@ -68,14 +68,14 @@ export type NamedElements<E extends object> = { [K in keyof E]: ElementSpec };
 /**
  * Project an element as a static or dynamic value based on its variants
  */
-export type ProjectElement<S extends HasVariants<string>> = [
+type ProjectElement<S extends HasVariants<string>> = [
   S['variants']
 ] extends [never] ? string : VariantProjector<S['variants']>;
 
 /**
  * Project an element spec as flat or nested class names
  */
-export type ProjectedElement<S extends ElementSpec> = [
+type ProjectedElement<S extends ElementSpec> = [
   keyof S['children']
 ] extends [never] ? ProjectElement<S>
   : S['children'] extends NamedElements<S['children']>
@@ -85,7 +85,7 @@ export type ProjectedElement<S extends ElementSpec> = [
 /**
  * Project a set of elements as class names
  */
-export type ProjectedElements<E extends NamedElements<E>> = {
+type ProjectedElements<E extends NamedElements<E>> = {
   [K in keyof E]: ProjectedElement<E[K]>;
 };
 
