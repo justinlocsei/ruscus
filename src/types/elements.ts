@@ -63,7 +63,7 @@ export type EmptyElementSpecs = EmptyObject;
 /**
  * A constraint on element specs that preserves each element's type
  */
-export type NamedElements<E> = { [K in keyof E]: ElementSpec };
+export type NamedElements<E extends object> = { [K in keyof E]: ElementSpec };
 
 /**
  * Produce class selectors for a set of elements
