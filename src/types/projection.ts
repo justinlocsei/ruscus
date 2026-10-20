@@ -1,7 +1,6 @@
 import type { ComponentSpec } from './components.ts';
 import type {
   ElementSpec,
-  EmptyElementSpecs,
   NamedElements,
   VariantProjector
 } from './elements.ts';
@@ -26,9 +25,9 @@ type ProjectedElement<S extends ElementSpec> = [
 /**
  * An element tree projected as class names
  */
-type ProjectedElements<
-  E extends NamedElements<E> = EmptyElementSpecs
-> = { [K in keyof E]: ProjectedElement<E[K]> };
+type ProjectedElements<E extends NamedElements<E>> = {
+  [K in keyof E]: ProjectedElement<E[K]>;
+};
 
 /**
  * Project a single element as a class name
