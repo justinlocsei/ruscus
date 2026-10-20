@@ -55,10 +55,7 @@ export type ElementSpecs<T extends string = string> = {
 /**
  * An empty element spec
  */
-export type EmptyElementSpec = ElementSpec<
-  EmptyElementSpecs,
-  never
->;
+export type EmptyElementSpec = ElementSpec<EmptyElementSpecs, never>;
 
 /**
  * An empty set of element specs
