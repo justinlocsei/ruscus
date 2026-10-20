@@ -3,12 +3,10 @@ import type {
   ElementDefinitions,
   ElementSpecs,
   EmptyElementSpecs,
-  ProjectElement,
-  ProjectedElements,
+  ProjectedTree,
   VariantProjector
 } from './elements.ts';
 import type { DerivedStyles, FragmentScope } from './fragments.ts';
-import { ELEMENT_ROOT } from './ids.ts';
 import type { HasVariants } from './utils.ts';
 
 /**
@@ -17,7 +15,7 @@ import type { HasVariants } from './utils.ts';
 export type DerivedComponentContext<
   S extends ComponentSpec = ComponentSpec
 > = {
-  els: { [ELEMENT_ROOT]: ProjectElement<S> } & ProjectedElements<S['els']>;
+  els: ProjectedTree<S, S['els']>;
   ids: IdentifierValues<S['ids']>;
   variants: VariantProjector<S['variants']>;
 };
@@ -58,9 +56,10 @@ export type ComponentSpec<
 /**
  * A component projected as class names
  */
-export type ProjectedComponent<S extends ComponentSpec> =
-  & { [ELEMENT_ROOT]: ProjectElement<S> }
-  & ProjectedElements<S['els']>;
+export type ProjectedComponent<S extends ComponentSpec> = ProjectedTree<
+  S,
+  S['els']
+>;
 
 /**
  * An empty component spec

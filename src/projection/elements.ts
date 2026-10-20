@@ -3,7 +3,8 @@ import type {
   ElementDefinition,
   ElementDefinitions,
   ElementSpec,
-  ProjectedElement,
+  ElementSpecs,
+  ProjectedTree,
   VariantProjector
 } from '../types/elements.ts';
 import { ELEMENT_ROOT } from '../types/ids.ts';
@@ -134,10 +135,10 @@ export function projectElementSelectors(
   namespace: string[],
   elements: ElementDefinitions,
   { hasVariants, name }: { hasVariants: boolean; name: NameGenerator }
-): ProjectedElement<ElementSpec> {
+): ProjectedTree<ElementSpec, ElementSpecs> {
   return projectElementTree(namespace, elements, {
     format: 'selectors',
     hasVariants,
     name
-  }) as ProjectedElement<ElementSpec>;
+  }) as ProjectedTree<ElementSpec, ElementSpecs>;
 }

@@ -9,7 +9,7 @@ import type { EmptyObject, HasVariants } from './utils.ts';
 export type DerivedElementContext<
   S extends ElementSpec = ElementSpec
 > = {
-  els: { [ELEMENT_ROOT]: ProjectElement<S> } & ProjectedElements<S['children']>;
+  els: ProjectedTree<S, S['children']>;
   variants: VariantProjector<S['variants']>;
 };
 
@@ -79,7 +79,7 @@ export type ProjectedElement<S extends ElementSpec> = [
   keyof S['children']
 ] extends [never] ? ProjectElement<S>
   : S['children'] extends NamedElements<S['children']>
-    ? { [ELEMENT_ROOT]: ProjectElement<S> } & ProjectedElements<S['children']>
+    ? ProjectedTree<S, S['children']>
   : never;
 
 /**
@@ -88,6 +88,14 @@ export type ProjectedElement<S extends ElementSpec> = [
 export type ProjectedElements<E extends NamedElements<E>> = {
   [K in keyof E]: ProjectedElement<E[K]>;
 };
+
+/**
+ * Project an element tree and its possible children as class names
+ */
+export type ProjectedTree<
+  Root extends HasVariants<string>,
+  Children extends NamedElements<Children>
+> = { [ELEMENT_ROOT]: ProjectElement<Root> } & ProjectedElements<Children>;
 
 /**
  * A projector for a selector that uses one or more variants
