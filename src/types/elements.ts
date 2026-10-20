@@ -9,7 +9,7 @@ import type { EmptyObject, HasVariants } from './utils.ts';
 export type DerivedElementContext<
   S extends ElementSpec = ElementSpec
 > = {
-  els: ProjectedTree<S, S['children']>;
+  els: ProjectTree<S, S['children']>;
   variants: VariantProjector<S['variants']>;
 };
 
@@ -66,36 +66,36 @@ export type EmptyElementSpecs = EmptyObject;
 export type NamedElements<E extends object> = { [K in keyof E]: ElementSpec };
 
 /**
- * Project an element as a static or dynamic value based on its variants
+ * Project a root or branch element
  */
-type ProjectElement<S extends HasVariants<string>> = [
+type ProjectElement<S extends ElementSpec> = [
+  keyof S['children']
+] extends [never] ? ProjectRoot<S>
+  : S['children'] extends NamedElements<S['children']>
+    ? ProjectTree<S, S['children']>
+  : never;
+
+/**
+ * Project a tree of elements as class names
+ */
+type ProjectElements<E extends NamedElements<E>> = {
+  [K in keyof E]: ProjectElement<E[K]>;
+};
+
+/**
+ * Project an element root as a static or dynamic value based on its variants
+ */
+type ProjectRoot<S extends HasVariants<string>> = [
   S['variants']
 ] extends [never] ? string : VariantProjector<S['variants']>;
 
 /**
- * Project an element spec as flat or nested class names
- */
-type ProjectedElement<S extends ElementSpec> = [
-  keyof S['children']
-] extends [never] ? ProjectElement<S>
-  : S['children'] extends NamedElements<S['children']>
-    ? ProjectedTree<S, S['children']>
-  : never;
-
-/**
- * Project a set of elements as class names
- */
-type ProjectedElements<E extends NamedElements<E>> = {
-  [K in keyof E]: ProjectedElement<E[K]>;
-};
-
-/**
  * Project an element tree and its possible children as class names
  */
-export type ProjectedTree<
+export type ProjectTree<
   Root extends HasVariants<string>,
   Children extends NamedElements<Children>
-> = { [ELEMENT_ROOT]: ProjectElement<Root> } & ProjectedElements<Children>;
+> = { [ELEMENT_ROOT]: ProjectRoot<Root> } & ProjectElements<Children>;
 
 /**
  * A projector for a selector that uses one or more variants
