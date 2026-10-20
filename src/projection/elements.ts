@@ -79,13 +79,6 @@ export function projectVariantSelector(
 }
 
 /**
- * Format a class name for projection
- */
-function formatName(className: string, format: ProjectionFormat): string {
-  return format === 'selectors' ? `.${className}` : className;
-}
-
-/**
  * Project an element as a class name, selector, or child tree
  */
 function projectElement(
@@ -120,13 +113,17 @@ export function projectNode(
     hasVariants: boolean;
   }
 ): VariantProjector<string> | string {
-  if (format === 'selectors') {
-    return formatName(className, format);
-  }
+  const project = (name: string) =>
+    format === 'selectors'
+      ? `.${name}`
+      : name;
+
+  const root = project(className);
+  const joiner = format === 'selectors' ? '' : ' ';
 
   return hasVariants
-    ? (...vs) => [className, ...vs.map(v => `is-${v}`)].join(' ')
-    : className;
+    ? (...vs) => [root, ...vs.map(v => project(`is-${v}`))].join(joiner)
+    : root;
 }
 
 /**
@@ -135,11 +132,11 @@ export function projectNode(
 export function projectElementSelectors(
   namespace: string[],
   elements: ElementDefinitions,
-  { name }: { name: NameGenerator }
+  { hasVariants, name }: { hasVariants: boolean; name: NameGenerator }
 ): Selectors {
   return projectElementTree(namespace, elements, {
     format: 'selectors',
-    hasVariants: false,
+    hasVariants,
     name
   }) as Selectors;
 }
