@@ -66,13 +66,6 @@ export type EmptyElementSpecs = EmptyObject;
 export type NamedElements<E extends object> = { [K in keyof E]: ElementSpec };
 
 /**
- * Produce class selectors for a set of elements
- */
-export type Selectors<E extends NamedElements<E> = ElementSpecs> =
-  & { [ELEMENT_ROOT]: ProjectElement<ElementSpec> }
-  & ProjectedElements<E>;
-
-/**
  * Project an element as a static or dynamic value based on its variants
  */
 export type ProjectElement<S extends HasVariants<string>> = [
@@ -82,7 +75,7 @@ export type ProjectElement<S extends HasVariants<string>> = [
 /**
  * Project an element spec as flat or nested class names
  */
-type ProjectedElement<S extends ElementSpec> = [
+export type ProjectedElement<S extends ElementSpec> = [
   keyof S['children']
 ] extends [never] ? ProjectElement<S>
   : S['children'] extends NamedElements<S['children']>

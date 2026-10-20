@@ -2,7 +2,8 @@ import type { NameGenerator } from '../naming.ts';
 import type {
   ElementDefinition,
   ElementDefinitions,
-  Selectors,
+  ElementSpec,
+  ProjectedElement,
   VariantProjector
 } from '../types/elements.ts';
 import { ELEMENT_ROOT } from '../types/ids.ts';
@@ -133,10 +134,10 @@ export function projectElementSelectors(
   namespace: string[],
   elements: ElementDefinitions,
   { hasVariants, name }: { hasVariants: boolean; name: NameGenerator }
-): Selectors {
+): ProjectedElement<ElementSpec> {
   return projectElementTree(namespace, elements, {
     format: 'selectors',
     hasVariants,
     name
-  }) as Selectors;
+  }) as ProjectedElement<ElementSpec>;
 }
