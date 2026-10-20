@@ -182,7 +182,7 @@ export class Component<S extends ComponentSpec = ComponentSpec>
   > {
     this.setStateField(
       'variants',
-      provider as DerivedComponentStyles
+      provider as unknown as DerivedComponentStyles
     );
 
     // biome-ignore lint/suspicious/noExplicitAny: avoid a duplicate signature in a cast
