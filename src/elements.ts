@@ -55,7 +55,7 @@ export type ProvidersToSpecs<T extends ElementProviders> = {
 export function defineElement(
   styles: Styles = {}
 ): Element<EmptyElementSpec> {
-  return new Element().css(styles);
+  return new Element<EmptyElementSpec>().css(styles);
 }
 
 /**
