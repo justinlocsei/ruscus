@@ -12,17 +12,19 @@ Public API: `src/index.ts` (component factory, compile entry, queries).
 
 | Layer | Role | Typing |
 | --- | --- | --- |
-| Builder / `.apply()` | TSX class names, narrow inference | `Component<S>`, `InternalComponent<S>`, `ApplicableComponent<S>` |
-| Style providers on the builder | Fragment keys, `els`, `variants()` | `ComponentContext<S>`, `ElementContext<S>`, and `DerivedStyles` |
-| `ComponentDefinition` / `ElementDefinition` | Stored tree + provider lists | `ComponentContext`, `ElementContext` |
-| `ComponentCompiler` | Emit CSS from definitions | `buildSelector` and fragment **keys are strings**; no projector dispatch in the compiler |
-| Context builders | Same selector strings authors expect | `projectElementSelectors` (shared with projection); `hasVariants` on the tree root (from `component.variants` / `element.variants` at call sites) |
+| Builder / `.apply()` | TSX class names, narrow inference | `Component<S>`, `InternalComponent<S>`, `ProjectedComponent<S>` (`src/types/components.ts`) |
+| Style providers on the builder | Fragment keys, `els`, `variants()` | `DerivedComponentContext<S>`, `DerivedElementContext<S>`, `DerivedComponentStyles`, `DerivedElementStyles` |
+| `ComponentDefinition` / `ElementDefinition` | Stored tree + provider lists | Wide `DerivedComponentContext` / `DerivedElementContext` (erased at storage) |
+| `ComponentCompiler` | Emit CSS from definitions | `buildSelector`; fragment map **keys are strings** at compile time (authors call `els.*()` when a node is a projector) |
+| Context builders | CSS selector `els` for derived styles | `buildComponentContext` / `buildElementContext` in `src/contexts.ts`; both use `projectElementSelectors` (`format: 'selectors'`) with `hasVariants` from `component.variants` / `element.variants` |
 
-**Variant projectors:** For a given node, types are **either** a plain `string` **or** `VariantProjector<V>` (conditional on `variants: never`), not `string | VariantProjector` on the same property. Authors with variants call `els.foo()` / `root()` in fragment keys; plain `els.foo` when the spec has no variants on that node. Avoid helper bridges that accept both.
+**Projection types** (`ProjectElement`, `ProjectedElement`, `ProjectedElements`, `Selectors`) live in `src/types/elements.ts`. `ProjectedComponent<S>` matches `DerivedComponentContext<S>['els']` plus root typed from the component spec. Apply uses `projectComponent` (`format: 'names'`); compile contexts use selector formatting only—same TypeScript tree shape.
 
-**Wide spec defaults** (`ComponentSpec`, `ElementSpec`) are for **storage and internal provider signatures**, not for typing a normal `.apply()` result. Their defaults use `variants: string`, open elements/children, and open identifiers. `EmptyComponentSpec` / `EmptyElementSpec` are used only by `defineComponent` / `defineElement` to start the builder chain; the classes themselves default to the wide specs. A bare `ComponentSpec` passed to `ApplicableComponent` over-types the root as always callable—fine for wide bounds, wrong for author ergonomics. Prefer the narrowed `S` from the builder chain for applied types.
+**Variant projectors:** For a given node, types are **either** a plain `string` **or** `VariantProjector<V>` (conditional on `variants: never`), not `string | VariantProjector` on the same property. Authors with variants call `els.foo()` / `root()` in fragment keys; plain `els.foo` when the spec has no variants on that node. **`context.variants`** (`projectVariantSelector('&')`) is for relative `&.is-*` keys; **`els.*()`** yields absolute class/selector strings (e.g. `.card.is-compact`). Avoid helper bridges that accept both string and projector on one property.
 
-**Provider variance:** Stored providers use wide `ComponentContext` / `ElementContext` contexts. Cast narrow author providers to these erased types when pushing onto component or element definitions.
+**Wide spec defaults** (`ComponentSpec`, `ElementSpec`) are for **storage and internal provider signatures**, not for typing a normal `.apply()` result. Their defaults use `variants: string`, open elements/children, and open identifiers. `EmptyComponentSpec` / `EmptyElementSpec` are used only by `defineComponent` / `defineElement` to start the builder chain; the classes themselves default to the wide specs. A bare `ComponentSpec` passed to `ProjectedComponent` over-types the root as always callable—fine for wide bounds, wrong for author ergonomics. Prefer the narrowed `S` from the builder chain for applied types.
+
+**Provider variance:** Stored providers use wide `DerivedComponentContext` / `DerivedElementContext`. Cast narrow author providers to these erased types when pushing onto component or element definitions.
 
 **Generics:** Let `S` accrue on the fluent chain; do not thread `S` through compile/storage unless author precision truly requires it. That split is intentional complexity tradeoff: slightly awkward internal casts and wide-spec erasure vs. a fully generic compiler.
 
@@ -41,7 +43,7 @@ npm run test
 
 ## Testing
 
-Unit tests live beside source as `src/**/*.test.ts`. Integration tests live under `tests/` (golden CSS via `verifyOutput` in `tests/helpers.ts`). After editing a source file, run its matching test file when one exists.
+Unit tests live beside source as `src/**/*.test.ts`. Integration tests live under `tests/` (golden CSS via `compareStyles` in `tests/helpers.ts`). After editing a source file, run its matching test file when one exists.
 
 ## Code style
 
