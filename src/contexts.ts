@@ -30,7 +30,11 @@ export function buildComponentContext(
   { name }: ContextOptions
 ): DerivedComponentContext {
   return {
-    els: projectElementSelectors([component.id], component.elements, { name }),
+    els: projectElementSelectors(
+      [component.id],
+      component.elements,
+      { hasVariants: component.variants !== undefined, name }
+    ),
     ids: projectIdentifiers(component),
     variants
   };
