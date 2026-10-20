@@ -1,20 +1,8 @@
 /**
- * A block containing either declarations or nested rules
- */
-export type Block = Declarations | RuleBlock;
-
-/**
  * CSS declarations in a nested rule block
  */
 export type Declarations = {
   [property: string]: Value | undefined;
-};
-
-/**
- * A mapping of selectors to nested blocks
- */
-export type RuleBlock = {
-  [selector: string]: Block;
 };
 
 /**
