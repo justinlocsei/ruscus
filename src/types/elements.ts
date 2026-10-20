@@ -9,7 +9,7 @@ import type { EmptyObject, HasVariants } from './utils.ts';
 export type DerivedElementContext<
   S extends ElementSpec = ElementSpec
 > = {
-  els: Selectors<S['children']>;
+  els: { [ELEMENT_ROOT]: ProjectElement<S> } & ProjectedElements<S['children']>;
   variants: VariantProjector<S['variants']>;
 };
 
@@ -69,18 +69,32 @@ export type NamedElements<E extends object> = { [K in keyof E]: ElementSpec };
  * Produce class selectors for a set of elements
  */
 export type Selectors<E extends NamedElements<E> = ElementSpecs> =
-  & { [ELEMENT_ROOT]: string }
-  & { [K in keyof E]: SelectorForSpec<E[K]> };
+  & { [ELEMENT_ROOT]: ProjectElement<ElementSpec> }
+  & ProjectedElements<E>;
 
 /**
- * Resolve the selector type for an element spec
+ * Project an element as a static or dynamic value based on its variants
  */
-type SelectorForSpec<S extends ElementSpec> = [
+export type ProjectElement<S extends HasVariants<string>> = [
+  S['variants']
+] extends [never] ? string : VariantProjector<S['variants']>;
+
+/**
+ * Project an element spec as flat or nested class names
+ */
+type ProjectedElement<S extends ElementSpec> = [
   keyof S['children']
-] extends [never] ? string
+] extends [never] ? ProjectElement<S>
   : S['children'] extends NamedElements<S['children']>
-    ? Selectors<S['children']>
+    ? { [ELEMENT_ROOT]: ProjectElement<S> } & ProjectedElements<S['children']>
   : never;
+
+/**
+ * Project a set of elements as class names
+ */
+export type ProjectedElements<E extends NamedElements<E>> = {
+  [K in keyof E]: ProjectedElement<E[K]>;
+};
 
 /**
  * A projector for a selector that uses one or more variants
