@@ -48,9 +48,7 @@ export type ElementSpec<
 /**
  * A nested collection of named element specs
  */
-export type ElementSpecs<T extends string = string> = {
-  [K in T]: ElementSpec;
-};
+export type ElementSpecs = { [K in string]: ElementSpec };
 
 /**
  * An empty element spec
