@@ -78,20 +78,13 @@ export type Selectors<E extends NamedElements<E> = EmptyElementSpecs> =
   & { [K in keyof E]: SelectorForSpec<E[K]> };
 
 /**
- * Get selectors for an element with children
- */
-type SelectorForChildren<C extends NamedElements<C>> =
-  & { [ELEMENT_ROOT]: string }
-  & { [K in keyof C]: SelectorForSpec<C[K]> };
-
-/**
  * Resolve the selector type for an element spec
  */
 type SelectorForSpec<S extends ElementSpec> = [
   keyof S['children']
 ] extends [never] ? string
   : S['children'] extends NamedElements<S['children']>
-    ? SelectorForChildren<S['children']>
+    ? Selectors<S['children']>
   : never;
 
 /**
