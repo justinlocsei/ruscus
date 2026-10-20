@@ -73,7 +73,7 @@ export type NamedElements<E> = { [K in keyof E]: ElementSpec };
 /**
  * Produce class selectors for a set of elements
  */
-export type Selectors<E extends NamedElements<E> = EmptyElementSpecs> =
+export type Selectors<E extends NamedElements<E> = ElementSpecs> =
   & { [ELEMENT_ROOT]: string }
   & { [K in keyof E]: SelectorForSpec<E[K]> };
 
