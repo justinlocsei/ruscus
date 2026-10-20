@@ -16,7 +16,7 @@ Public API: `src/index.ts` (component factory, compile entry, queries).
 | Style providers on the builder | Fragment keys, `els`, `variants()` | `DerivedComponentContext<S>`, `DerivedElementContext<S>`, `DerivedComponentStyles`, `DerivedElementStyles` |
 | `ComponentDefinition` / `ElementDefinition` | Stored tree + provider lists | Wide `DerivedComponentContext` / `DerivedElementContext` (erased at storage) |
 | `ComponentCompiler` | Emit CSS from definitions | `buildSelector`; fragment map **keys are strings** at compile time (authors call `els.*()` when a node is a projector) |
-| Context builders | CSS selector `els` for derived styles | `buildComponentContext` / `buildElementContext` in `src/contexts.ts`; both use `projectElementSelectors` (`format: 'selectors'`) with `hasVariants` from `component.variants` / `element.variants` |
+| Context builders | CSS selector `els` for derived styles | `buildComponentContext` / `buildElementContext` in `src/contexts.ts`; both call `projectElementTree` with `format: 'selectors'` and `hasVariants` from `component.variants` / `element.variants` |
 
 **Projection types** (`ProjectElement`, `ProjectedElement`, `ProjectedElements`, `ProjectedTree`) live in `src/types/elements.ts`. `ProjectedTree<S, E>` is `{ root: ProjectElement<S> } & ProjectedElements<E>` for component/element roots and child maps (`ProjectedComponent`, derived `els`, wide selector projection). Apply uses `projectComponent` (`format: 'names'`); compile contexts use selector formatting only—same TypeScript tree shape.
 
@@ -31,6 +31,8 @@ Public API: `src/index.ts` (component factory, compile entry, queries).
 ## Exports
 
 Be conservative about what gets exported. Only export a type or function when another module in this repo genuinely needs it, or when explicitly requested as part of the public API in `src/index.ts`. Do not preemptively export helpers, types, or utilities “just in case” — keep symbols module-local until there is a concrete internal consumer or an intentional API decision.
+
+When that consumer appears, **export the existing type** from its home module (often `src/types/`) instead of copying an equivalent alias elsewhere. Prefer widening visibility of one shared definition over duplicating constraints like `NamedElements` under a new name in runtime modules.
 
 ## Dev commands
 
