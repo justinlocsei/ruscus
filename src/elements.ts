@@ -155,9 +155,10 @@ export class Element<S extends ElementSpec = ElementSpec>
   ): Element<ElementSpec<S['children'], VariantsFromProvider<P>>> {
     this.setStateField(
       'variants',
-      provider as DerivedElementStyles
+      provider as unknown as DerivedElementStyles
     );
 
-    return this;
+    // biome-ignore lint/suspicious/noExplicitAny: avoid a duplicate signature in a cast
+    return this as any;
   }
 }
