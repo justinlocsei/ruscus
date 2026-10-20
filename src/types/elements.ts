@@ -1,16 +1,7 @@
 import type { Styles } from './css.ts';
 import type { DerivedStyles } from './fragments.ts';
-import type { ElementRoot } from './ids.ts';
 import { ELEMENT_ROOT } from './ids.ts';
 import type { EmptyObject, HasVariants } from './utils.ts';
-
-/**
- * Get selectors for an element with children
- */
-type ChildSelectors<C extends NamedElements<C>> = {
-  [K in ElementRoot | keyof C]: K extends ElementRoot ? string
-    : SelectorForSpec<C[Extract<K, keyof C>]>;
-};
 
 /**
  * The context available when defining derived element styles
@@ -87,13 +78,20 @@ export type Selectors<E extends NamedElements<E> = EmptyElementSpecs> =
   & { [K in keyof E]: SelectorForSpec<E[K]> };
 
 /**
+ * Get selectors for an element with children
+ */
+type SelectorForChildren<C extends NamedElements<C>> =
+  & { [ELEMENT_ROOT]: string }
+  & { [K in keyof C]: SelectorForSpec<C[K]> };
+
+/**
  * Resolve the selector type for an element spec
  */
 type SelectorForSpec<S extends ElementSpec> = [
   keyof S['children']
 ] extends [never] ? string
   : S['children'] extends NamedElements<S['children']>
-    ? ChildSelectors<S['children']>
+    ? SelectorForChildren<S['children']>
   : never;
 
 /**
