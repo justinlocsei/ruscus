@@ -4,7 +4,7 @@ import type { CompileConfig } from './compilation.ts';
 import { styleComponent } from './compilation.ts';
 import type { ElementProviders, ProvidersToSpecs } from './elements.ts';
 import { defineElement, resolveElements } from './elements.ts';
-import type { InternalComponent } from './internal.ts';
+import type { ApplicableComponent } from './internal.ts';
 import { annotateComponent } from './internal.ts';
 import { useNaming } from './naming.ts';
 import { projectIdentifiers } from './projection/identifiers.ts';
@@ -65,7 +65,7 @@ export class Component<S extends ComponentSpec = ComponentSpec>
   /**
    * Project the component into class names and identifiers
    */
-  apply(): InternalComponent<S> {
+  apply(): ApplicableComponent<S> {
     const name = useNaming(this.current);
 
     return annotateComponent(projectComponent(this, name), {

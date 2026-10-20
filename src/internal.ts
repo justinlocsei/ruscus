@@ -18,9 +18,9 @@ type Annotations<S extends ComponentSpec> = {
 };
 
 /**
- * An applicable component that includes internal annotations
+ * A component that can be applied as classes or styles
  */
-export type InternalComponent<S extends ComponentSpec> =
+export type ApplicableComponent<S extends ComponentSpec> =
   & ProjectedComponent<S>
   & Annotations<S>;
 
@@ -41,7 +41,7 @@ export function annotateComponent<S extends ComponentSpec>(
     buildPlan: BuildPlan;
     identifiers: IdentifierValuesFor<S>;
   }
-): InternalComponent<S> {
+): ApplicableComponent<S> {
   const annotate = <K extends keyof Annotations<S>>(
     key: K,
     value: Annotations<S>[K]
@@ -57,14 +57,14 @@ export function annotateComponent<S extends ComponentSpec>(
   annotate(build, annotations.buildPlan);
   annotate(identifiers, annotations.identifiers);
 
-  return component as InternalComponent<S>;
+  return component as ApplicableComponent<S>;
 }
 
 /**
  * Extract a build plan from a component
  */
 export function extractBuildPlan<S extends ComponentSpec>(
-  component: InternalComponent<S>
+  component: ApplicableComponent<S>
 ): BuildPlan {
   return component[build];
 }
@@ -73,7 +73,7 @@ export function extractBuildPlan<S extends ComponentSpec>(
  * Extract identifiers from a component
  */
 export function extractIdentifiers<S extends ComponentSpec>(
-  component: InternalComponent<S>
+  component: ApplicableComponent<S>
 ): IdentifierValuesFor<S> {
   return component[identifiers];
 }
