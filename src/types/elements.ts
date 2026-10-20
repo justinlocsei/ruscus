@@ -63,7 +63,7 @@ export type EmptyElementSpecs = EmptyObject;
 /**
  * A constraint on element specs that preserves each element's type
  */
-export type NamedElements<E extends object> = { [K in keyof E]: ElementSpec };
+type NamedElements<E extends object> = { [K in keyof E]: ElementSpec };
 
 /**
  * Project a root or branch element
