@@ -133,7 +133,7 @@ class ComponentCompiler {
         >(variants),
         buildElementContext(
           [this.component.id, ...path],
-          children,
+          element,
           { name: this.name }
         )
       );
@@ -153,7 +153,7 @@ class ComponentCompiler {
 
     const elementContext = buildElementContext(
       [this.component.id, ...path],
-      children,
+      element,
       { name: this.name }
     );
 

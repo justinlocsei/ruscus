@@ -10,7 +10,7 @@ import type {
 } from './types/components.ts';
 import type {
   DerivedElementContext,
-  ElementDefinitions
+  ElementDefinition
 } from './types/elements.ts';
 
 /**
@@ -45,11 +45,14 @@ export function buildComponentContext(
  */
 export function buildElementContext(
   namespace: string[],
-  children: ElementDefinitions,
-  options: ContextOptions
+  element: ElementDefinition,
+  { name }: ContextOptions
 ): DerivedElementContext {
   return {
-    els: projectElementSelectors(namespace, children, options),
+    els: projectElementSelectors(namespace, element.children, {
+      hasVariants: element.variants !== undefined,
+      name
+    }),
     variants
   };
 }
