@@ -2,9 +2,9 @@ import type { CompileConfig } from './compilation.ts';
 import type {
   ComponentDefinition,
   ComponentSpec,
-  IdentifierValuesFor
+  IdentifierValuesFor,
+  ProjectedComponent
 } from './types/components.ts';
-import type { ProjectedComponent } from './types/projection.ts';
 
 const build = Symbol.for('ruscus/build');
 const identifiers = Symbol.for('ruscus/identifiers');

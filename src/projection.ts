@@ -1,8 +1,7 @@
 import type { Component } from './components.ts';
 import type { NameGenerator } from './naming.ts';
 import { projectElementTree } from './projection/elements.ts';
-import type { ComponentSpec } from './types/components.ts';
-import type { ProjectedComponent } from './types/projection.ts';
+import type { ComponentSpec, ProjectedComponent } from './types/components.ts';
 
 /**
  * Project a component into applicable class names
