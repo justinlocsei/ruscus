@@ -300,18 +300,18 @@ class ComponentCompiler {
    * Format declaration as key/value pairs
    */
   private formatDeclarations(styles: Declarations): string | undefined {
-    const { config, indent } = this;
+    const { config: { properties }, indent } = this;
 
-    const properties = Object
+    const props = Object
       .entries(styles)
       .filter(([_, v]) => v !== undefined);
 
-    if (properties.length === 0) {
+    if (props.length === 0) {
       return undefined;
     }
 
-    return properties
-      .map(([p]) => `${indent}${config.properties.project(p)}: ${styles[p]};`)
+    return props
+      .map(([p]) => `${indent}${properties.project(p)}: ${styles[p]};`)
       .join('\n');
   }
 
