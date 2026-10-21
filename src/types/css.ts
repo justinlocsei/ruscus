@@ -1,3 +1,6 @@
+import type { KnownStyleProperties } from './css/properties.ts';
+import type { Value } from './css/values.ts';
+
 /**
  * CSS declarations in a nested rule block
  */
@@ -8,9 +11,4 @@ export type Declarations = {
 /**
  * A mapping of CSS properties to values
  */
-export type Styles<T extends string = string> = Record<T, Value>;
-
-/**
- * A CSS value
- */
-export type Value = number | string;
+export type Styles = KnownStyleProperties & Record<string, Value | undefined>;
