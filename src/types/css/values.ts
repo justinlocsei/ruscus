@@ -6,12 +6,7 @@ type AuthorString = string & {};
 /**
  * A CSS value directly provided by an author
  */
-export type AuthorValue = number | AuthorString | SharedValue;
-
-/**
- * A value shared by all CSS properties
- */
-type SharedValue = 'inherit' | 'initial' | 'revert' | 'revert-layer' | 'unset';
+export type AuthorValue = number | AuthorString;
 
 /**
  * A CSS value
