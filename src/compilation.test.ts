@@ -3,7 +3,7 @@ import { assert, describe, it } from 'vitest';
 import type { CompileConfig } from './compilation.ts';
 import { styleComponent } from './compilation.ts';
 import type { AnyComponent } from './components.ts';
-import { Component } from './components.ts';
+import { defineComponent } from './components.ts';
 import { css } from './tests.ts';
 
 function checkOutput(
@@ -16,12 +16,12 @@ function checkOutput(
 
 describe('styleComponent', () => {
   it('returns empty CSS for a component with no styles', () => {
-    checkOutput(new Component('empty'), '');
+    checkOutput(defineComponent('empty'), '');
   });
 
   it('emits root styles', () => {
     checkOutput(
-      new Component('card').css({ color: 'black', display: 'block' }),
+      defineComponent('card').css({ color: 'black', display: 'block' }),
       css`
         .card {
           color: black;
@@ -33,7 +33,7 @@ describe('styleComponent', () => {
 
   it('emits element styles', () => {
     checkOutput(
-      new Component('card')
+      defineComponent('card')
         .css({ color: 'black' })
         .elements(e => ({
           body: e({ margin: '0' }),
@@ -57,7 +57,7 @@ describe('styleComponent', () => {
 
   it('emits styles for element variants', () => {
     checkOutput(
-      new Component('card').elements(e => ({
+      defineComponent('card').elements(e => ({
         line: e({ marginTop: '0' }).variants(s => ({
           bold: s({ fontWeight: '700' }),
           spacer: s({ marginTop: '1rem' })
@@ -81,7 +81,7 @@ describe('styleComponent', () => {
 
   it('emits nested styles for the component', () => {
     checkOutput(
-      new Component('card')
+      defineComponent('card')
         .css({ display: 'block' })
         .elements(e => ({
           body: e(),
@@ -127,7 +127,7 @@ describe('styleComponent', () => {
 
   it('supports deeply nested styles', () => {
     checkOutput(
-      new Component('card').elements(e => ({
+      defineComponent('card').elements(e => ({
         title: e(),
         body: e()
       })).nested((s, { els }) => ({
@@ -150,7 +150,7 @@ describe('styleComponent', () => {
 
   it('emits global styles', () => {
     checkOutput(
-      new Component('card').global(s => ({
+      defineComponent('card').global(s => ({
         '.card': s({ color: 'black' }),
         '@media (min-width: 768px)': s().nested({
           '.card__title': s({ fontSize: '1rem' })
@@ -172,7 +172,7 @@ describe('styleComponent', () => {
 
   it('provides identifiers to nested component styles', () => {
     checkOutput(
-      new Component('card')
+      defineComponent('card')
         .identifiers({ alfa: 'string' })
         .nested((s, { ids }) => ({
           '&:hover': s({ animationName: ids.alfa })
@@ -187,7 +187,7 @@ describe('styleComponent', () => {
 
   it('emits nested rules for variant combinations', () => {
     checkOutput(
-      new Component('card').elements(e => ({
+      defineComponent('card').elements(e => ({
         body: e({ display: 'block' })
           .variants(s => ({
             compact: s({ padding: '0.5rem' }),
@@ -224,7 +224,7 @@ describe('styleComponent', () => {
 
   it('emits nested rules for an element', () => {
     checkOutput(
-      new Component('card').elements(e => ({
+      defineComponent('card').elements(e => ({
         body: e({ display: 'block' })
           .children({ title: e() })
           .nested((s, { els }) => ({
@@ -250,7 +250,7 @@ describe('styleComponent', () => {
 
   it('emits nested element styles', () => {
     checkOutput(
-      new Component('hero').elements(e => ({
+      defineComponent('hero').elements(e => ({
         title: e().children({
           text: e({ color: 'red' })
         })
@@ -265,7 +265,7 @@ describe('styleComponent', () => {
 
   it('emits styles for root variants', () => {
     checkOutput(
-      new Component('card')
+      defineComponent('card')
         .css({ padding: '1rem' })
         .variants(s => ({
           compact: s({ padding: '0.5rem' }),
@@ -289,7 +289,7 @@ describe('styleComponent', () => {
 
   it('respects custom indentation', () => {
     checkOutput(
-      new Component('card').css({ color: 'black' }),
+      defineComponent('card').css({ color: 'black' }),
       css`
         .card {
             color: black;
@@ -301,7 +301,7 @@ describe('styleComponent', () => {
 
   it('projects camelCase properties to kebab-case', () => {
     checkOutput(
-      new Component('card').css({
+      defineComponent('card').css({
         backgroundColor: 'white',
         fontSize: '1rem'
       }),
@@ -316,7 +316,7 @@ describe('styleComponent', () => {
 
   it('uses the full component ID', () => {
     checkOutput(
-      new Component('card', { namespace: 'ui' }).css({ color: 'black' }),
+      defineComponent('card', { namespace: 'ui' }).css({ color: 'black' }),
       css`
         .ui--card {
           color: black;
