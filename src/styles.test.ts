@@ -1,6 +1,6 @@
 import { assert, describe, it } from 'vitest';
 
-import { asIdentifier, mergeStyles } from './styles.ts';
+import { asIdentifier, mergeStyles, PropertyProjector } from './styles.ts';
 import { checkConversion } from './tests.ts';
 import type { Styles } from './types/css.ts';
 
@@ -39,5 +39,15 @@ describe('mergeStyles', () => {
       mergeStyles({}, { color: 'red' }, {}, { background: 'blue' }),
       { background: 'blue', color: 'red' }
     );
+  });
+});
+
+describe('PropertyProjector', () => {
+  it('projects camel-cased values as CSS properties', () => {
+    const projector = new PropertyProjector();
+
+    assert.equal(projector.project('backgroundColor'), 'background-color');
+    assert.equal(projector.project('backgroundColor'), 'background-color');
+    assert.equal(projector.project('WebkitLineClamp'), '-webkit-line-clamp');
   });
 });

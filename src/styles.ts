@@ -22,3 +22,28 @@ export function mergeStyles(base: Styles, ...others: Styles[]): Styles {
 
   return merged;
 }
+
+export class PropertyProjector {
+  private names: Map<string, string>;
+
+  /**
+   * Create a mapper of camel-cased values to CSS properties
+   */
+  constructor() {
+    this.names = new Map();
+  }
+
+  /**
+   * Project a camel-cased value as a CSS property
+   */
+  project(camel: string): string {
+    let prop = this.names.get(camel);
+
+    if (prop === undefined) {
+      prop = asIdentifier(camel);
+      this.names.set(camel, prop);
+    }
+
+    return prop;
+  }
+}
