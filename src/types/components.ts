@@ -36,7 +36,7 @@ export type ComponentDefinition = {
   global: DerivedComponentStyles<'absolute'>[];
   id: string;
   identifiers: NamedIdentifiers;
-  nested: DerivedComponentStyles[];
+  nested: DerivedComponentStyles<'relative'>[];
   styles: Styles;
   variants?: DerivedComponentStyles;
 };

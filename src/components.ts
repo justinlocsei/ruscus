@@ -157,7 +157,7 @@ export class Component<S extends ComponentSpec = ComponentSpec>
     definitions: DerivedComponentStyles<'relative', DerivedComponentContext<S>>
   ): Component<S> {
     this.current.nested.push(
-      definitions as DerivedComponentStyles
+      definitions as DerivedComponentStyles<'relative'>
     );
 
     return this;
