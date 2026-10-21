@@ -4,16 +4,14 @@ import { projectTree } from './projection/elements.ts';
 import type { ComponentSpec, ProjectedComponent } from './types/components.ts';
 
 /**
- * Project a component into applicable class names
+ * Project a component as class names
  */
 export function projectComponent<S extends ComponentSpec>(
-  component: Component<S>,
+  { current }: Component<S>,
   name: NameGenerator
 ): ProjectedComponent<S> {
-  const { current } = component;
-
   return projectTree<S, S['els']>(
-    [component.id],
+    [current.id],
     current.elements,
     {
       format: 'names',
