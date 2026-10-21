@@ -274,7 +274,7 @@ async function renderTypes() {
     })
     .sort();
 
-  return `// This file is managed by the generate-css-types script.
+  return `// This file is managed by the generate-types script.
 
 import type { AuthorValue } from './values.ts';
 
