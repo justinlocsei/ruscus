@@ -20,7 +20,7 @@ const SHARED = [
 ];
 
 // The minimum percentage of overlapping values to produce an alias
-const MIN_VALUE_OVERLAP = 0.9;
+const MIN_VALUE_OVERLAP = 0.75;
 
 /**
  * Convert a kebab-cased value to camel case
