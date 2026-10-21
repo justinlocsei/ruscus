@@ -102,10 +102,6 @@ class ComponentCompiler {
       );
     }
 
-    for (const [name, element] of Object.entries(elements)) {
-      this.addElementNested([name], element);
-    }
-
     for (const provider of component.global) {
       this.addGlobalFragmentRules(
         provider(defineAbsoluteFragment, context)
@@ -122,37 +118,21 @@ class ComponentCompiler {
     const { children, variants } = element;
     const selector = this.buildSelector(...path);
 
+    const context = buildElementContext(
+      [this.component.id, ...path],
+      element,
+      { name: this.name }
+    );
+
     this.addRule(selector, element.styles);
 
     if (variants) {
       this.addVariantRules(
         selector,
         cast<DerivedComponentStyles<'relative', DerivedContext>>(variants),
-        buildElementContext(
-          [this.component.id, ...path],
-          element,
-          { name: this.name }
-        )
+        context
       );
     }
-
-    for (const [name, child] of Object.entries(children)) {
-      this.addElementStyles([...path, name], child);
-    }
-  }
-
-  /**
-   * Add nested rules for a component's elements
-   */
-  private addElementNested(path: string[], element: ElementDefinition): void {
-    const { children } = element;
-    const selector = this.buildSelector(...path);
-
-    const context = buildElementContext(
-      [this.component.id, ...path],
-      element,
-      { name: this.name }
-    );
 
     for (const provider of element.nested) {
       this.addScopedFragmentRules(
@@ -162,7 +142,7 @@ class ComponentCompiler {
     }
 
     for (const [name, child] of Object.entries(children)) {
-      this.addElementNested([...path, name], child);
+      this.addElementStyles([...path, name], child);
     }
   }
 
