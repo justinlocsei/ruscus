@@ -18,15 +18,6 @@ import type { HasVariants } from '../types/utils.ts';
 type ProjectionFormat = 'names' | 'selectors';
 
 /**
- * Options for projecting an element tree
- */
-type ProjectElementTreeOptions = {
-  format: ProjectionFormat;
-  hasVariants: boolean;
-  name: NameGenerator;
-};
-
-/**
  * Options for projecting an element
  */
 type ProjectElementOptions = {
@@ -43,7 +34,15 @@ export function projectTree<
 >(
   namespace: string[],
   elements: ElementDefinitions,
-  { format, hasVariants, name }: ProjectElementTreeOptions
+  {
+    format,
+    hasVariants,
+    name
+  }: {
+    format: ProjectionFormat;
+    hasVariants: boolean;
+    name: NameGenerator;
+  }
 ): ProjectTree<R, E> {
   return {
     ...projectElements(namespace, elements, { format, name }),
