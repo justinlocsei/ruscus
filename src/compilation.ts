@@ -82,7 +82,7 @@ class ComponentCompiler {
     }
 
     for (const provider of component.nested) {
-      this.addScopedFragmentRules(
+      this.addRelativeFragmentRules(
         root,
         provider(defineRelativeFragment, context)
       );
@@ -120,7 +120,7 @@ class ComponentCompiler {
     }
 
     for (const provider of element.nested) {
-      this.addScopedFragmentRules(
+      this.addRelativeFragmentRules(
         selector,
         provider(defineRelativeFragment, context)
       );
@@ -166,9 +166,9 @@ class ComponentCompiler {
   }
 
   /**
-   * Add scoped fragment rules anchored to a selector
+   * Add relative fragment rules
    */
-  private addScopedFragmentRules(
+  private addRelativeFragmentRules(
     anchor: string,
     definitions: ScopedFragments<'relative'>
   ): void {
