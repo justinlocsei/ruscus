@@ -1,9 +1,9 @@
 import type { Styles } from './types/css.ts';
 
 /**
- * Project a camel-cased identifier name as a CSS property segment
+ * Project a camel-cased value as a CSS identifier
  */
-export function asProperty(camel: string): string {
+export function asIdentifier(camel: string): string {
   return camel.replace(
     /[A-Z]/g,
     l => `-${l.toLowerCase()}`

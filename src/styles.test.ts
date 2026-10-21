@@ -1,14 +1,14 @@
 import { assert, describe, it } from 'vitest';
 
-import { asProperty, mergeStyles } from './styles.ts';
+import { asIdentifier, mergeStyles } from './styles.ts';
 import { checkConversion } from './tests.ts';
 import type { Styles } from './types/css.ts';
 
-describe('asProperty', () => {
-  it('projects camel-cased values as CSS properties', () => {
+describe('asIdentifier', () => {
+  it('projects camel-cased values as CSS identifiers', () => {
     checkConversion<string, string>(
       (id, property, message) => {
-        assert.equal(property, asProperty(id), message);
+        assert.equal(property, asIdentifier(id), message);
       },
       [
         ['color', 'color'],

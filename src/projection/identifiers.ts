@@ -1,4 +1,4 @@
-import { asProperty } from '../styles.ts';
+import { asIdentifier } from '../styles.ts';
 import type {
   ComponentDefinition,
   IdentifierValues
@@ -12,7 +12,7 @@ export function projectIdentifiers(
 ): IdentifierValues<string> {
   return Object.fromEntries(
     Object.entries(component.identifiers).map(([key, type]) => {
-      const scoped = `${component.id}--${asProperty(key)}`;
+      const scoped = `${component.id}--${asIdentifier(key)}`;
 
       return [
         key,
