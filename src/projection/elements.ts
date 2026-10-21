@@ -60,15 +60,13 @@ function projectElements<E extends NamedElements<E>>(
 ): ProjectElements<E> {
   return Object.entries(elements).reduce<ProjectElements<E>>(
     (previous, [key, element]) => {
-      if (element === undefined) {
-        return previous;
+      if (element) {
+        previous[key as keyof E] = projectElement(
+          [...namespace, key],
+          element,
+          { format, name }
+        ) as ProjectElements<E>[keyof E];
       }
-
-      previous[key as keyof E] = projectElement(
-        [...namespace, key],
-        element,
-        { format, name }
-      ) as ProjectElements<E>[keyof E];
 
       return previous;
     },
