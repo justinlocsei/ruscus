@@ -147,7 +147,7 @@ class ComponentCompiler {
     const { children } = element;
     const selector = this.buildSelector(...path);
 
-    const elementContext = buildElementContext(
+    const context = buildElementContext(
       [this.component.id, ...path],
       element,
       { name: this.name }
@@ -156,7 +156,7 @@ class ComponentCompiler {
     for (const provider of element.nested) {
       this.addScopedFragmentRules(
         selector,
-        provider(defineRelativeFragment, elementContext)
+        provider(defineRelativeFragment, context)
       );
     }
 
@@ -170,10 +170,7 @@ class ComponentCompiler {
    */
   private addVariantRules(
     anchor: string,
-    provider: DerivedComponentStyles<
-      'relative',
-      DerivedContext
-    >,
+    provider: DerivedComponentStyles<'relative', DerivedContext>,
     ctx: DerivedContext
   ): void {
     const definitions = provider(defineRelativeFragment, ctx);
