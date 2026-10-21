@@ -304,15 +304,14 @@ class ComponentCompiler {
 
     const properties = Object
       .entries(styles)
-      .filter(([_, v]) => v !== undefined)
-      .map(([k]) => k);
+      .filter(([_, v]) => v !== undefined);
 
     if (properties.length === 0) {
       return undefined;
     }
 
     return properties
-      .map(p => `${indent}${config.properties.project(p)}: ${styles[p]};`)
+      .map(([p]) => `${indent}${config.properties.project(p)}: ${styles[p]};`)
       .join('\n');
   }
 
