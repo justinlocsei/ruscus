@@ -115,24 +115,32 @@ function projectNode(
     hasVariants: boolean;
   }
 ): VariantProjector<string> | string {
-  const project = (name: string) =>
-    format === 'selectors'
-      ? `.${name}`
-      : name;
-
-  const root = project(className);
-  const joiner = format === 'selectors' ? '' : ' ';
+  const root = formatClass(className, format);
 
   return hasVariants
-    ? (...vs) => [root, ...vs.map(v => project(`is-${v}`))].join(joiner)
+    ? createVariantProjector(root, format)
     : root;
 }
 
 /**
- * Build a variant selector anchored to a compile-time root
+ * Format a class name
  */
-export function projectVariantSelector(
-  anchor: string
+function formatClass(name: string, format: ProjectionFormat): string {
+  return format === 'selectors' ? `.${name}` : name;
+}
+
+/**
+ * Create a variant projector anchored to a compile-time root
+ */
+export function createVariantProjector(
+  anchor: string,
+  format: ProjectionFormat
 ): VariantProjector<string> {
-  return (...vs) => `${anchor}${vs.map(v => `.is-${v}`).join('')}`;
+  const joiner = format === 'selectors' ? '' : ' ';
+
+  return (...vs) =>
+    [
+      anchor,
+      ...vs.map(v => formatClass(`is-${v}`, format))
+    ].join(joiner);
 }
