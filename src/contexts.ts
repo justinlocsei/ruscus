@@ -1,5 +1,5 @@
 import type { NameGenerator } from './naming.ts';
-import { projectTree, projectVariantSelector } from './projection/elements.ts';
+import { createVariantProjector, projectTree } from './projection/elements.ts';
 import { projectIdentifiers } from './projection/identifiers.ts';
 import type {
   ComponentDefinition,
@@ -17,7 +17,7 @@ type ContextOptions = {
   name: NameGenerator;
 };
 
-const variants = projectVariantSelector('&');
+const variants = createVariantProjector('&', 'selectors');
 
 /**
  * Build a context for derived component styles
