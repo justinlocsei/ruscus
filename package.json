@@ -40,6 +40,7 @@
     "check:formatting": "biome ci --linter-enabled=false . && dprint check",
     "check:types": "tsc --noEmit",
     "format": "biome check --write --linter-enabled=false . && dprint fmt",
+    "generate:types": "node scripts/generate-css-types.mjs",
     "test": "vitest run --reporter verbose"
   },
   "devDependencies": {
