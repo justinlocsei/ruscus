@@ -15,7 +15,8 @@
   ],
   "excludes": [
     "dist",
-    "node_modules"
+    "node_modules",
+    "src/types/css/properties.ts"
   ],
   "plugins": [
     "npm:@dprint/json@0.23.0",
