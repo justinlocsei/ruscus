@@ -1,9 +1,9 @@
 import type { Styles } from './types/css.ts';
 
 /**
- * Project a camel-cased value as a CSS identifier
+ * Convert a camel-cased value to kebab case
  */
-export function asIdentifier(camel: string): string {
+export function camelToKebab(camel: string): string {
   return camel.replace(
     /[A-Z]/g,
     l => `-${l.toLowerCase()}`
@@ -11,9 +11,9 @@ export function asIdentifier(camel: string): string {
 }
 
 /**
- * Project a kebab-cased value as a camel-cased identifier
+ * Convert a kebab-cased value to camel case
  */
-export function asCamelCase(kebab: string): string {
+export function kebabToCamel(kebab: string): string {
   return kebab.replace(
     /-([a-z])/g,
     (_, letter: string) => letter.toUpperCase()
@@ -50,7 +50,7 @@ export class PropertyProjector {
     let prop = this.names.get(camel);
 
     if (prop === undefined) {
-      prop = asIdentifier(camel);
+      prop = camelToKebab(camel);
       this.names.set(camel, prop);
     }
 

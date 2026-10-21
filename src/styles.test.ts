@@ -1,19 +1,19 @@
 import { assert, describe, it } from 'vitest';
 
 import {
-  asCamelCase,
-  asIdentifier,
+  camelToKebab,
+  kebabToCamel,
   mergeStyles,
   PropertyProjector
 } from './styles.ts';
 import { checkConversion } from './tests.ts';
 import type { Styles } from './types/css.ts';
 
-describe('asIdentifier', () => {
+describe('camelToKebab', () => {
   it('projects camel-cased values as CSS identifiers', () => {
     checkConversion<string, string>(
       (id, property, message) => {
-        assert.equal(property, asIdentifier(id), message);
+        assert.equal(property, camelToKebab(id), message);
       },
       [
         ['color', 'color'],
@@ -24,10 +24,10 @@ describe('asIdentifier', () => {
   });
 });
 
-describe('asCamelCase', () => {
+describe('kebabToCamel', () => {
   it('projects kebab-cased values as camel-cased identifiers', () => {
-    assert.equal(asCamelCase('background-color'), 'backgroundColor');
-    assert.equal(asCamelCase('-webkit-line-clamp'), 'WebkitLineClamp');
+    assert.equal(kebabToCamel('background-color'), 'backgroundColor');
+    assert.equal(kebabToCamel('-webkit-line-clamp'), 'WebkitLineClamp');
   });
 });
 
