@@ -126,12 +126,7 @@ class ComponentCompiler {
     if (variants) {
       this.addVariantRules(
         selector,
-        cast<
-          DerivedComponentStyles<
-            'relative',
-            DerivedContext
-          >
-        >(variants),
+        cast<DerivedComponentStyles<'relative', DerivedContext>>(variants),
         buildElementContext(
           [this.component.id, ...path],
           element,
