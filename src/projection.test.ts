@@ -31,6 +31,7 @@ describe('projectComponent', () => {
       .variants(s => ({
         active: s({ color: 'red' })
       }));
+
     const els = projectComponent(component, useNaming(component.current));
 
     assert.equal(els.root('active'), 'card is-active');
