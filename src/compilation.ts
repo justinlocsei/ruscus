@@ -154,10 +154,7 @@ class ComponentCompiler {
     definitions: ScopedFragments<'absolute'>
   ): void {
     for (const [key, fragment] of Object.entries(definitions)) {
-      const rule = this.formatFragmentRules(
-        this.selectorForFragmentKey('', key, fragment.scope),
-        fragment
-      );
+      const rule = this.formatFragmentRules(key, fragment);
 
       if (rule) {
         this.blocks.push(rule);
@@ -174,7 +171,7 @@ class ComponentCompiler {
   ): void {
     for (const [key, fragment] of Object.entries(definitions)) {
       const rule = this.formatFragmentRules(
-        this.selectorForFragmentKey(anchor, key, fragment.scope),
+        this.buildNestedSelector(anchor, key),
         fragment
       );
 
@@ -182,21 +179,6 @@ class ComponentCompiler {
         this.blocks.push(rule);
       }
     }
-  }
-
-  /**
-   * Resolve a selector for a fragment map key
-   */
-  private selectorForFragmentKey(
-    anchor: string,
-    key: string,
-    scope: FragmentScope
-  ): string {
-    if (scope === 'absolute') {
-      return key;
-    }
-
-    return this.buildNestedSelector(anchor, key);
   }
 
   /**
