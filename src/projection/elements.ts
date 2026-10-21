@@ -58,14 +58,14 @@ function projectElements<E extends NamedElements<E>>(
   elements: ElementDefinitions,
   { format, name }: ProjectElementOptions
 ): ProjectElements<E> {
-  return Object.entries(elements).reduce<ProjectElements<E>>(
+  return Object.entries(elements).reduce(
     (previous, [key, element]) => {
       if (element) {
         previous[key as keyof E] = projectElement(
           [...namespace, key],
           element,
           { format, name }
-        ) as ProjectElements<E>[keyof E];
+        );
       }
 
       return previous;
