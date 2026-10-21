@@ -2,7 +2,7 @@ import { buildComponentContext, buildElementContext } from './contexts.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
-import { asIdentifier, PropertyProjector } from './styles.ts';
+import { PropertyProjector } from './styles.ts';
 import type {
   ComponentDefinition,
   DerivedComponentContext,
@@ -326,7 +326,7 @@ class ComponentCompiler {
     const indent = ' '.repeat(this.config.indentation);
 
     return properties
-      .map(p => `${indent}${asIdentifier(p)}: ${styles[p]};`)
+      .map(p => `${indent}${this.config.properties.project(p)}: ${styles[p]};`)
       .join('\n');
   }
 
