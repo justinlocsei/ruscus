@@ -28,6 +28,16 @@ Public API: `src/index.ts` (component factory, compile entry, queries).
 
 **Generics:** Let `S` accrue on the fluent chain; do not thread `S` through compile/storage unless author precision truly requires it. That split is intentional complexity tradeoff: slightly awkward internal casts and wide-spec erasure vs. a fully generic compiler.
 
+**CSS types:**
+
+- **Layout:** `src/types/css/values.ts` (`AuthorValue` with `AuthorString` for literal hints, wide `Value` for erasure) and generated `src/types/css/properties.ts`, composed in `src/types/css.ts`.
+- **Author `Styles`:** `KnownProperties & Record<string, Value | undefined>` — autocomplete on known keys and keywords without rejecting arbitrary properties or values.
+- **`Declarations`:** wide `[property: string]: Value | undefined`; compile paths do not use generated keyword unions.
+- **Codegen:** `scripts/generate-css-types.mjs` (`npm run generate:types`); `@webref/css` plus CSSTree `definitionSyntax`. Only **`KnownProperties`** is exported from the generated file. Shared keyword sets become non-exported PascalCase aliases (shortest camel property name, numeric suffix on clashes), extracted iteratively by overlapping value sets (`MIN_VALUE_OVERLAP` in the script). Each property type uses aliases, remaining literals, and/or a file-local `Value` (`AuthorValue |` wide keywords). The extractor mutates in-memory prop `values` between passes while generating.
+- **Naming:** generated property keys are camelCase (`kebabToCamel` in the script); emit uses `camelToKebab` / `PropertyProjector`.
+- **Formatting:** `properties.ts` is dprint-excluded so each property and union stays one line for diff readability.
+- **Non-goals:** generated types improve DX only; they are not a strict CSS validator or csstype-level enforcement.
+
 ## Exports
 
 Be conservative about what gets exported. Only export a type or function when another module in this repo genuinely needs it, or when explicitly requested as part of the public API in `src/index.ts`. Do not preemptively export helpers, types, or utilities “just in case” — keep symbols module-local until there is a concrete internal consumer or an intentional API decision.
@@ -42,6 +52,8 @@ Before finishing work:
 npm run check
 npm run test
 ```
+
+After changing `scripts/generate-css-types.mjs` or bumping `@webref/css`, run `npm run generate:types` and commit the updated `src/types/css/properties.ts`.
 
 ## Testing
 
