@@ -1,4 +1,4 @@
-import type { KnownStyleProperties } from './css/properties.ts';
+import type { KnownProperties } from './css/properties.ts';
 import type { Value } from './css/values.ts';
 
 /**
@@ -11,4 +11,4 @@ export type Declarations = {
 /**
  * A mapping of CSS properties to values
  */
-export type Styles = KnownStyleProperties & Record<string, Value | undefined>;
+export type Styles = KnownProperties & Record<string, Value | undefined>;
