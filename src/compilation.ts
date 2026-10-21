@@ -187,7 +187,7 @@ class ComponentCompiler {
   private formatFragmentRules(
     parentSelector: string,
     fragment: Fragment
-  ): string | undefined {
+  ): string | null {
     const { nested, root: styles } = fragment.styles;
     const nestedEntries = Object.entries(nested);
 
@@ -216,8 +216,8 @@ class ComponentCompiler {
       }
     }
 
-    if (inner.length === 0) {
-      return undefined;
+    if (!inner.length) {
+      return null;
     }
 
     return this.formatNestedBlock(parentSelector, inner);
@@ -245,7 +245,7 @@ class ComponentCompiler {
   /**
    * Format declaration as key/value pairs
    */
-  private formatDeclarations(styles: Declarations): string | undefined {
+  private formatDeclarations(styles: Declarations): string | null {
     const { config: { properties }, indent } = this;
 
     const props = Object
@@ -253,7 +253,7 @@ class ComponentCompiler {
       .filter(([_, v]) => v !== undefined);
 
     if (props.length === 0) {
-      return undefined;
+      return null;
     }
 
     return props
@@ -318,11 +318,11 @@ class ComponentCompiler {
   private formatRule(
     selector: string,
     styles: Declarations
-  ): string | undefined {
+  ): string | null {
     const body = this.formatDeclarations(styles);
 
-    if (!body) {
-      return undefined;
+    if (body === null) {
+      return null;
     }
 
     return `${selector} {\n${body}\n}`;
