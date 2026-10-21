@@ -3,22 +3,14 @@ import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
 import { PropertyProjector } from './styles.ts';
-import type {
-  ComponentDefinition,
-  DerivedComponentContext,
-  DerivedComponentStyles
-} from './types/components.ts';
+import type { ComponentDefinition } from './types/components.ts';
 import type { Declarations } from './types/css.ts';
-import type {
-  DerivedElementContext,
-  ElementDefinition
-} from './types/elements.ts';
+import type { ElementDefinition } from './types/elements.ts';
 import type {
   Fragment,
   FragmentScope,
   ScopedFragments
 } from './types/fragments.ts';
-import { cast } from './utils.ts';
 
 /**
  * Options for compiling a component's CSS
@@ -28,11 +20,6 @@ export type CompileConfig = {
   naming?: NamingScheme;
   properties?: PropertyProjector;
 };
-
-/**
- * Any possible derived context
- */
-type DerivedContext = DerivedComponentContext | DerivedElementContext;
 
 /**
  * Generate CSS for a component's styles
@@ -86,8 +73,7 @@ class ComponentCompiler {
     if (variants) {
       this.addVariantRules(
         root,
-        cast<DerivedComponentStyles<'relative', DerivedContext>>(variants),
-        buildComponentContext(component, { name })
+        variants(defineRelativeFragment, context)
       );
     }
 
@@ -129,8 +115,7 @@ class ComponentCompiler {
     if (variants) {
       this.addVariantRules(
         selector,
-        cast<DerivedComponentStyles<'relative', DerivedContext>>(variants),
-        context
+        variants(defineRelativeFragment, context)
       );
     }
 
@@ -151,11 +136,8 @@ class ComponentCompiler {
    */
   private addVariantRules(
     anchor: string,
-    provider: DerivedComponentStyles<'relative', DerivedContext>,
-    ctx: DerivedContext
+    definitions: ScopedFragments
   ): void {
-    const definitions = provider(defineRelativeFragment, ctx);
-
     for (const [name, fragment] of Object.entries(definitions)) {
       const rule = this.formatFragmentRules(`${anchor}.is-${name}`, fragment);
 
