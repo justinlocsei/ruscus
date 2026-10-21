@@ -30,6 +30,11 @@ export type CompileConfig = {
 };
 
 /**
+ * Any possible derived context
+ */
+type DerivedContext = DerivedComponentContext | DerivedElementContext;
+
+/**
  * Generate CSS for a component's styles
  */
 export function styleComponent(
@@ -54,8 +59,6 @@ class ComponentCompiler {
   ) {
     this.blocks = [];
 
-    this.component = component;
-
     this.config = {
       indentation: 2,
       naming: 'verbose',
@@ -63,6 +66,7 @@ class ComponentCompiler {
       ...config
     };
 
+    this.component = component;
     this.name = useNaming(component, config.naming);
   }
 
@@ -70,51 +74,40 @@ class ComponentCompiler {
    * Produce CSS for the component's styles
    */
   compile(): string {
-    const { component } = this;
+    const { component, name } = this;
     const { elements, variants } = component;
-    const root = this.buildSelector();
 
-    const derivedContext = buildComponentContext(component, {
-      name: this.name
-    });
+    const root = this.buildSelector();
+    const context = buildComponentContext(component, { name });
 
     this.addRule(root, component.styles);
 
     if (variants) {
       this.addVariantRules(
         root,
-        cast<
-          DerivedComponentStyles<
-            'relative',
-            DerivedComponentContext | DerivedElementContext
-          >
-        >(variants),
-        buildComponentContext(component, { name: this.name })
+        cast<DerivedComponentStyles<'relative', DerivedContext>>(variants),
+        buildComponentContext(component, { name })
       );
     }
 
-    for (
-      const [name, element] of Object.entries(elements)
-    ) {
+    for (const [name, element] of Object.entries(elements)) {
       this.addElementStyles([name], element);
     }
 
     for (const provider of component.nested) {
       this.addScopedFragmentRules(
         root,
-        provider(defineRelativeFragment, derivedContext)
+        provider(defineRelativeFragment, context)
       );
     }
 
-    for (
-      const [name, element] of Object.entries(elements)
-    ) {
+    for (const [name, element] of Object.entries(elements)) {
       this.addElementNested([name], element);
     }
 
     for (const provider of component.global) {
       this.addGlobalFragmentRules(
-        provider(defineAbsoluteFragment, derivedContext)
+        provider(defineAbsoluteFragment, context)
       );
     }
 
@@ -136,7 +129,7 @@ class ComponentCompiler {
         cast<
           DerivedComponentStyles<
             'relative',
-            DerivedComponentContext | DerivedElementContext
+            DerivedContext
           >
         >(variants),
         buildElementContext(
@@ -184,9 +177,9 @@ class ComponentCompiler {
     anchor: string,
     provider: DerivedComponentStyles<
       'relative',
-      DerivedComponentContext | DerivedElementContext
+      DerivedContext
     >,
-    ctx: DerivedComponentContext | DerivedElementContext
+    ctx: DerivedContext
   ): void {
     const definitions = provider(defineRelativeFragment, ctx);
 
