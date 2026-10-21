@@ -2,7 +2,7 @@ import { buildComponentContext, buildElementContext } from './contexts.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
-import { asIdentifier } from './styles.ts';
+import { asIdentifier, PropertyProjector } from './styles.ts';
 import type {
   ComponentDefinition,
   DerivedComponentContext,
@@ -26,6 +26,7 @@ import { cast } from './utils.ts';
 export type CompileConfig = {
   indentation?: number;
   naming?: NamingScheme;
+  properties?: PropertyProjector;
 };
 
 /**
@@ -41,7 +42,7 @@ export function styleComponent(
 class ComponentCompiler {
   private blocks: string[];
   private component: ComponentDefinition;
-  private config: Required<Omit<CompileConfig, 'naming'>>;
+  private config: Required<CompileConfig>;
   private name: NameGenerator;
 
   /**
@@ -54,7 +55,14 @@ class ComponentCompiler {
     this.blocks = [];
 
     this.component = component;
-    this.config = { indentation: 2, ...config };
+
+    this.config = {
+      indentation: 2,
+      naming: 'verbose',
+      properties: new PropertyProjector(),
+      ...config
+    };
+
     this.name = useNaming(component, config.naming);
   }
 
