@@ -150,7 +150,9 @@ class ComponentCompiler {
   /**
    * Add global fragment rules
    */
-  private addGlobalFragmentRules(definitions: ScopedFragments): void {
+  private addGlobalFragmentRules(
+    definitions: ScopedFragments<'absolute'>
+  ): void {
     for (const [key, fragment] of Object.entries(definitions)) {
       const rule = this.formatFragmentRules(
         this.selectorForFragmentKey('', key, fragment.scope),
@@ -168,7 +170,7 @@ class ComponentCompiler {
    */
   private addScopedFragmentRules(
     anchor: string,
-    definitions: ScopedFragments
+    definitions: ScopedFragments<'relative'>
   ): void {
     for (const [key, fragment] of Object.entries(definitions)) {
       const rule = this.formatFragmentRules(
