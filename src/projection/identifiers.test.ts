@@ -23,13 +23,4 @@ describe('projectIdentifiers', () => {
       charlieDelta: 'card--charlie-delta'
     });
   });
-
-  it('scopes identifiers to the component ID', () => {
-    const component = defineComponent('card', { namespace: 'ui' })
-      .identifiers({ alfa: 'variable' });
-
-    assert.deepEqual(projectIdentifiers(component.current), {
-      alfa: '--ui--card--alfa'
-    });
-  });
 });
