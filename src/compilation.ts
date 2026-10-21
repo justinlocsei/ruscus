@@ -48,6 +48,7 @@ class ComponentCompiler {
   private blocks: string[];
   private component: ComponentDefinition;
   private config: Required<CompileConfig>;
+  private indent: string;
   private name: NameGenerator;
 
   /**
@@ -57,8 +58,6 @@ class ComponentCompiler {
     component: ComponentDefinition,
     config: CompileConfig
   ) {
-    this.blocks = [];
-
     this.config = {
       indentation: 2,
       naming: 'verbose',
@@ -66,7 +65,9 @@ class ComponentCompiler {
       ...config
     };
 
+    this.blocks = [];
     this.component = component;
+    this.indent = ' '.repeat(this.config.indentation);
     this.name = useNaming(component, config.naming);
   }
 
@@ -299,6 +300,8 @@ class ComponentCompiler {
    * Format declaration lines without a selector wrapper
    */
   private formatDeclarations(styles: Declarations): string | undefined {
+    const { config, indent } = this;
+
     const properties = Object
       .entries(styles)
       .filter(([_, v]) => v !== undefined)
@@ -308,10 +311,8 @@ class ComponentCompiler {
       return undefined;
     }
 
-    const indent = ' '.repeat(this.config.indentation);
-
     return properties
-      .map(p => `${indent}${this.config.properties.project(p)}: ${styles[p]};`)
+      .map(p => `${indent}${config.properties.project(p)}: ${styles[p]};`)
       .join('\n');
   }
 
@@ -319,7 +320,7 @@ class ComponentCompiler {
    * Wrap nested rules in a selector block
    */
   private formatNestedBlock(selector: string, inner: string[]): string {
-    const indent = ' '.repeat(this.config.indentation);
+    const { indent } = this;
 
     const body = inner
       .map(rule =>
