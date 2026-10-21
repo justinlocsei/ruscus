@@ -46,10 +46,7 @@ export function projectTree<
 ): ProjectTree<R, E> {
   return {
     ...projectElements(namespace, elements, { format, name }),
-    [ELEMENT_ROOT]: projectNode(name(namespace), {
-      format,
-      hasVariants
-    })
+    [ELEMENT_ROOT]: projectNode(name(namespace), { format, hasVariants })
   } as ProjectTree<R, E>;
 }
 
