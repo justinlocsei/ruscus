@@ -11,16 +11,6 @@ export function camelToKebab(camel: string): string {
 }
 
 /**
- * Convert a kebab-cased value to camel case
- */
-export function kebabToCamel(kebab: string): string {
-  return kebab.replace(
-    /-([a-z])/g,
-    (_, letter: string) => letter.toUpperCase()
-  );
-}
-
-/**
  * Merge multiple styles on top of a base
  */
 export function mergeStyles(base: Styles, ...others: Styles[]): Styles {

@@ -1,11 +1,6 @@
 import { assert, describe, it } from 'vitest';
 
-import {
-  camelToKebab,
-  kebabToCamel,
-  mergeStyles,
-  PropertyProjector
-} from './styles.ts';
+import { camelToKebab, mergeStyles, PropertyProjector } from './styles.ts';
 import { checkConversion } from './tests.ts';
 import type { Styles } from './types/css.ts';
 
@@ -21,13 +16,6 @@ describe('camelToKebab', () => {
         ['WebkitLineClamp', '-webkit-line-clamp']
       ]
     );
-  });
-});
-
-describe('kebabToCamel', () => {
-  it('projects kebab-cased values as camel-cased identifiers', () => {
-    assert.equal(kebabToCamel('background-color'), 'backgroundColor');
-    assert.equal(kebabToCamel('-webkit-line-clamp'), 'WebkitLineClamp');
   });
 });
 
