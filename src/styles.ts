@@ -11,6 +11,16 @@ export function asIdentifier(camel: string): string {
 }
 
 /**
+ * Project a kebab-cased value as a camel-cased identifier
+ */
+export function asCamelCase(kebab: string): string {
+  return kebab.replace(
+    /-([a-z])/g,
+    (_, letter: string) => letter.toUpperCase()
+  );
+}
+
+/**
  * Merge multiple styles on top of a base
  */
 export function mergeStyles(base: Styles, ...others: Styles[]): Styles {
