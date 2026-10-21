@@ -297,7 +297,7 @@ class ComponentCompiler {
   }
 
   /**
-   * Format declaration lines without a selector wrapper
+   * Format declaration as key/value pairs
    */
   private formatDeclarations(styles: Declarations): string | undefined {
     const { config, indent } = this;
