@@ -30,13 +30,6 @@ import { cast } from './utils.ts';
  */
 export type AnyComponent = BuilderState<ComponentDefinition>;
 
-/**
- * Options for creating a component
- */
-type ComponentOptions = {
-  namespace?: string;
-};
-
 export class Component<S extends ComponentSpec = ComponentSpec>
   extends Builder<ComponentDefinition>
 {
@@ -45,8 +38,11 @@ export class Component<S extends ComponentSpec = ComponentSpec>
   /**
    * Create a component
    */
-  constructor(name: string, options: ComponentOptions = {}) {
-    const id = [options.namespace, name]
+  constructor(
+    name: string,
+    { namespace = [] }: { namespace?: string[] } = {}
+  ) {
+    const id = [...namespace, name]
       .filter(Boolean)
       .join('--');
 
@@ -193,14 +189,20 @@ export class Component<S extends ComponentSpec = ComponentSpec>
 /**
  * Define a component
  */
-export function defineComponent(
-  name: string,
-  options: ComponentOptions = {}
-): Component<EmptyComponentSpec> {
-  return new Component(name, options);
+export function defineComponent(name: string): Component<EmptyComponentSpec> {
+  return new Component(name);
 }
 
 /**
  * A factory for defining components
  */
 export type ComponentFactory = typeof defineComponent;
+
+/**
+ * Create a factory to produce namespaced components
+ */
+export function defineComponentNamespace(
+  ...namespace: string[]
+): ComponentFactory {
+  return (name: string) => new Component(name, { namespace });
+}

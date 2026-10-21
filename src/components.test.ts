@@ -1,7 +1,11 @@
 import { assert, describe, it } from 'vitest';
 
 import type { AnyComponent } from './components.ts';
-import { Component } from './components.ts';
+import {
+  Component,
+  defineComponent,
+  defineComponentNamespace
+} from './components.ts';
 import { buildComponentContext } from './contexts.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 
@@ -27,18 +31,6 @@ describe('Component', () => {
   it('has an ID', () => {
     assert.equal(new Component('alfa').id, 'alfa');
     assert.equal(new Component('bravo').id, 'bravo');
-  });
-
-  it('can apply a namespace to the ID', () => {
-    assert.equal(
-      new Component('alfa', { namespace: 'bravo' }).id,
-      'bravo--alfa'
-    );
-
-    assert.equal(
-      new Component('alfa', { namespace: 'charlie' }).id,
-      'charlie--alfa'
-    );
   });
 
   describe('css', () => {
@@ -262,5 +254,21 @@ describe('Component', () => {
         'variants may only be set once'
       );
     });
+  });
+});
+
+describe('defineComponent', () => {
+  it('creates a component', () => {
+    const component = defineComponent('title');
+    assert.equal(component.id, 'title');
+  });
+});
+
+describe('defineComponentNamespace', () => {
+  it('creates a factory for namespaced components', () => {
+    const c = defineComponentNamespace('ui', 'admin');
+
+    assert.equal(c('card').id, 'ui--admin--card');
+    assert.equal(c('badge').id, 'ui--admin--badge');
   });
 });

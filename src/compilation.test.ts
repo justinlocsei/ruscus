@@ -3,7 +3,7 @@ import { assert, describe, it } from 'vitest';
 import type { CompileConfig } from './compilation.ts';
 import { styleComponent } from './compilation.ts';
 import type { AnyComponent } from './components.ts';
-import { defineComponent } from './components.ts';
+import { defineComponent, defineComponentNamespace } from './components.ts';
 import { css } from './tests.ts';
 
 function checkOutput(
@@ -314,9 +314,11 @@ describe('styleComponent', () => {
     );
   });
 
-  it('uses the full component ID', () => {
+  it('supports namespaced components', () => {
+    const c = defineComponentNamespace('ui');
+
     checkOutput(
-      defineComponent('card', { namespace: 'ui' }).css({ color: 'black' }),
+      c('card').css({ color: 'black' }),
       css`
         .ui--card {
           color: black;
