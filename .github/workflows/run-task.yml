@@ -1,0 +1,32 @@
+name: Run a task
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: The Node.js version to use
+        required: true
+        type: number
+      task:
+        description: The task to run
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  run-task:
+    name: Run
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Clone Ruscus
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: ./.github/actions/install-node
+        name: Install Node.js ${{ inputs.node-version }}
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Run ${{ inputs.task }}
+        run: npm run ${{ inputs.task }}
