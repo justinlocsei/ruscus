@@ -29,7 +29,7 @@ describe('CompactNaming', () => {
 
     it('uses stable suffixes for registered elements', () => {
       const component = defineComponent('card').elements(e => ({
-        body: e(),
+        body: e().children({ text: e() }),
         title: e()
       }));
 
@@ -39,9 +39,15 @@ describe('CompactNaming', () => {
         naming.forClass([component.id, 'body']),
         /_0$/
       );
+
+      assert.match(
+        naming.forClass([component.id, 'body', 'text']),
+        /_1$/
+      );
+
       assert.match(
         naming.forClass([component.id, 'title']),
-        /_1$/
+        /_2$/
       );
     });
   });
