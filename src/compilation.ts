@@ -277,13 +277,11 @@ class ComponentCompiler {
   private buildNestedSelector(anchor: string, key: string): string {
     if (key.startsWith('&')) {
       return `${anchor}${key.slice(1)}`;
-    }
-
-    if (key === anchor) {
+    } else if (key === anchor) {
       return anchor;
+    } else {
+      return `${anchor} ${key}`;
     }
-
-    return `${anchor} ${key}`;
   }
 
   /**
