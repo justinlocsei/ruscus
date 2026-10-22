@@ -14,4 +14,11 @@ export abstract class Naming {
    * Produce a class name from a list of levels
    */
   abstract forClass(levels: string[]): string;
+
+  /**
+   * Produce the class name for a variant
+   */
+  forVariant(name: string): string {
+    return `is-${name}`;
+  }
 }

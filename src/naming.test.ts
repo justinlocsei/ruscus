@@ -11,8 +11,9 @@ describe('useNaming', () => {
 
     const name = useNaming(component.current);
 
-    assert.equal(name(['card']), 'card');
-    assert.equal(name(['card', 'body']), 'card__body');
+    assert.equal(name.forClass(['card']), 'card');
+    assert.equal(name.forClass(['card', 'body']), 'card__body');
+    assert.equal(name.forVariant('compact'), 'is-compact');
   });
 
   it('uses a hashed prefix for compact root names', () => {
@@ -22,13 +23,13 @@ describe('useNaming', () => {
     const compact = useNaming(component.current, 'compact');
 
     assert.isAbove(
-      verbose([component.id]).length,
-      compact([component.id]).length
+      verbose.forClass([component.id]).length,
+      compact.forClass([component.id]).length
     );
 
     assert.equal(
-      compact([component.id]),
-      compact([component.id])
+      compact.forClass([component.id]),
+      compact.forClass([component.id])
     );
   });
 
@@ -40,7 +41,7 @@ describe('useNaming', () => {
 
     const name = useNaming(component.current, 'compact');
 
-    assert.match(name([component.id, 'body']), /_0$/);
-    assert.match(name([component.id, 'title']), /_1$/);
+    assert.match(name.forClass([component.id, 'body']), /_0$/);
+    assert.match(name.forClass([component.id, 'title']), /_1$/);
   });
 });
