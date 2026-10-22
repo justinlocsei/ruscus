@@ -1,6 +1,5 @@
 export { styleComponent as style } from './compilation.ts';
 export {
-  Component,
   type ComponentFactory,
   defineComponent as component
 } from './components.ts';
