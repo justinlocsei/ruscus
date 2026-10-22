@@ -18,7 +18,13 @@ export function compareStyles(
 ): void {
   test(name, async () => {
     const applied = define(defineComponent).apply();
-    const output = `${extractBuildPlan(applied).compile().trimEnd()}\n`;
+    const buildPlan = extractBuildPlan(applied);
+
+    if (buildPlan === undefined) {
+      throw new Error('Expected the applied component to have a build plan');
+    }
+
+    const output = `${buildPlan.compile().trimEnd()}\n`;
 
     await expect(output).toMatchFileSnapshot(
       join(TESTS_DIR, `${name}.css`)
