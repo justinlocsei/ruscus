@@ -1,17 +1,17 @@
 declare module '@webref/css' {
-  type CssTypeEntry = {
+  type Type = {
     syntax?: string;
   };
 
-  type WebrefProperty = {
+  type Property = {
     name: string;
     syntax?: string;
   };
 
   const css: {
     index(): Promise<{
-      properties: Record<string, WebrefProperty>;
-      types?: Record<string, CssTypeEntry>;
+      properties: Record<string, Property>;
+      types?: Record<string, Type>;
     }>;
   };
 
