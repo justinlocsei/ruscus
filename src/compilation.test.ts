@@ -287,6 +287,55 @@ describe('styleComponent', () => {
     );
   });
 
+  it('omits empty global fragments', () => {
+    checkOutput(
+      defineComponent('card')
+        .css({ color: 'black' })
+        .global(s => ({
+          '.card': s(),
+          '.card__title': s({ fontWeight: '700' })
+        })),
+      css`
+        .card {
+          color: black;
+        }
+
+        .card__title {
+          font-weight: 700;
+        }
+      `
+    );
+  });
+
+  it('omits empty variant styles', () => {
+    checkOutput(
+      defineComponent('card')
+        .variants(s => ({
+          compact: s({ padding: '0.5rem' }),
+          empty: s()
+        })),
+      css`
+        .card.is-compact {
+          padding: 0.5rem;
+        }
+      `
+    );
+  });
+
+  it('omits undefined declaration values', () => {
+    checkOutput(
+      defineComponent('card').css({
+        color: 'black',
+        display: undefined
+      }),
+      css`
+        .card {
+          color: black;
+        }
+      `
+    );
+  });
+
   it('respects custom indentation', () => {
     checkOutput(
       defineComponent('card').css({ color: 'black' }),
