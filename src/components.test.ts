@@ -46,8 +46,9 @@ describe('Component', () => {
 
       assert.equal(projection.root as unknown as string, 'testing');
 
-      const { compile } = extractBuildPlan(projection);
-      assert.equal(typeof compile, 'function');
+      const buildPlan = extractBuildPlan(projection);
+      assert.isDefined(buildPlan);
+      assert.equal(typeof buildPlan.compile, 'function');
     });
   });
 
