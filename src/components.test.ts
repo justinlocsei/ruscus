@@ -9,6 +9,7 @@ import {
 import { buildComponentContext } from './contexts.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 import { useNaming } from './naming.ts';
+import { T } from './tests.ts';
 
 describe('Component', () => {
   const component = () => new Component('testing');
@@ -165,6 +166,19 @@ describe('Component', () => {
       assert.equal(typeof instance.current.global[0], 'function');
     });
 
+    it('exposes narrowly typed elements to the global provider', () => {
+      component()
+        .elements(e => ({ title: e() }))
+        .global((s, { els }) => {
+          T.assert<T.Equivalent<typeof els.title, string>>(true);
+
+          // @ts-expect-error unknown element
+          els.footer;
+
+          return { [els.title]: s({ color: 'red' }) };
+        });
+    });
+
     it('supports chaining', () => {
       assert.deepEqual(
         component()
@@ -213,6 +227,104 @@ describe('Component', () => {
         .nested((s, { els }) => ({ [els.title]: s({ color: 'red' }) }));
 
       assert.equal(typeof instance.current.nested[0], 'function');
+    });
+
+    it('exposes deeply nested elements to the nested provider', () => {
+      component()
+        .elements(e => ({
+          header: () =>
+            e().children(() => ({
+              title: e().children(() => ({ text: e() }))
+            }))
+        }))
+        .nested((s, { els }) => {
+          T.assert<
+            T.Equivalent<typeof els.header.title.text, string>
+          >(true);
+
+          // @ts-expect-error unknown element
+          els.header.title.footer;
+
+          return { [els.header.title.text]: s({ color: 'red' }) };
+        });
+    });
+
+    it('exposes element variants on the nested provider', () => {
+      component()
+        .elements(e => ({
+          body: e().variants(s => ({
+            compact: s({ padding: '0.5rem' }),
+            large: s({ padding: '2rem' })
+          }))
+        }))
+        .nested((s, { els }) => {
+          T.assert<
+            T.Equivalent<
+              typeof els.body,
+              (name: 'compact' | 'large') => string
+            >
+          >(true);
+
+          // @ts-expect-error unknown element
+          els.title;
+
+          return {
+            [els.body('compact')]: s({ gap: '0.25rem' })
+          };
+        });
+    });
+
+    it('exposes narrowly typed elements to the nested provider', () => {
+      component()
+        .elements(e => ({ title: e() }))
+        .nested((s, { els }) => {
+          T.assert<T.Equivalent<typeof els.title, string>>(true);
+
+          // @ts-expect-error unknown element
+          els.footer;
+
+          return {
+            '&:hover': s({ opacity: '0.9' }),
+            [els.title]: s({ color: 'red' })
+          };
+        });
+    });
+
+    it('exposes root variants on the nested provider', () => {
+      component()
+        .elements(e => ({ body: e() }))
+        .variants(s => ({
+          compact: s({ padding: '0.5rem' }),
+          large: s({ padding: '2rem' })
+        }))
+        .nested((s, { els, variants }) => {
+          T.assert<
+            T.Equivalent<
+              typeof els.root,
+              (name: 'compact' | 'large') => string
+            >
+          >(true);
+
+          T.assert<T.Equivalent<typeof els.body, string>>(true);
+
+          T.assert<
+            T.Equivalent<
+              typeof variants,
+              <T extends 'compact' | 'large'>(...names: T[]) => string
+            >
+          >(true);
+
+          // @ts-expect-error unknown element
+          els.title;
+
+          // @ts-expect-error unknown variant
+          variants('wide');
+
+          return {
+            [variants('compact')]: s({ gap: '0.25rem' }),
+            [els.body]: s({ display: 'block' })
+          };
+        });
     });
 
     it('supports chaining', () => {
