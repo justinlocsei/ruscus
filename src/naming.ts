@@ -3,8 +3,6 @@ import type { Naming } from './naming/shared.ts';
 import { VerboseNaming } from './naming/verbose.ts';
 import type { ComponentDefinition } from './types/components.ts';
 
-export { Naming } from './naming/shared.ts';
-
 /**
  * A generator for class and variant names
  */
