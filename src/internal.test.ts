@@ -10,7 +10,7 @@ import { useNaming } from './naming.ts';
 import { projectComponent } from './projection.ts';
 
 describe('annotateComponent', () => {
-  it('attaches a build plan and identifiers to the projection', () => {
+  it('attaches annotations to a projected component', () => {
     const component = defineComponent('card').identifiers({ alfa: 'string' });
 
     const annotated = annotateComponent(
@@ -51,7 +51,7 @@ describe('annotateComponent', () => {
 });
 
 describe('extractBuildPlan', () => {
-  it('returns the build plan for an applied component', () => {
+  it('returns the build plan for an annotated component', () => {
     const applied = defineComponent('card').css({ color: 'red' }).apply();
     const buildPlan = extractBuildPlan(applied);
 
@@ -61,7 +61,7 @@ describe('extractBuildPlan', () => {
 });
 
 describe('extractIdentifiers', () => {
-  it('returns projected identifier values', () => {
+  it('returns identifier values for an annotated component', () => {
     const applied = defineComponent('card')
       .identifiers({ alfa: 'string', bravo: 'variable' })
       .apply();
