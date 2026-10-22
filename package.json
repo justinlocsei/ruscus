@@ -46,6 +46,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.9",
     "@types/node": "^24.0.0",
+    "@vitest/coverage-v8": "^5.0.5",
     "@webref/css": "^8.7.7",
     "css-tree": "^3.2.1",
     "dprint": "^0.57.0",
