@@ -136,7 +136,10 @@ class ComponentCompiler {
   ): void {
     for (const [name, fragment] of Object.entries(definitions)) {
       this.blocks.push(
-        this.formatFragmentRules(`${anchor}.is-${name}`, fragment)
+        this.formatFragmentRules(
+          `${anchor}.${this.name.forVariant(name)}`,
+          fragment
+        )
       );
     }
   }
@@ -262,7 +265,7 @@ class ComponentCompiler {
    * Build a selector for a component element
    */
   private buildSelector(...parts: string[]): string {
-    return `.${this.name([this.component.id, ...parts])}`;
+    return `.${this.name.forClass([this.component.id, ...parts])}`;
   }
 
   /**

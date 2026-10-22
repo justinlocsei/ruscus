@@ -8,13 +8,14 @@ import {
 } from './components.ts';
 import { buildComponentContext } from './contexts.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
+import { useNaming } from './naming.ts';
 
 describe('Component', () => {
   const component = () => new Component('testing');
 
   const styleContext = (instance: AnyComponent) =>
     buildComponentContext(instance.current, {
-      name: levels => levels.join('__')
+      name: useNaming(instance.current, 'verbose')
     });
 
   it('starts with an empty state', () => {

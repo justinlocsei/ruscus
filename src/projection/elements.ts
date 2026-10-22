@@ -46,7 +46,11 @@ export function projectTree<
 ): ProjectTree<R, E> {
   return {
     ...projectElements(namespace, elements, { format, name }),
-    [ELEMENT_ROOT]: projectNode(name(namespace), { format, hasVariants })
+    [ELEMENT_ROOT]: projectNode(name.forClass(namespace), {
+      format,
+      hasVariants,
+      name
+    })
   } as ProjectTree<R, E>;
 }
 
@@ -90,7 +94,7 @@ function projectElement<S extends ElementSpec>(
       ...options,
       hasVariants
     })
-    : projectNode(options.name(path), {
+    : projectNode(options.name.forClass(path), {
       ...options,
       hasVariants
     })) as ProjectElement<S>;
@@ -103,16 +107,16 @@ function projectNode(
   className: string,
   {
     format,
-    hasVariants
-  }: {
-    format: ProjectionFormat;
+    hasVariants,
+    name
+  }: ProjectElementOptions & {
     hasVariants: boolean;
   }
 ): VariantProjector<string> | string {
   const root = formatClass(className, format);
 
   return hasVariants
-    ? createVariantProjector(root, format)
+    ? createVariantProjector(root, format, name)
     : root;
 }
 
@@ -128,13 +132,14 @@ function formatClass(name: string, format: ProjectionFormat): string {
  */
 export function createVariantProjector(
   anchor: string,
-  format: ProjectionFormat
+  format: ProjectionFormat,
+  name: NameGenerator
 ): VariantProjector<string> {
   const joiner = format === 'selectors' ? '' : ' ';
 
   return (...vs) =>
     [
       anchor,
-      ...vs.map(v => formatClass(`is-${v}`, format))
+      ...vs.map(v => formatClass(name.forVariant(v), format))
     ].join(joiner);
 }
