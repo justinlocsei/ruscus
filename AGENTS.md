@@ -33,7 +33,7 @@ Public API: `src/index.ts` (component factory, compile entry, queries).
 - **Layout:** `src/types/css/values.ts` (`AuthorValue` with `AuthorString` for literal hints, wide `Value` for erasure) and generated `src/types/css/properties.ts`, composed in `src/types/css.ts`.
 - **Author `Styles`:** `KnownProperties & Record<string, Value | undefined>` — autocomplete on known keys and keywords without rejecting arbitrary properties or values.
 - **`Declarations`:** wide `[property: string]: Value | undefined`; compile paths do not use generated keyword unions.
-- **Codegen:** `scripts/generate-css-types.mjs` (`npm run generate:types`); `@webref/css` plus CSSTree `definitionSyntax`. Only **`KnownProperties`** is exported from the generated file. Shared keyword sets become non-exported PascalCase aliases (shortest camel property name, numeric suffix on clashes), extracted iteratively by overlapping value sets (`MIN_VALUE_OVERLAP` in the script). Each property type uses aliases, remaining literals, and/or a file-local `Value` (`AuthorValue |` wide keywords). The extractor mutates in-memory prop `values` between passes while generating.
+- **Codegen:** `scripts/generate-css-types.ts` (`npm run generate:types`, Node `--experimental-strip-types`); `@webref/css` (shim in `scripts/webref-css.d.ts`) plus CSSTree `definitionSyntax` (`@types/css-tree`). Only **`KnownProperties`** is exported from the generated file. Shared keyword sets become non-exported PascalCase aliases (shortest camel property name, numeric suffix on clashes), extracted iteratively by overlapping value sets (`MIN_VALUE_OVERLAP` in the script). Each property type uses aliases, remaining literals, and/or a file-local `Value` (`AuthorValue |` wide keywords). The extractor mutates in-memory prop `values` between passes while generating.
 - **Naming:** generated property keys are camelCase (`kebabToCamel` in the script); emit uses `camelToKebab` / `PropertyProjector`.
 - **Formatting:** `properties.ts` is dprint-excluded so each property and union stays one line for diff readability.
 - **Non-goals:** generated types improve DX only; they are not a strict CSS validator or csstype-level enforcement.
@@ -54,11 +54,13 @@ npm run test
 npm run test:coverage
 ```
 
-After changing `scripts/generate-css-types.mjs` or bumping `@webref/css`, run `npm run generate:types` and commit the updated `src/types/css/properties.ts`.
+After changing `scripts/generate-css-types.ts` or bumping `@webref/css`, run `npm run generate:types` and commit the updated `src/types/css/properties.ts`.
 
 ## Testing
 
 Unit tests live beside source as `src/**/*.test.ts`. Integration tests live under `tests/` (golden CSS via `compareStyles` in `tests/helpers.ts`). After editing a source file, run its matching test file when one exists. Coverage: `npm run test:coverage` (100% thresholds on `src/`; see `vitest.config.ts`; excludes `src/tests.ts` and `src/tests/**`).
+
+Use **NATO phonetic** names for sequential test data (`alfa`, `bravo`, `charlie`, …) instead of `foo` / `test1` / `a`, `b`.
 
 ## Code style
 
@@ -69,10 +71,6 @@ Unit tests live beside source as `src/**/*.test.ts`. Integration tests live unde
 - Keep initialisms uppercase in TypeScript identifiers: use `ID`, not `Id`.
 - Comments only for non-obvious logic; minimize scope; match existing patterns
 - Do not reword existing code comments — leave their wording unchanged unless the underlying behavior changed and the comment is no longer accurate
-
-## Testing conventions
-
-- Use **NATO phonetic** names for sequential test data (`alfa`, `bravo`, `charlie`, …) instead of `foo` / `test1` / `a`, `b`
 
 ## Library internals
 
