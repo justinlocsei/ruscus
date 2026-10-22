@@ -2,6 +2,8 @@ import { assert, describe, it } from 'vitest';
 
 import { defineElement, Element, resolveElements } from './elements.ts';
 import { T } from './tests.ts';
+import { defineTrait } from './traits.ts';
+import type { ScopedFragments } from './types/fragments.ts';
 
 const e = defineElement;
 
@@ -110,6 +112,31 @@ describe('Element', () => {
           .current
           .styles,
         { color: 'red', background: 'blue' }
+      );
+    });
+  });
+
+  describe('is', () => {
+    it('applies trait styles', () => {
+      const element = defineElement().is(
+        defineTrait(s => s({ color: 'blue' }))
+      );
+
+      assert.deepEqual(element.current.styles, { color: 'blue' });
+      assert.equal(element.current.nested.length, 0);
+    });
+
+    it('registers nested trait styles', () => {
+      const element = defineElement().is(
+        defineTrait(s => s().nested({ '&:hover': s({ opacity: '0.5' }) }))
+      );
+
+      assert.equal(element.current.nested.length, 1);
+
+      assert.deepEqual(
+        (element.current.nested[0] as () => ScopedFragments)()['&:hover']
+          ?.styles.root,
+        { opacity: '0.5' }
       );
     });
   });

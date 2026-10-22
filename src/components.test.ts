@@ -10,6 +10,8 @@ import { buildComponentContext } from './contexts.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 import { useNaming } from './naming.ts';
 import { T } from './tests.ts';
+import { defineTrait } from './traits.ts';
+import type { ScopedFragments } from './types/fragments.ts';
 
 describe('Component', () => {
   const component = () => new Component('testing');
@@ -129,6 +131,31 @@ describe('Component', () => {
       assert.throws(
         () => instance.identifiers({ bravo: 'variable' }),
         'identifiers may only be set once'
+      );
+    });
+  });
+
+  describe('is', () => {
+    it('applies trait styles', () => {
+      const instance = component().is(
+        defineTrait(s => s({ color: 'blue' }))
+      );
+
+      assert.deepEqual(instance.current.styles, { color: 'blue' });
+      assert.equal(instance.current.nested.length, 0);
+    });
+
+    it('registers nested trait styles', () => {
+      const instance = component().is(
+        defineTrait(s => s().nested({ '&:hover': s({ opacity: '0.5' }) }))
+      );
+
+      assert.equal(instance.current.nested.length, 1);
+
+      assert.deepEqual(
+        (instance.current.nested[0] as () => ScopedFragments)()['&:hover']
+          ?.styles.root,
+        { opacity: '0.5' }
       );
     });
   });
