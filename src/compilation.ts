@@ -32,7 +32,7 @@ export function styleComponent(
 }
 
 class ComponentCompiler {
-  private blocks: string[];
+  private blocks: (string | null)[];
   private component: ComponentDefinition;
   private config: Required<CompileConfig>;
   private indent: string;
@@ -94,7 +94,7 @@ class ComponentCompiler {
       );
     }
 
-    return this.blocks.join('\n\n');
+    return this.blocks.filter(Boolean).join('\n\n');
   }
 
   /**
@@ -139,11 +139,9 @@ class ComponentCompiler {
     definitions: ScopedFragments
   ): void {
     for (const [name, fragment] of Object.entries(definitions)) {
-      const rule = this.formatFragmentRules(`${anchor}.is-${name}`, fragment);
-
-      if (rule) {
-        this.blocks.push(rule);
-      }
+      this.blocks.push(
+        this.formatFragmentRules(`${anchor}.is-${name}`, fragment)
+      );
     }
   }
 
@@ -154,11 +152,7 @@ class ComponentCompiler {
     definitions: ScopedFragments<'absolute'>
   ): void {
     for (const [key, fragment] of Object.entries(definitions)) {
-      const rule = this.formatFragmentRules(key, fragment);
-
-      if (rule) {
-        this.blocks.push(rule);
-      }
+      this.blocks.push(this.formatFragmentRules(key, fragment));
     }
   }
 
@@ -170,14 +164,12 @@ class ComponentCompiler {
     definitions: ScopedFragments<'relative'>
   ): void {
     for (const [key, fragment] of Object.entries(definitions)) {
-      const rule = this.formatFragmentRules(
-        this.buildNestedSelector(anchor, key),
-        fragment
+      this.blocks.push(
+        this.formatFragmentRules(
+          this.buildNestedSelector(anchor, key),
+          fragment
+        )
       );
-
-      if (rule) {
-        this.blocks.push(rule);
-      }
     }
   }
 
@@ -298,11 +290,7 @@ class ComponentCompiler {
    * Add a CSS rule
    */
   private addRule(selector: string, declarations: Declarations): void {
-    const rule = this.formatRule(selector, declarations);
-
-    if (rule) {
-      this.blocks.push(rule);
-    }
+    this.blocks.push(this.formatRule(selector, declarations));
   }
 
   /**
