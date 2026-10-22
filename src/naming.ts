@@ -23,5 +23,5 @@ export function useNaming(
     ? new CompactNaming(component)
     : new VerboseNaming(component);
 
-  return levels => name.generate(levels);
+  return levels => name.forClass(levels);
 }

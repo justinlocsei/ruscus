@@ -24,9 +24,9 @@ export class CompactNaming extends Naming {
   }
 
   /**
-   * Generate a compact class name
+   * Produce a compact class name
    */
-  generate(levels: string[]): string {
+  forClass(levels: string[]): string {
     if (levels.length <= 1) {
       return this.prefix;
     }

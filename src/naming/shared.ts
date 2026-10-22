@@ -13,5 +13,5 @@ export abstract class Naming {
   /**
    * Produce a class name from a list of levels
    */
-  abstract generate(levels: string[]): string;
+  abstract forClass(levels: string[]): string;
 }

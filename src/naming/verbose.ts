@@ -2,9 +2,9 @@ import { Naming } from './shared.ts';
 
 export class VerboseNaming extends Naming {
   /**
-   * Generate a BEM-style class name
+   * Produce a BEM-style class name
    */
-  generate(levels: string[]): string {
+  forClass(levels: string[]): string {
     return levels.join('__');
   }
 }
