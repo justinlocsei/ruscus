@@ -23,6 +23,29 @@ describe('createVariantProjector', () => {
 });
 
 describe('projectTree', () => {
+  it('ignores missing element entries', () => {
+    const { current } = defineComponent('card').elements(e => ({
+      body: e()
+    }));
+
+    const name = useNaming(current);
+
+    const tree = projectTree(
+      [current.id],
+      {
+        ...current.elements,
+        gap: undefined
+      } as unknown as typeof current.elements,
+      {
+        format: 'names',
+        hasVariants: false,
+        name
+      }
+    ) as unknown as { body: string };
+
+    assert.equal(tree.body, 'card__body');
+  });
+
   it('can project class names for each element in the tree', () => {
     const { current } = defineComponent('card').elements(e => ({
       body: e().children({ text: e() })
