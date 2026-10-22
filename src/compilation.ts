@@ -191,11 +191,10 @@ class ComponentCompiler {
     }
 
     for (const [key, child] of nestedEntries) {
-      const selector = key.startsWith('&')
-        ? `${parentSelector}${key.slice(1)}`
-        : key;
-
-      const rule = this.formatFragmentRules(selector, child);
+      const rule = this.formatFragmentRules(
+        key.startsWith('&') ? `${parentSelector}${key.slice(1)}` : key,
+        child
+      );
 
       if (rule) {
         inner.push(rule);
