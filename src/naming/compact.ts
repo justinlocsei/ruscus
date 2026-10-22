@@ -35,7 +35,7 @@ export class CompactNaming extends Naming {
 
     if (suffix === undefined) {
       throw new Error(
-        `Unknown element path for compact naming: ${levels.join(' / ')}`
+        `Unknown element path for compact naming: ${levels.join(' > ')}`
       );
     }
 
