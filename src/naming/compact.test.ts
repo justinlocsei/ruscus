@@ -1,6 +1,7 @@
 import { assert, describe, it } from 'vitest';
 
 import { defineComponent } from '../components.ts';
+import { defineElement } from '../elements.ts';
 import { CompactNaming } from './compact.ts';
 
 describe('CompactNaming', () => {
@@ -16,6 +17,19 @@ describe('CompactNaming', () => {
         name,
         naming.forClass([component.id])
       );
+    });
+
+    it('ignores missing element entries', () => {
+      const definition = defineComponent('card').current;
+
+      definition.elements = {
+        body: defineElement().current,
+        gap: undefined
+      } as unknown as typeof definition.elements;
+
+      const naming = new CompactNaming(definition);
+
+      assert.match(naming.forClass([definition.id, 'body']), /_/);
     });
 
     it('throws for unknown element paths', () => {
