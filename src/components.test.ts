@@ -8,6 +8,7 @@ import {
 } from './components.ts';
 import { buildComponentContext } from './contexts.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
+import { extractBuildPlan } from './internal.ts';
 import { useNaming } from './naming.ts';
 import { T } from './tests.ts';
 import { defineTrait } from './traits.ts';
@@ -35,6 +36,19 @@ describe('Component', () => {
   it('has an ID', () => {
     assert.equal(new Component('alfa').id, 'alfa');
     assert.equal(new Component('bravo').id, 'bravo');
+  });
+
+  describe('apply', () => {
+    it('projects an applicable component', () => {
+      const projection = component()
+        .css({ color: 'black' })
+        .apply();
+
+      assert.equal(projection.root as unknown as string, 'testing');
+
+      const { compile } = extractBuildPlan(projection);
+      assert.equal(typeof compile, 'function');
+    });
   });
 
   describe('css', () => {
