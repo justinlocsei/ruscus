@@ -6,11 +6,7 @@ import { PropertyProjector } from './styles.ts';
 import type { ComponentDefinition } from './types/components.ts';
 import type { Declarations } from './types/css.ts';
 import type { ElementDefinition } from './types/elements.ts';
-import type {
-  Fragment,
-  FragmentScope,
-  ScopedFragments
-} from './types/fragments.ts';
+import type { Fragment, ScopedFragments } from './types/fragments.ts';
 
 /**
  * Options for compiling a component's CSS
@@ -195,11 +191,9 @@ class ComponentCompiler {
     }
 
     for (const [key, child] of nestedEntries) {
-      const selector = this.selectorForNestedKey(
-        parentSelector,
-        key,
-        child.scope
-      );
+      const selector = key.startsWith('&')
+        ? `${parentSelector}${key.slice(1)}`
+        : key;
 
       const rule = this.formatFragmentRules(selector, child);
 
@@ -213,25 +207,6 @@ class ComponentCompiler {
     }
 
     return this.formatNestedBlock(parentSelector, inner);
-  }
-
-  /**
-   * Resolve a selector for a nested fragment key
-   */
-  private selectorForNestedKey(
-    parentSelector: string,
-    key: string,
-    scope: FragmentScope
-  ): string {
-    if (key.startsWith('&')) {
-      return `${parentSelector}${key.slice(1)}`;
-    }
-
-    if (scope === 'absolute') {
-      return key;
-    }
-
-    return key;
   }
 
   /**
