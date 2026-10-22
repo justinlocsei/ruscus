@@ -287,6 +287,17 @@ describe('styleComponent', () => {
     );
   });
 
+  it('omits nested wrappers with no effective rules', () => {
+    checkOutput(
+      defineComponent('card').nested(s => ({
+        '.wrapper': s().nested({
+          '.child': s()
+        })
+      })),
+      ''
+    );
+  });
+
   it('omits empty global fragments', () => {
     checkOutput(
       defineComponent('card')
