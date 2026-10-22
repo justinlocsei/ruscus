@@ -24,7 +24,10 @@ describe('annotateComponent', () => {
       }
     );
 
-    assert.equal(extractBuildPlan(annotated).component, component.current);
+    const buildPlan = extractBuildPlan(annotated);
+
+    assert.isDefined(buildPlan);
+    assert.equal(buildPlan.component, component.current);
     assert.deepEqual(Object.keys(extractIdentifiers(annotated)), ['alfa']);
   });
 
@@ -55,8 +58,14 @@ describe('extractBuildPlan', () => {
     const applied = defineComponent('card').css({ color: 'red' }).apply();
     const buildPlan = extractBuildPlan(applied);
 
+    assert.isDefined(buildPlan);
     assert.include(buildPlan.compile(), '.card');
     assert.deepEqual(buildPlan.component.styles, { color: 'red' });
+  });
+
+  it('returns undefined for an unannotated value', () => {
+    assert.isUndefined(extractBuildPlan({}));
+    assert.isUndefined(extractBuildPlan(undefined));
   });
 });
 

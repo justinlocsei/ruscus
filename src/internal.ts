@@ -63,10 +63,12 @@ export function annotateComponent<S extends ComponentSpec>(
 /**
  * Extract a build plan from a component
  */
-export function extractBuildPlan<S extends ComponentSpec>(
-  component: ApplicableComponent<S>
-): BuildPlan {
-  return component[build];
+export function extractBuildPlan(value: unknown): BuildPlan | undefined {
+  if (value === null || typeof value !== 'object') {
+    return undefined;
+  }
+
+  return (value as Partial<Annotations<ComponentSpec>>)[build];
 }
 
 /**
