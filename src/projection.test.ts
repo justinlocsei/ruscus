@@ -13,6 +13,7 @@ describe('projectComponent', () => {
         title: e()
       })
     }));
+
     const els = projectComponent(component, useNaming(component.current));
 
     assert.equal(els.root, 'card');
@@ -43,6 +44,7 @@ describe('projectComponent', () => {
       .identifiers({ alfa: 'string' })
       .elements(e => ({ body: e() }))
       .variants(s => ({ compact: s({}) }));
+
     const applied = projectComponent(component, useNaming(component.current));
 
     T.assert<T.Equivalent<typeof applied.root, (name: 'compact') => string>>(
