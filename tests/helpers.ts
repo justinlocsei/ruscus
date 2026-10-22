@@ -3,11 +3,8 @@ import { fileURLToPath } from 'node:url';
 
 import { expect, test } from 'vitest';
 
-import {
-  component,
-  type ComponentFactory,
-  type Component
-} from '../src/index.ts';
+import { defineComponent } from '../src/components.ts';
+import { type Component, type ComponentFactory } from '../src/components.ts';
 import { extractBuildPlan } from '../src/internal.ts';
 
 const TESTS_DIR = dirname(fileURLToPath(import.meta.url));
@@ -20,7 +17,7 @@ export function compareStyles(
   define: (c: ComponentFactory) => Component<any>
 ): void {
   test(name, async () => {
-    const applied = define(component).apply();
+    const applied = define(defineComponent).apply();
     const output = `${extractBuildPlan(applied).compile().trimEnd()}\n`;
 
     await expect(output).toMatchFileSnapshot(
