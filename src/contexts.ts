@@ -17,8 +17,6 @@ type ContextOptions = {
   name: NameGenerator;
 };
 
-const variants = createVariantProjector('&', 'selectors');
-
 /**
  * Build a context for derived component styles
  */
@@ -37,7 +35,7 @@ export function buildComponentContext(
       }
     ),
     ids: projectIdentifiers(component),
-    variants
+    variants: createVariantProjector('&', 'selectors', name)
   };
 }
 
@@ -59,6 +57,6 @@ export function buildElementContext(
         name
       }
     ),
-    variants
+    variants: createVariantProjector('&', 'selectors', name)
   };
 }
