@@ -71,7 +71,7 @@ describe('Element', () => {
       );
     });
 
-    it('preserves chaining', () => {
+    it('supports chaining', () => {
       assert.deepEqual(
         e()
           .children({ root: e({ display: 'block' }) })
@@ -123,7 +123,7 @@ describe('Element', () => {
       assert.deepEqual(element.current.nested.map(p => typeof p), ['function']);
     });
 
-    it('stores contextual definitions for compile-time resolution', () => {
+    it('stores lazy definitions', () => {
       const element = e()
         .children({ title: e() })
         .nested((s, { els }) => ({ [els.title]: s({ color: 'red' }) }));
@@ -199,7 +199,7 @@ describe('Element', () => {
         });
     });
 
-    it('preserves chaining', () => {
+    it('supports chaining', () => {
       assert.deepEqual(
         defineElement()
           .nested(s => ({ '&:hover': s({ opacity: '0.5' }) }))
@@ -229,7 +229,7 @@ describe('Element', () => {
       assert.equal(typeof element.current.variants, 'function');
     });
 
-    it('preserves chaining', () => {
+    it('supports chaining', () => {
       assert.deepEqual(
         defineElement()
           .variants(s => ({ bold: s({ fontWeight: '700' }) }))
