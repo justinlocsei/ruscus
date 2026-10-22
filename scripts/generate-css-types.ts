@@ -4,7 +4,6 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import css from '@webref/css';
 import { definitionSyntax } from 'css-tree';
 
-// The file that will receive the generated types
 const TYPES = resolve(
   dirname(fileURLToPath(import.meta.url)),
   '../src/types/css/properties.ts'
@@ -17,52 +16,64 @@ const SHARED = [
   'revert',
   'revert-layer',
   'unset'
-];
+] as const;
 
-// The minimum percentage of overlapping values to produce an alias
+// The minimum percentage overlap of values to consider them aliases
 const MIN_VALUE_OVERLAP = 0.75;
 
 /**
- * Convert a kebab-cased value to camel case
- *
- * @param {string} kebab
- * @returns {string}
+ * An alias for a set of CSS values
  */
-function kebabToCamel(kebab) {
+type Alias = {
+  name: string;
+  source: string;
+};
+
+/**
+ * A group of properties that share a set of values
+ */
+type AliasGroup = {
+  props: Set<Property>;
+  values: string[];
+};
+
+/**
+ * A CSS property and its supported values
+ */
+type Property = {
+  aliases?: string[];
+  name: string;
+  values: string[];
+};
+
+/**
+ * Convert a kebab-case string to camel case
+ */
+function kebabToCamel(kebab: string): string {
   return kebab.replace(
     /-([a-z])/g,
-    (_, letter) => letter.toUpperCase()
+    (_, letter: string) => letter.toUpperCase()
   );
 }
 
 /**
- * Convert a camel-cased value to Pascal case
- *
- * @param {string} camel
- * @returns {string}
+ * Convert a camel-case string to Pascal case
  */
-function camelToPascal(camel) {
-  return camel[0].toUpperCase() + camel.slice(1);
+function camelToPascal(camel: string): string {
+  return camel[0]!.toUpperCase() + camel.slice(1);
 }
 
 /**
  * Render a union of values as a string
- *
- * @param {string[]} values
- * @returns {string}
  */
-function renderUnion(values) {
+function renderUnion(values: string[]): string {
   return values.join(' | ');
 }
 
 /**
- * Calculate the percentage of overlap between two arrays of values
- *
- * @param {string[]} left
- * @param {string[]} right
- * @returns {number}
+ * Determine the percentage overlap of two sets of values
  */
-function calculateOverlap(left, right) {
+function calculateOverlap(left: string[], right: string[]): number {
   const rightValues = new Set(right);
   const shared = left.filter(v => rightValues.has(v));
 
@@ -70,16 +81,19 @@ function calculateOverlap(left, right) {
 }
 
 /**
- * Find aliases in a list of properties
- *
- * This iteratively looks for properties that have a high percentage of
- * overlapping values and extracts each set of common values to an alias.
- *
- * @param {object[]} props
- * @returns {object[]}
+ * Calculat the intersection of two sets of values
  */
-function findAliases(props) {
-  const groups = new Map();
+function intersectValues(left: string[], right: string[]): string[] {
+  const rightValues = new Set(right);
+
+  return [...new Set(left)].filter(v => rightValues.has(v));
+}
+
+/**
+ * Find alises for values shared across properties
+ */
+function findAliases(props: Property[]): AliasGroup[] {
+  const groups = new Map<string, AliasGroup>();
   const candidates = props.filter(p => p.values.length > 0);
 
   for (const prop of candidates) {
@@ -94,10 +108,8 @@ function findAliases(props) {
     const values = matching
       .slice(1)
       .reduce(
-        (previous, p) => [
-          ...new Set(previous).intersection(new Set(p.values))
-        ],
-        matching[0].values
+        (previous, p) => intersectValues(previous, p.values),
+        matching[0]!.values
       );
 
     const consumers = matching.filter(
@@ -118,21 +130,17 @@ function findAliases(props) {
     groups.set(key, group);
   }
 
-  return [...groups.values()]
-    .sort((l, r) =>
-      r.values.length - l.values.length
-      || l.values[0].localeCompare(r.values[0])
-    );
+  return [...groups.values()].sort((left, right) =>
+    right.values.length - left.values.length
+    || left.values[0]!.localeCompare(right.values[0]!)
+  );
 }
 
 /**
- * Extract aliases from a list of properties
- *
- * @param {object[]} props
- * @returns {object[]}
+ * Extract aliases for values shared across properties
  */
-function extractAliases(props) {
-  const aliases = [];
+function extractAliases(props: Property[]): Alias[] {
+  const aliases: Alias[] = [];
 
   const usedNames = new Set([
     'AuthorValue',
@@ -156,10 +164,10 @@ function extractAliases(props) {
       }
 
       const shortest = [...consumers].sort(
-        (l, r) =>
-          l.name.length - r.name.length
-          || l.name.localeCompare(r.name)
-      )[0];
+        (left, right) =>
+          left.name.length - right.name.length
+          || left.name.localeCompare(right.name)
+      )[0]!;
 
       const base = camelToPascal(shortest.name);
       let name = base;
@@ -198,30 +206,25 @@ function extractAliases(props) {
     }
   }
 
-  return aliases.sort((l, r) => l.name.localeCompare(r.name));
+  return aliases.sort((left, right) => left.name.localeCompare(right.name));
 }
 
 /**
- * Extract keywords from a CSS syntax definition
- *
- * @param {string} syntax
- * @param {Record<string, any>} types
- * @param {Set<string>} visited
- * @returns {string[]}
+ * Extract keyword values from a CSS syntax definition
  */
 export function extractKeywords(
-  syntax,
-  types,
-  visited = new Set()
-) {
+  syntax: string | undefined,
+  types: Record<string, { syntax?: string }>,
+  visited: Set<string> = new Set()
+): string[] {
   if (syntax === undefined) {
     return [];
   }
 
-  const keywords = new Set();
+  const keywords = new Set<string>();
   const ast = definitionSyntax.parse(syntax);
 
-  definitionSyntax.walk(ast, node => {
+  definitionSyntax.walk(ast, (node) => {
     if (node.type === 'Keyword' && node.name !== undefined) {
       keywords.add(node.name);
     }
@@ -249,14 +252,16 @@ export function extractKeywords(
 }
 
 /**
- * Render CSS property types
+ * Render CSS property and value types
  */
-async function renderTypes() {
+async function renderTypes(): Promise<string> {
   const { properties, types = {} } = await css.index();
 
-  const props = Object.values(properties).map(p => ({
+  const props: Property[] = Object.values(properties).map(p => ({
     name: kebabToCamel(p.name),
-    values: extractKeywords(p.syntax, types).filter(k => !SHARED.includes(k))
+    values: extractKeywords(p.syntax, types).filter(k =>
+      !(SHARED as readonly string[]).includes(k)
+    )
   }));
 
   const aliases = extractAliases(props);
@@ -289,9 +294,9 @@ ${declarations.join('\n')}
 }
 
 /**
- * Generate CSS property types
+ * Generate CSS property and value types
  */
-async function generate() {
+async function generate(): Promise<void> {
   await writeFile(TYPES, await renderTypes());
 }
 
