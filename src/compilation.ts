@@ -274,10 +274,8 @@ class ComponentCompiler {
   ): string | null {
     const body = this.formatDeclarations(styles);
 
-    if (body === null) {
-      return null;
-    }
-
-    return `${selector} {\n${body}\n}`;
+    return body === null
+      ? null
+      : `${selector} {\n${body}\n}`;
   }
 }
