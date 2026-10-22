@@ -98,6 +98,17 @@ describe('Component', () => {
         { color: 'black' }
       );
     });
+
+    it('throws when elements are defined more than once', () => {
+      const instance = component().elements(e => ({
+        body: e({ margin: '0' })
+      }));
+
+      assert.throws(
+        () => instance.elements(e => ({ title: e() })),
+        'elements may only be set once'
+      );
+    });
   });
 
   describe('identifiers', () => {

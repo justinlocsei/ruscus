@@ -108,10 +108,13 @@ export class Component<S extends ComponentSpec = ComponentSpec>
   ): Component<
     ComponentSpec<ProvidersToSpecs<T>, S['variants'], S['ids']>
   > {
-    this.current.elements = resolveElements(
-      provider(
-        defineElement,
-        { ids: projectIdentifiers(this.current) }
+    this.setStateField(
+      'elements',
+      resolveElements(
+        provider(
+          defineElement,
+          { ids: projectIdentifiers(this.current) }
+        )
       )
     );
 
