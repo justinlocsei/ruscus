@@ -55,7 +55,7 @@ describe('Component', () => {
   });
 
   describe('elements', () => {
-    it('registers element instances for each name', () => {
+    it('registers named elements', () => {
       const { current: { elements } } = component().elements(e => ({
         body: e({ margin: '0' }),
         title: e().css({ color: 'red' })
@@ -75,7 +75,7 @@ describe('Component', () => {
       });
     });
 
-    it('provides component-specific identifiers', () => {
+    it('can reference component-specific identifiers', () => {
       const instance = component()
         .identifiers({ alfa: 'string', bravo: 'variable' })
         .elements((e, { ids }) => ({
@@ -88,7 +88,7 @@ describe('Component', () => {
       });
     });
 
-    it('allows chaining after elements', () => {
+    it('supports chaining', () => {
       assert.deepEqual(
         component()
           .elements(e => ({ root: e({ display: 'block' }) }))
@@ -154,7 +154,7 @@ describe('Component', () => {
       assert.equal(typeof instance.current.global[0], 'function');
     });
 
-    it('allows chaining', () => {
+    it('supports chaining', () => {
       assert.deepEqual(
         component()
           .global(s => ({ '.card': s({ color: 'black' }) }))
@@ -165,7 +165,7 @@ describe('Component', () => {
       );
     });
 
-    it('allows multiple global providers', () => {
+    it('can be called multiple times', () => {
       const instance = component()
         .global(s => ({ '.card': s({ color: 'black' }) }))
         .global(s => ({ '.card__title': s({ color: 'red' }) }));
@@ -204,7 +204,7 @@ describe('Component', () => {
       assert.equal(typeof instance.current.nested[0], 'function');
     });
 
-    it('allows chaining', () => {
+    it('supports chaining', () => {
       assert.deepEqual(
         component()
           .nested(s => ({ '&:hover': s({ opacity: '0.5' }) }))
@@ -215,7 +215,7 @@ describe('Component', () => {
       );
     });
 
-    it('allows multiple nested providers', () => {
+    it('can be called multiple times', () => {
       const instance = component()
         .nested(s => ({ '&:hover': s({ opacity: '0.5' }) }))
         .nested(s => ({ '&:focus': s({ outline: 'none' }) }));
@@ -225,7 +225,7 @@ describe('Component', () => {
   });
 
   describe('variants', () => {
-    it('registers a variant provider', () => {
+    it('register component variants', () => {
       const instance = component().variants(s => ({
         compact: s({ padding: '0.5rem' }),
         large: s({ padding: '2rem' })
@@ -234,7 +234,7 @@ describe('Component', () => {
       assert.equal(typeof instance.current.variants, 'function');
     });
 
-    it('allows chaining after variants', () => {
+    it('supports chaining', () => {
       assert.deepEqual(
         component()
           .variants(s => ({ compact: s({ padding: '0.5rem' }) }))
