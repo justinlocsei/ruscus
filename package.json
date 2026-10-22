@@ -41,7 +41,8 @@
     "check:types": "tsc --noEmit",
     "format": "biome check --write --linter-enabled=false . && dprint fmt",
     "generate:types": "node scripts/generate-css-types.mjs",
-    "test": "vitest run --reporter verbose"
+    "test": "vitest run --reporter verbose",
+    "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.9",
