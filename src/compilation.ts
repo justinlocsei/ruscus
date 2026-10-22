@@ -64,7 +64,7 @@ class ComponentCompiler {
     const root = this.buildSelector();
     const context = buildComponentContext(component, { name });
 
-    this.addRule(root, component.styles);
+    this.blocks.push(this.formatRule(root, component.styles));
 
     if (variants) {
       this.addVariantRules(
@@ -106,7 +106,7 @@ class ComponentCompiler {
       { name: this.name }
     );
 
-    this.addRule(selector, element.styles);
+    this.blocks.push(this.formatRule(selector, element.styles));
 
     if (variants) {
       this.addVariantRules(
@@ -257,13 +257,6 @@ class ComponentCompiler {
     } else {
       return `${anchor} ${key}`;
     }
-  }
-
-  /**
-   * Add a CSS rule
-   */
-  private addRule(selector: string, declarations: Declarations): void {
-    this.blocks.push(this.formatRule(selector, declarations));
   }
 
   /**
