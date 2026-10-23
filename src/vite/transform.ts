@@ -3,6 +3,15 @@ const SUFFIX = '.css';
 const LOADER_PREFIX = `\0${PREFIX}`;
 
 /**
+ * Wrap a valid CSS module ID with a loader prefix
+ */
+export function cssToLoader(id: string): string | undefined {
+  return (id.startsWith(PREFIX) && cssToSource(id))
+    ? `\0${id}`
+    : undefined;
+}
+
+/**
  * Extract the source module ID from a CSS module ID
  */
 export function cssToSource(id: string): string | undefined {

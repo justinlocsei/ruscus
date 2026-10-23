@@ -1,11 +1,32 @@
 import { assert, describe, it } from 'vitest';
 
 import {
+  cssToLoader,
   cssToSource,
   injectCSSImport,
   mayContainStyles,
   sourceToCSS
 } from './transform.ts';
+
+describe('cssToLoader', () => {
+  it('wraps valid CSS module IDs', () => {
+    const source = '/styles/charlie.ts';
+    const publicID = sourceToCSS(source);
+
+    assert.equal(
+      cssToLoader(publicID),
+      `\0${publicID}`
+    );
+  });
+
+  it('returns undefined for other IDs', () => {
+    assert.isUndefined(cssToLoader('/styles/delta.ts'));
+
+    assert.isUndefined(
+      cssToLoader(`\0${sourceToCSS('/styles/echo.ts')}`)
+    );
+  });
+});
 
 describe('cssToSource', () => {
   it('wraps a source module in a virtual CSS one', () => {
