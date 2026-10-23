@@ -1,13 +1,21 @@
+// A Rollup/Vite prefix for virtual modules
+export const VIRTUAL = '\0';
+
+// A prefix for virtual CSS modules
 const PREFIX = 'virtual:ruscus/css/';
+
+// The suffix for virtual CSS modules
 const SUFFIX = '.css';
-const LOADER_PREFIX = `\0${PREFIX}`;
+
+// A prefix for a CSS module that has been resolved by the loader
+const LOADER_PREFIX = `${VIRTUAL}${PREFIX}`;
 
 /**
  * Wrap a valid CSS module ID with a loader prefix
  */
 export function cssToLoader(id: string): string | undefined {
   return (id.startsWith(PREFIX) && cssToSource(id))
-    ? `\0${id}`
+    ? `${VIRTUAL}${id}`
     : undefined;
 }
 

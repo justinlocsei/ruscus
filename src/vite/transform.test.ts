@@ -5,7 +5,8 @@ import {
   cssToSource,
   injectCSSImport,
   mayContainStyles,
-  sourceToCSS
+  sourceToCSS,
+  VIRTUAL
 } from './transform.ts';
 
 describe('cssToLoader', () => {
@@ -15,7 +16,7 @@ describe('cssToLoader', () => {
 
     assert.equal(
       cssToLoader(publicID),
-      `\0${publicID}`
+      `${VIRTUAL}${publicID}`
     );
   });
 
@@ -23,7 +24,7 @@ describe('cssToLoader', () => {
     assert.isUndefined(cssToLoader('/styles/delta.ts'));
 
     assert.isUndefined(
-      cssToLoader(`\0${sourceToCSS('/styles/echo.ts')}`)
+      cssToLoader(`${VIRTUAL}${sourceToCSS('/styles/echo.ts')}`)
     );
   });
 });
