@@ -1,0 +1,5 @@
+import { component } from './helpers.ts';
+
+export default component('duplicate')
+  .css({ color: 'blue' })
+  .apply();
