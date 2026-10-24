@@ -33,6 +33,20 @@ function testFactory(fragment: FragmentFactory) {
       { opacity: '0.5' }
     );
   });
+
+  it('registers nested fragments via rules', () => {
+    const styled = fragment.rules({
+      from: fragment({ opacity: 0 }),
+      to: fragment({ opacity: 1 })
+    });
+
+    assert.deepEqual(styled.styles.root, {});
+
+    const from = styled.styles.nested.from;
+    assert.isDefined(from);
+
+    assert.deepEqual(from.styles.root, { opacity: 0 });
+  });
 }
 
 describe('defineAbsoluteFragment', () => {

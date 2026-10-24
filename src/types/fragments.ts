@@ -46,9 +46,9 @@ export type FragmentStyles = {
 /**
  * Define a scoped fragment factory
  */
-export type IsFragmentFactory<S extends FragmentScope> = (
-  styles?: Styles
-) => Fragment<S>;
+export type IsFragmentFactory<S extends FragmentScope> =
+  & ((styles?: Styles) => Fragment<S>)
+  & { rules: (definitions: ScopedFragments) => Fragment<S> };
 
 /**
  * A factory for absolute fragments

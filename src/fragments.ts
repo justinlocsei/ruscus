@@ -10,7 +10,7 @@ import type {
 function createFactory<T extends FragmentScope>(
   scope: T
 ): IsFragmentFactory<T> {
-  const factory: IsFragmentFactory<T> = (styles = {}) => ({
+  const factory = ((styles = {}) => ({
     nested: definitions => {
       const nested = factory(styles);
 
@@ -27,7 +27,9 @@ function createFactory<T extends FragmentScope>(
       nested: {},
       root: styles
     }
-  });
+  })) as IsFragmentFactory<T>;
+
+  factory.rules = definitions => factory().nested(definitions);
 
   return factory;
 }
