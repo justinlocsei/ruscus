@@ -1,7 +1,7 @@
 {
   "name": "ruscus",
   "version": "0.0.1",
-  "description": "Typed component styles",
+  "description": "A TypeScript library for organizing and defining component styles",
   "keywords": [
     "css",
     "components",
