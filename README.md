@@ -1,41 +1,347 @@
 <p align="center">
-  <img src="./assets/logo.svg" width="600" alt="Larkspur">
+  <img src="./assets/logo.svg" width="600" alt="Ruscus">
 </p>
 
 <br>
 
 <p align="center">
-  Ruscus is a zero-runtime, TypeScript-first system for orchestrating component styles.  A component's styled surface area is defined once as a tree of named elements and variants, and that definition projects into a typed set of class names for your view layer.  The CSS itself is yours to write: plain strings or objects, with a small set of opt-in typed values for things like colors and dimensions that cross the CSS/JS boundary.
+  Ruscus is a zero-runtime, TypeScript-first library that provides a rich vocabulary for defining component styles, with child elements, variants, and nested and global styles as first-class concerns.  It enables the reuse of styles through traits and shared media queries, and can be used with any view layer that allows you to apply class names to DOM elements.
 </p>
 
 ---
 
 <!-- <toc> -->
-- [Status](#status)
-- [Development](#development)
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Components](#components)
+- [Elements](#elements)
+- [Variants](#variants)
+- [Nested Styles](#nested-styles)
+- [Global Styles](#global-styles)
+- [Identifiers](#identifiers)
+- [Traits](#traits)
+- [Queries](#queries)
+- [Integration](#integration)
+  - [Vite](#vite)
 - [Why the Name?](#why-the-name)
 <!-- </toc> -->
 
-## Status
-
-Ruscus is being built in the open. The core component-style API and Vite
-integration are experimental.
-
-## Development
+## Installation
 
 ```sh
-npm run check          # Lint, formatting, and type checks
-npm run test           # Tests (src/**/*.test.ts)
-npm run build          # Build the package to dist/
-npm run format         # Format the codebase
+npm install ruscus
 ```
 
-## Vite
+## Getting Started
 
-Add the plugin to serve extracted CSS during development and include it in
-production builds:
+Define component styles in a `card.ts` file:
 
-```typescript
+```ts
+import { component } from 'ruscus';
+
+export default component('card')
+  .css({
+    display: 'block',
+    padding: '1rem'
+  })
+  .elements(e => ({
+    title: e({
+      fontWeight: 'bold'
+    })
+  }))
+  .variants(s => ({
+    compact: s({ padding: '0.5rem' }),
+    featured: s({ border: '2px solid currentColor' })
+  }))
+  .apply();
+```
+
+Apply the styles to your component in a `card.tsx` file:
+
+```tsx
+import C from './card.ts';
+
+export function Card({ compact }: { compact: boolean }) {
+  return (
+    <article className={card.root(compact && 'compact')}>
+      <h1 className={C.title}>
+        A card
+      </h1>
+    </article>
+  );
+}
+```
+
+The styles imported from `card.ts` are a map of element labels to class names that are present in the CSS generated through [bundler integration](#integration), allowing them to be used with any view layer.
+
+## Components
+
+All component styles begin with a call to the `component` function, which requires a unique ID.  Ruscus uses a fluent API for defining component styles, allowing you to chain calls to definition methods before exposing the component's styles as class names via the `.apply` method.
+
+```ts
+import { component } from 'ruscus';
+
+export default component('button')
+  .css({ border: 0, cursor: 'pointer' })
+  .apply();
+```
+
+Component styles should be the default export of a `.ts` file.  Style discovery happens via bundler integration that looks at the module graph, so there is no need for a particular file suffix.  If you wish to use a convention like `.styles.ts`, however, you're more than welcome to.
+
+## Elements
+
+Components define child elements via the `.elements` method.  Elements can themselves have child elements, allowing for deeply nested trees.
+
+```ts
+import { component } from 'ruscus';
+
+export default component('card')
+  .elements(e => ({
+    body: e({ padding: '1rem' }),
+    footer: e({ borderTop: '1px solid currentColor' }),
+    header: e().children(() => ({
+      icon: e({ marginRight: '0.5rem' }),
+      title: e({ fontWeight: '700' })
+    }))
+  }))
+  .apply();
+```
+
+A component's elements are known at compile time, allowing for safe access to each element's class name in the view layer:
+
+```ts
+import card from './card.ts';
+
+// Valid
+card.body
+card.footer
+card.header.root
+card.header.icon
+
+// Type error
+card.missing
+card.header.missing
+```
+
+## Variants
+
+Variants can be defined on the component root or on any element:
+
+```ts
+import { component } from 'ruscus';
+
+export default component('card')
+  .elements(e => ({
+    body: e().variants(s => ({
+      active: s({ background: 'yellow' }),
+      compact: s({ padding: '0.5rem' })
+    }))
+  }))
+  .variants(s => ({
+    featured: s({ boxShadow: '0 0 0 2px currentColor' })
+  }))
+  .apply();
+```
+
+Variants are applied in the view layer via functions on the element or component with variants.  These functions take variant names and falsy or truthy values which can be used to conditionally apply the named variant:
+
+```tsx
+import card from './card.ts';
+
+export function Card({
+  active,
+  compact,
+  featured
+}: {
+  active?: boolean;
+  compact?: boolean;
+  featured?: boolean;
+}) {
+  return (
+    <article className={card.root(featured && 'featured')}>
+      <div className={card.body(active && 'active', compact && 'compact')}>
+        A card
+      </div>
+    </article>
+  );
+}
+```
+
+## Nested Styles
+
+Use the `.nested` method for selectors that are relative to a component or element. A selector can use `&` to refer to the current node, or omit it to generate a selector whose parent is the class name of the component or element:
+
+```ts
+import { component } from 'ruscus';
+
+export default component('button')
+  .css({ color: 'black' })
+  .elements(e => ({
+    button: e({
+      color: 'red'
+    }).nested({
+      '&:active': s({ color: 'green' })
+    })
+  }))
+  .nested((s, { els }) => ({
+    a: s({ color: 'blue' }),
+    [`&:hover ${els.button}`]: s({ textDecoration: 'underline' }),
+  }))
+  .apply();
+```
+
+The provider function can reference the component's variants, allowing styles to be applied to combinations of variants:
+
+```ts
+import { component } from 'ruscus';
+
+export default component('card')
+  .variants(s => ({
+    compact: s()
+    featured: s()
+  }))
+  .nested((s, { variants }) => ({
+    [variants('compact', 'featured')]: s({
+      border: '2px solid currentColor'
+    })
+  }))
+  .apply();
+```
+
+## Global Styles
+
+Use the `.global` method for selectors that are not scoped to the component root. This is useful for document-level rules and other intentionally shared CSS:
+
+```ts
+import { component } from 'ruscus';
+
+export default component('editor')
+  .global(s => ({
+    ':root': s({ colorScheme: 'light dark' }),
+    html: s({ fontFamily: 'system-ui, sans-serif' })
+  }))
+  .apply();
+```
+
+Global definitions can also contain nested rules such as [media queries](#queries).
+
+## Identifiers
+
+Identifiers are component-specific values that are defined via the `.identifiers` method. String identifiers become class-scoped names, while variable identifiers become scoped CSS custom properties:
+
+```ts
+import { component } from 'ruscus';
+
+export default component('card')
+  .identifiers({
+    animation: 'string',
+    spacing: 'variable'
+  })
+  .elements((e, { ids }) => ({
+    body: e({ animation: `${ids.animation} 500ms` }),
+    items: e({
+      display: 'flex',
+      gap: `var(${ids.spacing})`
+    })
+  }))
+  .global((s, { ids }) => ({
+    [`@keyframes ${ids.animation}`]: s().nested({
+      from: s({ opacity: 0 }),
+      to: s({ opacity: 1 })
+    })
+  }))
+  .apply();
+```
+
+To reference an identifier in the view layer, use the `identifiers` function:
+
+```tsx
+import card from './card.ts';
+import { identifiers } from 'ruscus';
+
+const ids = identifiers(card);
+
+export function Card() {
+  return (
+    <article className={card.root} style={{ [ids.spacing]: '0.75rem' }}>
+      <div className={card.items}>
+        <div className={card.body}>A card</div>
+      </div>
+    </article>
+  );
+}
+```
+
+## Traits
+
+Traits provide a way to share styles across components and elements. They are defined once using the `trait` function, and can be applied to components and elements with the `.is` method:
+
+```ts
+import { component, trait } from 'ruscus';
+
+const interactive = trait(s =>
+  s({ cursor: 'pointer' }).nested({
+    '&:hover': s({ opacity: '0.8' })
+  })
+);
+
+export default component('link')
+  .is(interactive)
+  .apply();
+```
+
+## Queries
+
+The `queries` function maps internal labels to CSS at-rule queries:
+
+```ts
+import { queries } from 'ruscus';
+
+export const responsive = queries({
+  narrow: '@container card (min-width: 400px)',
+  wide: '@media (min-width: 768px)',
+});
+```
+
+To use queries to style a component, apply them in a `.global` block:
+
+```ts
+import { component } from 'ruscus';
+import { responsive } from './helpers.ts';
+
+export default component('card')
+  .elements(e => ({
+    body: e(),
+    title: e()
+  }))
+  .global((s, { els }) => responsive({
+    narrow: {
+      [els.title]: s({ fontSize: '0.8em' }),
+    },
+    wide: {
+      [els.body]: s({ padding: '2rem' })
+    }
+  }))
+  .apply();
+```
+
+Each key from the initial `queries` call can be provided to the applicator function.  Queries may be omitted, and any unknown queries will result in a type error.
+
+## Integration
+
+Ruscus provides a framework for defining component styles and structure without having opinions on how those styles are applied to your app.  Integrations connect the generated CSS to a build tool or framework.
+
+### Vite
+
+Install Vite alongside Ruscus:
+
+```sh
+npm install vite
+```
+
+Add the Ruscus plugin to serve CSS during development and include it in production builds to your Vite config:
+
+```ts
 import { defineConfig } from 'vite';
 import ruscus from 'ruscus/vite';
 
@@ -44,12 +350,8 @@ export default defineConfig({
 });
 ```
 
-Import a module that default-exports an applied component from the application
-graph. The plugin extracts CSS only for reachable modules, so code splitting and
-unused-style elimination follow Vite's module graph. Component IDs must be
-unique among reachable modules. CSS uses verbose class names in development and
-compact names in production; pass `naming: 'verbose' | 'compact'` to override.
+All style files that define a default export of an applied component and are included in the module graph for your entry point will be used to generate component CSS.
 
 ## Why the Name?
 
-In [floristry](https://www.instagram.com/justinlocsei/), ruscus is a hardy foliage used to give an arrangement its structure.  It rarely draws attention to itself, but everything else is placed in relation to it.
+In [floristry](https://www.instagram.com/justinlocsei/), ruscus is a common foliage that provides structure without calling too much attention to itself.
