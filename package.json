@@ -69,6 +69,7 @@
   },
   "allowScripts": {
     "fsevents@2.3.3": true,
-    "dprint@0.57.4": true
+    "dprint@0.57.4": true,
+    "esbuild@0.28.2": true
   }
 }
