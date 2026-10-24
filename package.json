@@ -16,8 +16,8 @@
     "type": "git",
     "url": "git+https://github.com/justinlocsei/ruscus.git"
   },
-  "author": "Justin Locsei",
   "license": "MIT",
+  "author": "Justin Locsei",
   "type": "module",
   "exports": {
     ".": {
@@ -37,9 +37,6 @@
     "dist/vite.mjs",
     "dist/vite.d.mts"
   ],
-  "engines": {
-    "node": ">=22.0.0"
-  },
   "scripts": {
     "build": "tsdown",
     "check": "npm run check:code && npm run check:formatting && npm run check:types",
@@ -58,7 +55,7 @@
     "@vitest/coverage-v8": "^5.0.5",
     "@webref/css": "^8.7.7",
     "css-tree": "^3.2.1",
-    "dprint": "^0.57.0",
+    "dprint": "^0.63.0",
     "tsdown": "^0.23.0",
     "typescript": "^6.0.3",
     "vite": "^8.3.4",
@@ -67,9 +64,12 @@
   "peerDependencies": {
     "vite": ">=6.0.0"
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "allowScripts": {
     "fsevents@2.3.3": true,
-    "dprint@0.57.4": true,
+    "dprint@0.63.0": true,
     "esbuild@0.28.2": true
   }
 }

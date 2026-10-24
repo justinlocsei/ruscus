@@ -19,7 +19,7 @@
     "src/types/css/properties.ts"
   ],
   "plugins": [
-    "npm:@dprint/json@0.23.0",
+    "npm:@dprint/json@0.25.2",
     "npm:@dprint/typescript@0.96.1"
   ]
 }
