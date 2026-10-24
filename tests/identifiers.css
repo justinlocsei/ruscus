@@ -1,0 +1,18 @@
+.card__body {
+  animation: card--animation 500ms;
+}
+
+.card__items {
+  display: flex;
+  gap: var(--card--spacing);
+}
+
+@keyframes card--animation {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
