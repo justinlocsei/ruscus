@@ -12,6 +12,7 @@ import { extractBuildPlan } from './internal.ts';
 import { useNaming } from './naming.ts';
 import { T } from './tests.ts';
 import { defineTrait } from './traits.ts';
+import type { VariantProjector } from './types/elements.ts';
 import type { ScopedFragments } from './types/fragments.ts';
 
 describe('Component', () => {
@@ -303,7 +304,7 @@ describe('Component', () => {
           T.assert<
             T.Equivalent<
               typeof els.body,
-              (name: 'compact' | 'large') => string
+              VariantProjector<'compact' | 'large'>
             >
           >(true);
 
@@ -343,7 +344,7 @@ describe('Component', () => {
           T.assert<
             T.Equivalent<
               typeof els.root,
-              (name: 'compact' | 'large') => string
+              VariantProjector<'compact' | 'large'>
             >
           >(true);
 
@@ -352,7 +353,7 @@ describe('Component', () => {
           T.assert<
             T.Equivalent<
               typeof variants,
-              <T extends 'compact' | 'large'>(...names: T[]) => string
+              VariantProjector<'compact' | 'large'>
             >
           >(true);
 
