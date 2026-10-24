@@ -14,7 +14,7 @@ compareStyles('identifiers', c =>
       })
     }))
     .global((s, { ids }) => ({
-      [`@keyframes ${ids.animation}`]: s().nested({
+      [`@keyframes ${ids.animation}`]: s.rules({
         from: s({ opacity: 0 }),
         to: s({ opacity: 1 })
       })
