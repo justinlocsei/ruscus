@@ -16,6 +16,7 @@
   "excludes": [
     "dist",
     "node_modules",
+    "package*.json",
     "src/types/css/properties.ts"
   ],
   "plugins": [
