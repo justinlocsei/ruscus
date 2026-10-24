@@ -1,7 +1,11 @@
+import type { UserConfig } from 'tsdown';
 import { defineConfig } from 'tsdown';
 
-export default defineConfig({
-  entry: 'src/index.ts',
-  format: ['esm'],
-  sourcemap: 'hidden'
-});
+export default defineConfig(
+  ['index', 'vite'].map((file): UserConfig => ({
+    entry: `src/${file}.ts`,
+    format: ['esm'],
+    outputOptions: { codeSplitting: false },
+    sourcemap: 'hidden'
+  }))
+);
