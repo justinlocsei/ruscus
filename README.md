@@ -110,17 +110,17 @@ export default component('card')
 A component's elements are known at compile time, allowing for safe access to each element's class name in the view layer:
 
 ```ts
-import card from './card.ts';
+import C from './card.ts';
 
 // Valid
-card.body
-card.footer
-card.header.root
-card.header.icon
+C.body
+C.footer
+C.header.root
+C.header.icon
 
 // Type error
-card.missing
-card.header.missing
+C.missing
+C.header.missing
 ```
 
 ## Variants
@@ -146,7 +146,7 @@ export default component('card')
 Variants are applied in the view layer via functions on the element or component with variants.  These functions take variant names and falsy or truthy values which can be used to conditionally apply the named variant:
 
 ```tsx
-import card from './card.ts';
+import C from './card.ts';
 
 export function Card({
   active,
@@ -158,8 +158,8 @@ export function Card({
   featured?: boolean;
 }) {
   return (
-    <article className={card.root(featured && 'featured')}>
-      <div className={card.body(active && 'active', compact && 'compact')}>
+    <article className={C.root(featured && 'featured')}>
+      <div className={C.body(active && 'active', compact && 'compact')}>
         A card
       </div>
     </article>
@@ -179,9 +179,9 @@ export default component('button')
   .elements(e => ({
     button: e({
       color: 'red'
-    }).nested({
+    }).nested(s => ({
       '&:active': s({ color: 'green' })
-    })
+    }))
   }))
   .nested((s, { els }) => ({
     a: s({ color: 'blue' }),
@@ -197,7 +197,7 @@ import { component } from 'ruscus';
 
 export default component('card')
   .variants(s => ({
-    compact: s()
+    compact: s(),
     featured: s()
   }))
   .nested((s, { variants }) => ({
@@ -256,16 +256,16 @@ export default component('card')
 To reference an identifier in the view layer, use the `identifiers` function:
 
 ```tsx
-import card from './card.ts';
+import C from './card.ts';
 import { identifiers } from 'ruscus';
 
-const ids = identifiers(card);
+const ids = identifiers(C);
 
 export function Card() {
   return (
-    <article className={card.root} style={{ [ids.spacing]: '0.75rem' }}>
-      <div className={card.items}>
-        <div className={card.body}>A card</div>
+    <article className={C.root} style={{ [ids.spacing]: '0.75rem' }}>
+      <div className={C.items}>
+        <div className={C.body}>A card</div>
       </div>
     </article>
   );
@@ -329,7 +329,7 @@ Each key from the initial `queries` call can be provided to the applicator funct
 
 ## Integration
 
-Ruscus provides a framework for defining component styles and structure without having opinions on how those styles are applied to your app.  Integrations connect the generated CSS to a build tool or framework.
+Ruscus provides a framework for defining component styles and structure without taking a stance on how those styles are applied to your app.  Integrations connect the generated CSS to a build tool or framework.
 
 ### Vite
 
