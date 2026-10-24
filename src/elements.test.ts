@@ -3,6 +3,7 @@ import { assert, describe, it } from 'vitest';
 import { defineElement, Element, resolveElements } from './elements.ts';
 import { T } from './tests.ts';
 import { defineTrait } from './traits.ts';
+import type { VariantProjector } from './types/elements.ts';
 import type { ScopedFragments } from './types/fragments.ts';
 
 const e = defineElement;
@@ -212,7 +213,7 @@ describe('Element', () => {
           T.assert<
             T.Equivalent<
               typeof variants,
-              <T extends 'bold' | 'spacer'>(...names: T[]) => string
+              VariantProjector<'bold' | 'spacer'>
             >
           >(true);
 

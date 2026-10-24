@@ -4,6 +4,7 @@ import { defineComponent } from './components.ts';
 import { useNaming } from './naming.ts';
 import { projectComponent } from './projection.ts';
 import { T } from './tests.ts';
+import type { VariantProjector } from './types/elements.ts';
 
 describe('projectComponent', () => {
   it('projects root and element class names', () => {
@@ -47,9 +48,9 @@ describe('projectComponent', () => {
 
     const applied = projectComponent(component, useNaming(component.current));
 
-    T.assert<T.Equivalent<typeof applied.root, (name: 'compact') => string>>(
-      true
-    );
+    T.assert<
+      T.Equivalent<typeof applied.root, VariantProjector<'compact'>>
+    >(true);
 
     T.assert<T.Equivalent<typeof applied.body, string>>(true);
 
