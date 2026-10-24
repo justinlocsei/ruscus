@@ -98,10 +98,15 @@ export type ProjectTree<
 > = { [ELEMENT_ROOT]: ProjectRoot<Root> } & ProjectElements<Children>;
 
 /**
+ * A value that may be passed to a variant projector
+ */
+type VariantRequest<V extends string> = '' | 0 | false | null | undefined | V;
+
+/**
  * A projector for a selector that uses one or more variants
  */
-export type VariantProjector<V extends string> = <T extends V>(
-  ...names: T[]
+export type VariantProjector<V extends string> = (
+  ...names: VariantRequest<V>[]
 ) => string;
 
 /**
