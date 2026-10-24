@@ -94,7 +94,8 @@ export class Component<S extends ComponentSpec = ComponentSpec>
   ): Component<ComponentSpec<S['els'], S['variants'], keyof I & string>> {
     this.setStateField('identifiers', types);
 
-    return this;
+    // biome-ignore lint/suspicious/noExplicitAny: avoid a duplicate signature in a cast
+    return this as any;
   }
 
   /**
