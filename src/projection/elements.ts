@@ -137,9 +137,12 @@ export function createVariantProjector(
 ): VariantProjector<string> {
   const joiner = format === 'selectors' ? '' : ' ';
 
-  return (...vs) =>
-    [
+  return (...vs) => {
+    const names = vs.filter(Boolean) as string[];
+
+    return [
       anchor,
-      ...vs.map(v => formatClass(name.forVariant(v), format))
+      ...names.map(v => formatClass(name.forVariant(v), format))
     ].join(joiner);
+  };
 }

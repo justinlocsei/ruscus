@@ -20,6 +20,14 @@ describe('createVariantProjector', () => {
     assert.equal(project('compact'), '.card.is-compact');
     assert.equal(project('compact', 'large'), '.card.is-compact.is-large');
   });
+
+  it('ignores falsy variant names', () => {
+    const name = useNaming(defineComponent('card').current);
+    const project = createVariantProjector('card', 'names', name);
+
+    assert.equal(project(false, 'compact', undefined), 'card is-compact');
+    assert.equal(project(false, undefined, ''), 'card');
+  });
 });
 
 describe('projectTree', () => {
