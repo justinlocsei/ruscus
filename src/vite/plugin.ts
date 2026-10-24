@@ -23,9 +23,16 @@ type ModuleValue = {
 };
 
 /**
+ * Plugin options
+ */
+export type PluginOptions = {
+  naming?: NamingScheme;
+};
+
+/**
  * Define the Vite plugin
  */
-export function plugin(options: { naming?: NamingScheme } = {}): Plugin {
+export function plugin(options: PluginOptions = {}): Plugin {
   const owners = new ComponentRegistry();
 
   let config: ResolvedConfig;
