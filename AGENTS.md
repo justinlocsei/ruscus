@@ -56,6 +56,15 @@ npm run test:coverage
 
 After changing `scripts/generate-css-types.ts` or bumping `@webref/css`, run `npm run generate:types` and commit the updated `src/types/css/properties.ts`.
 
+## Vite integration
+
+The `ruscus/vite` plugin extracts CSS from graph-reachable modules whose default
+export is an applied component. It does not scan the filesystem or require a
+filename suffix. Importing a style module from application code makes its CSS
+available in development and production; unused style modules produce no CSS.
+Component IDs must be unique among reachable modules. The plugin option
+`naming` defaults to verbose during `vite dev` and compact during `vite build`.
+
 ## Testing
 
 Unit tests live beside source as `src/**/*.test.ts`. Integration tests live under `tests/` (golden CSS via `compareStyles` in `tests/helpers.ts`). After editing a source file, run its matching test file when one exists. Coverage: `npm run test:coverage` (100% thresholds on `src/`; see `vitest.config.ts`; excludes `src/tests.ts` and `src/tests/**`).
