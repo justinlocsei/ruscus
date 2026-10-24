@@ -5,7 +5,7 @@
 <br>
 
 <p align="center">
-  Ruscus is a TypeScript-first library that provides a rich vocabulary for defining component styles, with child elements, variants, and nested and global styles as first-class concerns.  It enables the reuse of styles through traits and shared media queries, and can be used with any view layer that allows you to apply class names to DOM elements.
+  Ruscus is a TypeScript library that provides a rich vocabulary for defining component styles, with child elements, variants, and nested and global styles as first-class concerns.  It enables the reuse of styles through traits and shared media queries, and can be used with any view layer that allows you to apply class names to DOM elements.
 </p>
 
 ---
