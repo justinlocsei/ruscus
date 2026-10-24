@@ -19,7 +19,7 @@ export class CompactNaming extends Naming {
   constructor(component: ComponentDefinition) {
     super(component);
 
-    this.prefix = hash(component.id);
+    this.prefix = `r${hash(component.id)}`;
     this.suffixes = this.buildSuffixes(component.elements);
   }
 
