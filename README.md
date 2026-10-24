@@ -18,7 +18,8 @@
 
 ## Status
 
-Ruscus is being built in the open and is not yet usable.  The repository currently contains tooling and an empty public API.
+Ruscus is being built in the open. The core component-style API and Vite
+integration are experimental.
 
 ## Development
 
@@ -28,6 +29,26 @@ npm run test           # Tests (src/**/*.test.ts)
 npm run build          # Build the package to dist/
 npm run format         # Format the codebase
 ```
+
+## Vite
+
+Add the plugin to serve extracted CSS during development and include it in
+production builds:
+
+```typescript
+import { defineConfig } from 'vite';
+import ruscus from 'ruscus/vite';
+
+export default defineConfig({
+  plugins: [ruscus()]
+});
+```
+
+Import a module that default-exports an applied component from the application
+graph. The plugin extracts CSS only for reachable modules, so code splitting and
+unused-style elimination follow Vite's module graph. Component IDs must be
+unique among reachable modules. CSS uses verbose class names in development and
+compact names in production; pass `naming: 'verbose' | 'compact'` to override.
 
 ## Why the Name?
 
