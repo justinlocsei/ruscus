@@ -83,4 +83,4 @@ Use **NATO phonetic** names for sequential test data (`alfa`, `bravo`, `charlie`
 
 ## Library internals
 
-Published `dist/` contains only `index.mjs` and `index.d.mts` (no source maps in the tarball).
+Published `dist/` contains `index.mjs`, `index.d.mts`, `vite.mjs`, and `vite.d.mts` (no source maps or shared chunks in the tarball). `tsdown` builds each entry separately with `codeSplitting: false` so bundles stay self-contained.
