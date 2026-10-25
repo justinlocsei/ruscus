@@ -10,6 +10,11 @@
 
 ---
 
+[![Verify](https://github.com/justinlocsei/ruscus/actions/workflows/verify.yml/badge.svg)](https://github.com/justinlocsei/ruscus/actions/workflows/verify.yml)
+[![npm version](https://img.shields.io/npm/v/ruscus.svg)](https://www.npmjs.com/package/ruscus)
+[![License](https://img.shields.io/npm/l/ruscus.svg)](https://github.com/justinlocsei/ruscus/blob/main/LICENSE)
+
+
 <!-- <toc> -->
 - [Installation](#installation)
 - [Getting Started](#getting-started)
