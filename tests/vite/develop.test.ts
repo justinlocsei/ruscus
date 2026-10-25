@@ -8,27 +8,35 @@ import { assert, describe, it } from 'vitest';
 
 import ruscus from '../../src/vite.ts';
 import type { PluginOptions } from '../../src/vite/plugin.ts';
-import { sourceToCSS } from '../../src/vite/transform.ts';
+import { cssToLoader, sourceToCSS } from '../../src/vite/transform.ts';
 
 const ROOT = new URL('./fixtures/', import.meta.url);
 const CARD = new URL('./fixtures/card.ts', import.meta.url).pathname;
+const CARD_CSS = cssToLoader(sourceToCSS(CARD)) ?? '';
 
-type Actions = {
-  handleHotUpdate: (context: HmrContext) => void | Promise<void>;
-  load: (id: string) => Promise<{ code?: string } | null>;
+type PluginTestAPI = {
+  handleHotUpdate: (context: HmrContext) => unknown;
   resolveId: (id: string) => string | null;
 };
 
-function testPlugin(options?: PluginOptions): {
-  actions: Actions;
-  plugin: Plugin;
-} {
-  const plugin = ruscus(options);
+function testPlugin(options?: PluginOptions): Plugin {
+  return ruscus(options);
+}
 
-  return {
-    actions: plugin as unknown as Actions,
-    plugin
-  };
+function asTestAPI(plugin: Plugin): PluginTestAPI {
+  return plugin as unknown as PluginTestAPI;
+}
+
+function loadCode(result: unknown): string {
+  if (result === undefined || result === null) {
+    return '';
+  } else if (typeof result === 'string') {
+    return result;
+  } else if (typeof result === 'object' && 'code' in result) {
+    return String(result.code ?? '');
+  } else {
+    return '';
+  }
 }
 
 async function withServer(
@@ -50,21 +58,20 @@ async function withServer(
 
 describe('Vite develop', () => {
   it('compiles reachable styles with verbose naming', async () => {
-    const { actions: hooks, plugin } = testPlugin();
+    const plugin = testPlugin();
 
-    await withServer(plugin, async () => {
-      const result = await hooks.load(sourceToCSS(CARD));
+    await withServer(plugin, async (server) => {
+      const result = await server.pluginContainer.load(CARD_CSS);
 
-      assert.include(String(result?.code), '.card {');
+      assert.include(loadCode(result), '.card {');
     });
   });
 
   it('respects an explicit naming scheme', async () => {
-    const { actions: hooks, plugin } = testPlugin({ naming: 'compact' });
+    const plugin = testPlugin({ naming: 'compact' });
 
-    await withServer(plugin, async () => {
-      const result = await hooks.load(sourceToCSS(CARD));
-      const code = String(result?.code);
+    await withServer(plugin, async (server) => {
+      const code = loadCode(await server.pluginContainer.load(CARD_CSS));
 
       assert.include(code, 'color: red;');
       assert.notInclude(code, '.card {');
@@ -72,16 +79,20 @@ describe('Vite develop', () => {
   });
 
   it('ignores IDs that are not Ruscus CSS modules', () => {
-    assert.isNull(testPlugin().actions.resolveId('/styles/not-css.ts'));
+    assert.isNull(asTestAPI(testPlugin()).resolveId('/styles/not-css.ts'));
   });
 
   it('invalidates modules when a style file changes', async () => {
-    const { actions: hooks, plugin } = testPlugin();
+    const plugin = testPlugin();
+    const hooks = asTestAPI(plugin);
     const invalidated: string[] = [];
 
     await withServer(plugin, async () => {
       const devServer = {
         moduleGraph: {
+          getModuleById: (id: string) => (
+            id === CARD_CSS ? { id: CARD_CSS } : undefined
+          ),
           getModulesByFile: () => new Set([{ id: '/entry.ts' }]),
           invalidateModule: ({ id }: { id: string | null }) => {
             invalidated.push(id ?? '');
@@ -97,12 +108,13 @@ describe('Vite develop', () => {
         timestamp: Date.now()
       } as HmrContext);
 
-      assert.deepEqual(invalidated, ['/entry.ts']);
+      assert.deepEqual(invalidated, ['/entry.ts', CARD_CSS]);
     });
   });
 
   it('ignores hot updates for files outside the module graph', async () => {
-    const { actions: hooks, plugin } = testPlugin();
+    const plugin = testPlugin();
+    const hooks = asTestAPI(plugin);
 
     await withServer(plugin, async () => {
       await hooks.handleHotUpdate({
@@ -111,6 +123,7 @@ describe('Vite develop', () => {
         read: async () => '',
         server: {
           moduleGraph: {
+            getModuleById: () => undefined,
             getModulesByFile: () => undefined,
             invalidateModule: () => undefined
           }
