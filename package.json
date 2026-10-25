@@ -45,6 +45,7 @@
     "check:types": "tsc --noEmit",
     "format": "biome check --write --linter-enabled=false . && dprint fmt",
     "generate:types": "node --experimental-strip-types scripts/generate-css-types.ts",
+    "prepublishOnly": "npm run build",
     "test": "vitest run --reporter verbose",
     "test:coverage": "vitest run --coverage"
   },
