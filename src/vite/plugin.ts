@@ -94,6 +94,8 @@ export function plugin(options: PluginOptions = {}): Plugin {
         return null;
       }
 
+      this.addWatchFile(sourceID);
+
       const module = await loadSource(sourceID);
       const plan = extractBuildPlan(module.default);
 
