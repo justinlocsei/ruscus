@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]*.[0-9]*.[0-9]*"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Clone Ruscus
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: ./.github/actions/install-node
+        name: Install Node.js 24
+        with:
+          node-version: 24
+
+      - name: Check code
+        run: npm run check
+
+      - name: Test
+        run: npm run test
+
+      - name: Publish to npm
+        run: npm stage publish --provenance --access public
