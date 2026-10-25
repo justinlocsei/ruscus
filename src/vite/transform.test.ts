@@ -30,12 +30,15 @@ describe('cssToLoader', () => {
 });
 
 describe('cssToSource', () => {
-  it('wraps a source module in a virtual CSS one', () => {
+  it('decodes a loader-prefixed CSS module id', () => {
     const source = '/project/src/card.ts?direct';
-    const css = sourceToCSS(source);
+    const loader = cssToLoader(sourceToCSS(source)) ?? '';
 
-    assert.match(css, /^virtual:ruscus\/css\//);
-    assert.match(css, /\.css$/);
+    assert.equal(cssToSource(loader), source);
+  });
+
+  it('returns undefined for non-wrapped IDs', () => {
+    assert.isUndefined(cssToSource('/project/src/card.ts'));
   });
 });
 
@@ -71,14 +74,18 @@ describe('mayContainStyles', () => {
 });
 
 describe('sourceToCSS', () => {
-  it('extracts the source module from a CSS wrapper', () => {
+  it('builds a virtual CSS module ID from a source module ID', () => {
     const source = '/project/src/card.ts?direct';
-    const virtual = sourceToCSS(source);
 
-    assert.equal(cssToSource(virtual), source);
+    assert.equal(
+      sourceToCSS(source),
+      'virtual:ruscus/css/%2Fproject%2Fsrc%2Fcard.ts%3Fdirect.css'
+    );
   });
 
-  it('returns undefined for non-wrapped IDs', () => {
-    assert.isUndefined(cssToSource('/project/src/card.ts'));
+  it('round-trips through cssToSource', () => {
+    const source = '/project/src/card.ts?direct';
+
+    assert.equal(cssToSource(sourceToCSS(source)), source);
   });
 });
