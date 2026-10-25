@@ -1,4 +1,4 @@
-import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite';
+import type { ModuleNode, Plugin, ResolvedConfig, ViteDevServer } from 'vite';
 import { runnerImport } from 'vite';
 
 import { extractBuildPlan } from '../internal.ts';
@@ -9,6 +9,7 @@ import {
   cssToSource,
   injectCSSImport,
   mayContainStyles,
+  sourceToCSS,
   VIRTUAL
 } from './transform.ts';
 
@@ -82,9 +83,26 @@ export function plugin(options: PluginOptions = {}): Plugin {
     handleHotUpdate({ file, server }) {
       owners.release(file);
 
-      for (const module of server.moduleGraph.getModulesByFile(file) ?? []) {
-        server.moduleGraph.invalidateModule(module);
+      const updated = new Set<ModuleNode>();
+      const graph = server.moduleGraph;
+
+      const invalidate = (node: ModuleNode) => {
+        graph.invalidateModule(node);
+        updated.add(node);
+      };
+
+      for (const module of graph.getModulesByFile(file) ?? []) {
+        invalidate(module);
       }
+
+      const cssID = cssToLoader(sourceToCSS(file));
+      const cssModule = cssID && graph.getModuleById(cssID);
+
+      if (cssModule) {
+        invalidate(cssModule);
+      }
+
+      return updated.size > 0 ? [...updated] : undefined;
     },
 
     async load(id) {
