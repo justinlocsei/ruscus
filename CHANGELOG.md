@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.3] (2026-10-26)
+
+### Changes
+
+- Preserve identifier key casing in scoped names ([#7])
+
+### Fixes
+
+- Fully support HMR in the Vite plugin ([#5])
+- Expand every `&` in nested selector keys ([#6])
+
 ## [0.0.2] (2026-10-25)
 
 ### Development
@@ -20,9 +31,13 @@ All notable changes to this project will be documented in this file.
 
 [0.0.1]: https://github.com/justinlocsei/ruscus/releases/tag/v0.0.1
 [0.0.2]: https://github.com/justinlocsei/ruscus/compare/v0.0.1..v0.0.2
+[0.0.3]: https://github.com/justinlocsei/ruscus/compare/v0.0.2..v0.0.3
 
 <!-- PRs -->
 
 [#1]: https://github.com/justinlocsei/ruscus/pull/1
 [#2]: https://github.com/justinlocsei/ruscus/pull/2
 [#3]: https://github.com/justinlocsei/ruscus/pull/3
+[#5]: https://github.com/justinlocsei/ruscus/pull/5
+[#6]: https://github.com/justinlocsei/ruscus/pull/6
+[#7]: https://github.com/justinlocsei/ruscus/pull/7
