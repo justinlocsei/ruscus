@@ -195,7 +195,9 @@ class ComponentCompiler {
 
     for (const [key, child] of nestedEntries) {
       const rule = this.formatFragmentRules(
-        key.startsWith('&') ? `${parentSelector}${key.slice(1)}` : key,
+        key.includes('&')
+          ? this.expandSelectorAnchor(parentSelector, key)
+          : key,
         child
       );
 
@@ -249,11 +251,18 @@ class ComponentCompiler {
   }
 
   /**
+   * Replace every & in a nested key with the anchor selector
+   */
+  private expandSelectorAnchor(anchor: string, key: string): string {
+    return key.replaceAll('&', anchor);
+  }
+
+  /**
    * Build a selector for a nested rule key
    */
   private buildNestedSelector(anchor: string, key: string): string {
-    if (key.startsWith('&')) {
-      return `${anchor}${key.slice(1)}`;
+    if (key.includes('&')) {
+      return this.expandSelectorAnchor(anchor, key);
     } else if (key === anchor) {
       return anchor;
     } else {

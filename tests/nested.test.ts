@@ -17,6 +17,7 @@ compareStyles('nested', c =>
           title: e({ fontWeight: '700' })
         })
         .nested((s, { els }) => ({
+          '& + &': s({ marginTop: '1rem' }),
           [els.title]: s({ color: 'navy' })
         }))
     }))
