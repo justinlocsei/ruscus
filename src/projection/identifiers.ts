@@ -1,4 +1,3 @@
-import { camelToKebab } from '../styles.ts';
 import type {
   ComponentDefinition,
   IdentifierValues
@@ -12,7 +11,7 @@ export function projectIdentifiers(
 ): IdentifierValues<string> {
   return Object.fromEntries(
     Object.entries(component.identifiers).map(([key, type]) => {
-      const scoped = `${component.id}--${camelToKebab(key)}`;
+      const scoped = `${component.id}--${key}`;
 
       return [
         key,

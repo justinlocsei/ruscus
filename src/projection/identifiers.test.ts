@@ -12,15 +12,17 @@ describe('projectIdentifiers', () => {
 
   it('projects string and variable identifiers', () => {
     const component = defineComponent('card').identifiers({
+      Alfa: 'string',
       alfa: 'string',
       bravo: 'variable',
       charlieDelta: 'string'
     });
 
     assert.deepEqual(projectIdentifiers(component.current), {
+      Alfa: 'card--Alfa',
       alfa: 'card--alfa',
       bravo: '--card--bravo',
-      charlieDelta: 'card--charlie-delta'
+      charlieDelta: 'card--charlieDelta'
     });
   });
 });
