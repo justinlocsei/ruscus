@@ -222,6 +222,21 @@ describe('styleComponent', () => {
     );
   });
 
+  it('expands every ampersand in nested selector keys', () => {
+    checkOutput(
+      defineComponent('card').elements(e => ({
+        header: e().nested(s => ({
+          '& + &': s({ marginTop: '1rem' })
+        }))
+      })),
+      css`
+        .card__header + .card__header {
+          margin-top: 1rem;
+        }
+      `
+    );
+  });
+
   it('emits nested rules for an element', () => {
     checkOutput(
       defineComponent('card').elements(e => ({
