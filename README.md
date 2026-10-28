@@ -55,8 +55,13 @@ export default component('card')
     })
   }))
   .variants(s => ({
-    compact: s({ padding: '0.5rem' }),
-    featured: s({ border: '2px solid currentColor' })
+    compact: s({
+      padding: '0.5rem'
+    }),
+
+    featured: s({
+      border: '2px solid currentColor'
+    })
   }))
   .apply();
 ```
@@ -87,7 +92,10 @@ All component styles begin with a call to the `component` function, which requir
 import { component } from 'ruscus';
 
 export default component('button')
-  .css({ border: 0, cursor: 'pointer' })
+  .css({
+    border: 0,
+    cursor: 'pointer'
+  })
   .apply();
 ```
 
@@ -102,11 +110,22 @@ import { component } from 'ruscus';
 
 export default component('card')
   .elements(e => ({
-    body: e({ padding: '1rem' }),
-    footer: e({ borderTop: '1px solid currentColor' }),
+    body: e({
+      padding: '1rem'
+    }),
+
+    footer: e({
+      borderTop: '1px solid currentColor'
+    }),
+
     header: e().children(() => ({
-      icon: e({ marginRight: '0.5rem' }),
-      title: e({ fontWeight: '700' })
+      icon: e({
+        marginRight: '0.5rem'
+      }),
+
+      title: e({
+        fontWeight: '700'
+      })
     }))
   }))
   .apply();
@@ -138,12 +157,19 @@ import { component } from 'ruscus';
 export default component('card')
   .elements(e => ({
     body: e().variants(s => ({
-      active: s({ background: 'yellow' }),
-      compact: s({ padding: '0.5rem' })
+      active: s({
+        background: 'yellow'
+      }),
+
+      compact: s({
+        padding: '0.5rem'
+      })
     }))
   }))
   .variants(s => ({
-    featured: s({ boxShadow: '0 0 0 2px currentColor' })
+    featured: s({
+      boxShadow: '0 0 0 2px currentColor'
+    })
   }))
   .apply();
 ```
@@ -180,17 +206,26 @@ Use the `.nested` method for selectors that are relative to a component or eleme
 import { component } from 'ruscus';
 
 export default component('button')
-  .css({ color: 'black' })
+  .css({
+    color: 'black'
+  })
   .elements(e => ({
     button: e({
       color: 'red'
     }).nested(s => ({
-      '&:active': s({ color: 'green' })
+      '&:active': s({
+        color: 'green'
+      })
     }))
   }))
   .nested((s, { els }) => ({
-    a: s({ color: 'blue' }),
-    [`&:hover ${els.button}`]: s({ textDecoration: 'underline' }),
+    a: s({
+      color: 'blue'
+    }),
+
+    [`&:hover ${els.button}`]: s({
+      textDecoration: 'underline'
+    })
   }))
   .apply();
 ```
@@ -222,8 +257,13 @@ import { component } from 'ruscus';
 
 export default component('editor')
   .global(s => ({
-    ':root': s({ colorScheme: 'light dark' }),
-    html: s({ fontFamily: 'system-ui, sans-serif' })
+    ':root': s({
+      colorScheme: 'light dark'
+    }),
+
+    html: s({
+      fontFamily: 'system-ui, sans-serif'
+    })
   }))
   .apply();
 ```
@@ -243,7 +283,10 @@ export default component('card')
     spacing: 'variable'
   })
   .elements((e, { ids }) => ({
-    body: e({ animation: `${ids.animation} 500ms` }),
+    body: e({
+      animation: `${ids.animation} 500ms`
+    }),
+
     items: e({
       display: 'flex',
       gap: `var(${ids.spacing})`
@@ -285,8 +328,12 @@ Traits provide a way to share styles across components and elements. They are de
 import { component, trait } from 'ruscus';
 
 const interactive = trait(s =>
-  s({ cursor: 'pointer' }).nested({
-    '&:hover': s({ opacity: '0.8' })
+  s({
+    cursor: 'pointer'
+  }).nested({
+    '&:hover': s({
+      opacity: '0.8'
+    })
   })
 );
 
@@ -321,10 +368,15 @@ export default component('card')
   }))
   .global((s, { els }) => responsive({
     narrow: {
-      [els.title]: s({ fontSize: '0.8em' }),
+      [els.title]: s({
+        fontSize: '0.8em'
+      })
     },
+
     wide: {
-      [els.body]: s({ padding: '2rem' })
+      [els.body]: s({
+        padding: '2rem'
+      })
     }
   }))
   .apply();
