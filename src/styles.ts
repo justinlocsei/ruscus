@@ -11,6 +11,13 @@ export function camelToKebab(camel: string): string {
 }
 
 /**
+ * Define styles
+ */
+export function defineStyles<T extends Styles>(styles: T): T {
+  return styles;
+}
+
+/**
  * Merge multiple styles on top of a base
  */
 export function mergeStyles(base: Styles, ...others: Styles[]): Styles {

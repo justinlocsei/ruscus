@@ -1,6 +1,11 @@
 import { assert, describe, it } from 'vitest';
 
-import { camelToKebab, mergeStyles, PropertyProjector } from './styles.ts';
+import {
+  camelToKebab,
+  defineStyles,
+  mergeStyles,
+  PropertyProjector
+} from './styles.ts';
 import { checkConversion } from './tests.ts';
 import type { Styles } from './types/css.ts';
 
@@ -16,6 +21,17 @@ describe('camelToKebab', () => {
         ['WebkitLineClamp', '-webkit-line-clamp']
       ]
     );
+  });
+});
+
+describe('defineStyles', () => {
+  it('returns the given styles object', () => {
+    const input: Styles = {
+      color: 'red',
+      display: 'flex'
+    };
+
+    assert.equal(defineStyles(input), input);
   });
 });
 
