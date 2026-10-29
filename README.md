@@ -26,6 +26,7 @@
 - [Identifiers](#identifiers)
 - [Traits](#traits)
 - [Queries](#queries)
+- [CSS](#css)
 - [Integration](#integration)
   - [Vite](#vite)
 - [Why the Name?](#why-the-name)
@@ -383,6 +384,32 @@ export default component('card')
 ```
 
 Each key from the initial `queries` call can be provided to the applicator function.  Queries may be omitted, and any unknown queries will result in a type error.
+
+## CSS
+
+Ruscus takes a permissive approach to CSS, accepting any string as a property and any number or string as a value.  However, to make the authoring experience more enjoyable, it uses [webref](https://github.com/w3c/webref) to generate types for known CSS properties and their keyword values, allowing you to see suggestions like `'flex'` when typing `display: ` in your editor.
+
+If you're writing code that needs to define or handle fragments of CSS, you can use the `CSS` type and `css` function that are part of the Ruscus API:
+
+```ts
+import { component, css, type CSS } from 'ruscus';
+
+const padded = css({
+  padding: '0.5rem'
+});
+
+function withBorder(styles: CSS): CSS {
+  return css({
+    ...styles,
+    border: '1px solid currentColor'
+  });
+}
+
+export default component('badge')
+  .css(withBorder(padded))
+  .elements(e => ({ label: e(padded) }))
+  .apply();
+```
 
 ## Integration
 
