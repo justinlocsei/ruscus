@@ -1,5 +1,6 @@
 export { defineComponent as component } from './components.ts';
 export { extractIdentifiers as identifiers } from './internal.ts';
 export { defineQueries as queries } from './queries.ts';
+export { defineStyles as css } from './styles.ts';
 export { defineTrait as trait } from './traits.ts';
 export type { Styles as CSS } from './types/css.ts';
