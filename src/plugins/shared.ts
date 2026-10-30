@@ -24,3 +24,19 @@ export function resolveConfig(options: PluginOptions): PluginConfig {
     naming: options.naming ?? 'compact'
   };
 }
+
+/**
+ * Strip an import query from a module ID
+ */
+export function stripQuery(id: string): string {
+  const query = id.indexOf('?');
+
+  return query === -1 ? id : id.slice(0, query);
+}
+
+/**
+ * Report whether a module ID provides styles
+ */
+export function isStyleModuleID(id: string, extension: string): boolean {
+  return stripQuery(id).endsWith(extension);
+}
