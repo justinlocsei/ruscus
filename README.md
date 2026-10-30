@@ -100,7 +100,7 @@ export default component('button')
   .apply();
 ```
 
-Component styles should be the default export of a `.ts` file.  Style discovery happens via bundler integration that looks at the module graph, so there is no need for a particular file suffix.  If you wish to use a convention like `.styles.ts`, however, you're more than welcome to.
+Component styles must be the default export of a `.styles.ts` file.  While style discovery happens via bundler integration that looks at the module graph, the use of a known extension allows for reliable identification of files that define component styles.  If you wish to change this extension, you can do so when [configuring Ruscus](#integration).
 
 ## Elements
 
@@ -423,7 +423,7 @@ Install Vite alongside Ruscus:
 npm install vite
 ```
 
-Add the Ruscus plugin to serve CSS during development and include it in production builds to your Vite config:
+Add the Ruscus plugin to your Vite config to serve CSS during development and include static, compiled CSS in production builds:
 
 ```ts
 import { defineConfig } from 'vite';
@@ -434,7 +434,10 @@ export default defineConfig({
 });
 ```
 
-All style files that define a default export of an applied component and are included in the module graph for your entry point will be used to generate component CSS.
+You can configure the plugin via the following keys on the options object accepted by the `ruscus()` function:
+
+* `extension`: The extension for style definitions, which defaults to `.styles.ts`
+* `naming`: The naming scheme to use for classes, which defaults to `'compact'` in production and `'verbose'` in development
 
 ## Why the Name?
 
