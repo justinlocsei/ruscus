@@ -99,8 +99,8 @@ export function plugin(options: PluginOptions = {}): Plugin {
     // Vite only seeds HMR with modules tied directly to the changed file.
     // When a helper changes, the styles module that imports it may not
     // invalidate its virtual CSS module on its own.  This hook walks
-    // the import graph for a module upward and invalidates any discovered
-    // consumers that define component styles.
+    // importers upward until a styles source is found, refreshes its
+    // virtual CSS module, and stops.
     handleHotUpdate({ file, modules, server }) {
       owners.release(file);
 
@@ -124,8 +124,8 @@ export function plugin(options: PluginOptions = {}): Plugin {
         }
       };
 
-      // Attempt to extract a styles source module from a node in the graph
-      const styleSourceFromModule = (node: ModuleNode): string | undefined => {
+      // Find a Ruscus styles source file for a module graph node, if any
+      const stylesSourceFromModule = (node: ModuleNode): string | undefined => {
         const id = node.id ?? '';
         const fromCSS = extractSourceModuleID(id);
 
@@ -137,10 +137,20 @@ export function plugin(options: PluginOptions = {}): Plugin {
           return id.slice(0, id.indexOf(STYLE_QUERY));
         }
 
-        return node.file ?? undefined;
+        const file = node.file;
+
+        if (
+          file !== null
+          && graph.getModuleById(getCSSModuleID(file, { resolved: true }))
+            !== undefined
+        ) {
+          return file;
+        }
+
+        return undefined;
       };
 
-      // Walk importers so dependency changes reach styles modules upstream
+      // Walk importers until a styles source is found
       const visitModule = (node: ModuleNode) => {
         if (visited.has(node)) {
           return;
@@ -149,10 +159,12 @@ export function plugin(options: PluginOptions = {}): Plugin {
         visited.add(node);
         invalidate(node);
 
-        const source = styleSourceFromModule(node);
+        const styles = stylesSourceFromModule(node);
 
-        if (source !== undefined) {
-          invalidateCSSForSource(source);
+        // Invalidate the virtual CSS for a styles source and stop the walk
+        if (styles !== undefined) {
+          invalidateCSSForSource(styles);
+          return;
         }
 
         for (const importer of node.importers) {
