@@ -84,11 +84,9 @@ describe('Vite develop', () => {
       await server.pluginContainer.load(CARD_TOKENS_CSS);
 
       const graph = server.moduleGraph;
-      const affected = new Set(
-        [...graph.getModulesByFile(TOKENS) ?? []].flatMap(
-          mod => [...mod.importers]
-        )
-      );
+      const modules = [...graph.getModulesByFile(TOKENS) ?? []];
+
+      assert.isNotEmpty(modules);
 
       const invalidateModule = graph.invalidateModule.bind(graph);
 
@@ -99,7 +97,7 @@ describe('Vite develop', () => {
 
       await hooks.handleHotUpdate({
         file: TOKENS,
-        modules: [...affected],
+        modules,
         read: async () => '',
         server,
         timestamp: Date.now()
