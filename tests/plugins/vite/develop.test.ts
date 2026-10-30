@@ -6,12 +6,12 @@ import {
 } from 'vite';
 import { assert, describe, it } from 'vitest';
 
-import ruscus from '../../src/vite.ts';
-import type { PluginOptions } from '../../src/vite/plugin.ts';
+import ruscus from '../../../src/plugins/vite.ts';
+import type { PluginOptions } from '../../../src/plugins/vite/plugin.ts';
 import {
   getInternalCSSModuleID,
   getCSSModuleID
-} from '../../src/vite/transform.ts';
+} from '../../../src/plugins/vite/transform.ts';
 
 const ROOT = new URL('./fixtures/', import.meta.url);
 

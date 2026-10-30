@@ -1,7 +1,7 @@
 import { build as viteBuild } from 'vite';
 import { assert, describe, it } from 'vitest';
 
-import ruscus from '../../src/vite.ts';
+import ruscus from '../../../src/plugins/vite.ts';
 
 const ROOT = new URL('./fixtures/', import.meta.url);
 

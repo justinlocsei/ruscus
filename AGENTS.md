@@ -64,10 +64,12 @@ filename suffix. Importing a style module from application code makes its CSS
 available in development and production; unused style modules produce no CSS.
 Component IDs must be unique among reachable modules. The plugin option
 `naming` defaults to verbose during `vite dev` and compact during `vite build`.
+The Vite plugin implementation is under `src/plugins/vite/`, with integration
+tests under `tests/plugins/vite/`.
 
 ## Testing
 
-Unit tests live beside source as `src/**/*.test.ts`. Integration tests live under `tests/` (golden CSS via `compareStyles` in `tests/helpers.ts`). After editing a source file, run its matching test file when one exists. Coverage: `npm run test:coverage` (100% thresholds on `src/`; see `vitest.config.ts`; excludes `src/tests.ts` and `src/tests/**`).
+Unit tests live beside source as `src/**/*.test.ts`. Integration tests live under `tests/` (golden CSS via `compareStyles` in `tests/helpers.ts`). After editing a source file, run its matching test file when one exists. Coverage: `npm run test:coverage` (100% thresholds on core `src/`; see `vitest.config.ts`; excludes `src/plugins/**`, `src/tests.ts`, and `src/tests/**`).
 
 Use **NATO phonetic** names for sequential test data (`alfa`, `bravo`, `charlie`, …) instead of `foo` / `test1` / `a`, `b`.
 
