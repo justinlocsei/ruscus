@@ -6,7 +6,6 @@ import {
   getInternalCSSModuleID,
   injectCSSImport,
   isResolvedModuleID,
-  mightContainStyles,
   RESOLVED
 } from './transform.ts';
 
@@ -112,20 +111,6 @@ describe('isResolvedModuleID', () => {
 
     assert.isTrue(
       isResolvedModuleID(getInternalCSSModuleID(getCSSModuleID(source)) ?? '')
-    );
-  });
-});
-
-describe('mightContainStyles', () => {
-  it('returns false when the source does not call apply', () => {
-    assert.isFalse(
-      mightContainStyles('export default { value: "charlie" };')
-    );
-  });
-
-  it('returns true when the source calls apply', () => {
-    assert.isTrue(
-      mightContainStyles('export default component("alfa").css({}).apply();')
     );
   });
 });

@@ -58,12 +58,13 @@ After changing `scripts/generate-css-types.ts` or bumping `@webref/css`, run `np
 
 ## Vite integration
 
-The `ruscus/vite` plugin extracts CSS from graph-reachable modules whose default
-export is an applied component. It does not scan the filesystem or require a
-filename suffix. Importing a style module from application code makes its CSS
-available in development and production; unused style modules produce no CSS.
-Component IDs must be unique among reachable modules. The plugin option
-`naming` defaults to verbose during `vite dev` and compact during `vite build`.
+The `ruscus/vite` plugin extracts CSS from graph-reachable style modules whose
+default export is an applied component. Style modules must match the configured
+file extension (default `.styles.ts`). Importing a style module from
+application code makes its CSS available in development and production; unused
+style modules produce no CSS. Component IDs must be unique among reachable
+modules. Plugin options: `extension` (default `.styles.ts`); `naming` defaults
+to verbose during `vite dev` and compact during `vite build`.
 The Vite plugin implementation is under `src/plugins/vite/`, with integration
 tests under `tests/plugins/vite/`.
 

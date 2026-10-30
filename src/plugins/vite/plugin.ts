@@ -3,15 +3,15 @@ import { isRunnableDevEnvironment, runnerImport } from 'vite';
 import type { ModuleRunner } from 'vite/module-runner';
 
 import { extractBuildPlan } from '../../internal.ts';
-import type { NamingScheme } from '../../naming.ts';
+import type { PluginOptions } from '../shared.ts';
+import { resolveConfig, stripQuery } from '../shared.ts';
 import { ComponentRegistry } from './registry.ts';
 import {
   extractSourceModuleID,
   getCSSModuleID,
   getInternalCSSModuleID,
   injectCSSImport,
-  isResolvedModuleID,
-  mightContainStyles
+  isResolvedModuleID
 } from './transform.ts';
 
 // A query string used to identify Ruscus style providers
@@ -25,22 +25,18 @@ type ModuleValue = {
 };
 
 /**
- * Plugin options
- */
-export type PluginOptions = {
-  naming?: NamingScheme;
-};
-
-/**
  * Define the Vite plugin
  */
 export function plugin(options: PluginOptions = {}): Plugin {
   const owners = new ComponentRegistry();
+  const ruscus = resolveConfig(options);
+
+  const isStyleModule = (id: string) =>
+    stripQuery(id).endsWith(ruscus.extension);
 
   let config: ResolvedConfig;
   let moduleRunner: ModuleRunner | undefined;
   let server: ViteDevServer | undefined;
-  let naming: NamingScheme = options.naming ?? 'compact';
 
   // Infer an appropriate naming scheme after a change if no scheme was provided
   //
@@ -50,7 +46,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
     after();
 
     if (!options.naming) {
-      naming = (server || config?.command === 'serve')
+      ruscus.naming = (server || config?.command === 'serve')
         ? 'verbose'
         : 'compact';
     }
@@ -126,28 +122,15 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
       // Find a Ruscus styles source file for a module graph node, if any
       const stylesSourceFromModule = (node: ModuleNode): string | undefined => {
-        const id = node.id ?? '';
-        const fromCSS = extractSourceModuleID(id);
+        const { file, id } = node;
 
-        if (fromCSS !== undefined) {
-          return fromCSS;
-        }
-
-        if (id.includes(STYLE_QUERY)) {
-          return id.slice(0, id.indexOf(STYLE_QUERY));
-        }
-
-        const file = node.file;
-
-        if (
-          file !== null
-          && graph.getModuleById(getCSSModuleID(file, { resolved: true }))
-            !== undefined
-        ) {
+        if (file && isStyleModule(file)) {
           return file;
+        } else if (id && isStyleModule(id)) {
+          return stripQuery(id);
+        } else {
+          return undefined;
         }
-
-        return undefined;
       };
 
       // Walk importers until a styles source is found
@@ -178,7 +161,9 @@ export function plugin(options: PluginOptions = {}): Plugin {
       }
 
       // Respond to direct edits to a styles module
-      invalidateCSSForSource(file);
+      if (isStyleModule(file)) {
+        invalidateCSSForSource(file);
+      }
 
       return updated.size > 0 ? [...updated] : undefined;
     },
@@ -213,7 +198,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
       // Project the virtual CSS module as concrete CSS text
       return {
-        code: plan.compile({ naming }),
+        code: plan.compile({ naming: ruscus.naming }),
         moduleType: 'css',
         moduleSideEffects: true
       };
@@ -231,11 +216,11 @@ export function plugin(options: PluginOptions = {}): Plugin {
       //
       // - are known style modules loaded via load()
       // - are resolved, internal modules
-      // - lacks style definitions
+      // - do not use the configured styles extension
       if (
         id.includes(STYLE_QUERY)
         || isResolvedModuleID(id)
-        || !mightContainStyles(code)
+        || !isStyleModule(id)
       ) {
         return null;
       }
