@@ -7,7 +7,9 @@ export default defineConfig({
       exclude: [
         'src/**/*.test.ts',
         'src/tests.ts',
-        'src/tests/**'
+        'src/tests/**',
+        'src/vite.ts',
+        'src/vite/**'
       ],
       include: ['src/**/*.ts'],
       provider: 'v8',
