@@ -43,6 +43,9 @@ export function plugin(options: PluginOptions = {}): Plugin {
   let naming: NamingScheme = options.naming ?? 'compact';
 
   // Infer an appropriate naming scheme after a change if no scheme was provided
+  //
+  // If the plugin appears to be running in a development environment, this
+  // uses verbose naming.  Otherwise, compact naming is used.
   function refreshNaming(after: () => void): void {
     after();
 
