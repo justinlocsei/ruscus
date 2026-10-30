@@ -1,5 +1,6 @@
 import type { ModuleNode, Plugin, ResolvedConfig, ViteDevServer } from 'vite';
-import { runnerImport } from 'vite';
+import { isRunnableDevEnvironment, runnerImport } from 'vite';
+import type { ModuleRunner } from 'vite/module-runner';
 
 import { extractBuildPlan } from '../internal.ts';
 import type { NamingScheme } from '../naming.ts';
@@ -37,6 +38,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
   const owners = new ComponentRegistry();
 
   let config: ResolvedConfig;
+  let moduleRunner: ModuleRunner | undefined;
   let server: ViteDevServer | undefined;
   let naming: NamingScheme = options.naming ?? 'compact';
 
@@ -55,8 +57,8 @@ export function plugin(options: PluginOptions = {}): Plugin {
   async function loadSource(id: string): Promise<ModuleValue> {
     const path = `${id}${STYLE_QUERY}`;
 
-    if (server !== undefined) {
-      return server.ssrLoadModule(path);
+    if (moduleRunner !== undefined) {
+      return moduleRunner.import(path);
     }
 
     return (
@@ -69,6 +71,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
   return {
     buildStart() {
+      moduleRunner = undefined;
       owners.clear();
     },
 
@@ -77,7 +80,15 @@ export function plugin(options: PluginOptions = {}): Plugin {
     },
 
     configureServer(devServer) {
-      refreshNaming(() => server = devServer);
+      refreshNaming(() => {
+        server = devServer;
+
+        const environment = devServer.environments.ssr;
+
+        if (isRunnableDevEnvironment(environment)) {
+          moduleRunner = environment.runner;
+        }
+      });
     },
 
     handleHotUpdate({ file, modules, server }) {
