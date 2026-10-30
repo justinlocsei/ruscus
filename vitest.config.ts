@@ -8,8 +8,7 @@ export default defineConfig({
         'src/**/*.test.ts',
         'src/tests.ts',
         'src/tests/**',
-        'src/vite.ts',
-        'src/vite/**'
+        'src/plugins/**'
       ],
       include: ['src/**/*.ts'],
       provider: 'v8',
