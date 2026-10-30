@@ -6,12 +6,12 @@ import { extractBuildPlan } from '../internal.ts';
 import type { NamingScheme } from '../naming.ts';
 import { ComponentRegistry } from './registry.ts';
 import {
+  getResolvedVirtualCSSModuleID,
   getSourceModuleFromVirtualCSSModule,
   getVirtualCSSModuleForSourceModule,
   injectCSSImport,
   mightContainStyles,
-  RESOLVED,
-  resolveVirtualCSSModule
+  RESOLVED
 } from './transform.ts';
 
 // A query string used to identify Ruscus style providers
@@ -191,7 +191,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
     name: 'ruscus',
 
     resolveId(id) {
-      return resolveVirtualCSSModule(id) ?? null;
+      return getResolvedVirtualCSSModuleID(id);
     },
 
     transform(code, id) {

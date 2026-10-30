@@ -46,6 +46,13 @@ export function injectCSSImport(code: string, id: string): string {
 }
 
 /**
+ * Determine whether an ID is for a virtual CSS module
+ */
+export function isVirtualCSSModuleID(id: string): boolean {
+  return id.startsWith(PREFIX) && id.endsWith(SUFFIX);
+}
+
+/**
  * Check whether code might define component styles
  */
 export function mightContainStyles(code: string): boolean {
@@ -53,10 +60,10 @@ export function mightContainStyles(code: string): boolean {
 }
 
 /**
- * Mark a valid CSS module ID as resolved by the loader
+ * Get the resolved internal ID of a virtual CSS module
  */
-export function resolveVirtualCSSModule(id: string): string | undefined {
-  return (id.startsWith(PREFIX) && getSourceModuleFromVirtualCSSModule(id))
+export function getResolvedVirtualCSSModuleID(id: string): string | null {
+  return isVirtualCSSModuleID(id)
     ? `${RESOLVED}${id}`
-    : undefined;
+    : null;
 }

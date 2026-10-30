@@ -1,12 +1,12 @@
 import { assert, describe, it } from 'vitest';
 
 import {
+  getResolvedVirtualCSSModuleID,
   getSourceModuleFromVirtualCSSModule,
   getVirtualCSSModuleForSourceModule,
   injectCSSImport,
   mightContainStyles,
-  RESOLVED,
-  resolveVirtualCSSModule
+  RESOLVED
 } from './transform.ts';
 
 describe('getSourceModuleFromVirtualCSSModule', () => {
@@ -14,7 +14,7 @@ describe('getSourceModuleFromVirtualCSSModule', () => {
     const source = '/project/src/card.ts?direct';
 
     const resolved =
-      resolveVirtualCSSModule(getVirtualCSSModuleForSourceModule(source))
+      getResolvedVirtualCSSModuleID(getVirtualCSSModuleForSourceModule(source))
         ?? '';
 
     assert.equal(getSourceModuleFromVirtualCSSModule(resolved), source);
@@ -80,12 +80,12 @@ describe('mightContainStyles', () => {
   });
 });
 
-describe('resolveVirtualCSSModule', () => {
-  it('returns undefined for other ids', () => {
-    assert.isUndefined(resolveVirtualCSSModule('/styles/delta.ts'));
+describe('getResolvedVirtualCSSModuleID', () => {
+  it('returns null for other ids', () => {
+    assert.isNull(getResolvedVirtualCSSModuleID('/styles/delta.ts'));
 
-    assert.isUndefined(
-      resolveVirtualCSSModule(
+    assert.isNull(
+      getResolvedVirtualCSSModuleID(
         `${RESOLVED}${getVirtualCSSModuleForSourceModule('/styles/echo.ts')}`
       )
     );
@@ -96,7 +96,7 @@ describe('resolveVirtualCSSModule', () => {
     const publicID = getVirtualCSSModuleForSourceModule(source);
 
     assert.equal(
-      resolveVirtualCSSModule(publicID),
+      getResolvedVirtualCSSModuleID(publicID),
       `${RESOLVED}${publicID}`
     );
   });

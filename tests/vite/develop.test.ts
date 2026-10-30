@@ -9,7 +9,7 @@ import { assert, describe, it } from 'vitest';
 import ruscus from '../../src/vite.ts';
 import type { PluginOptions } from '../../src/vite/plugin.ts';
 import {
-  resolveVirtualCSSModule,
+  getResolvedVirtualCSSModuleID,
   getVirtualCSSModuleForSourceModule
 } from '../../src/vite/transform.ts';
 
@@ -23,7 +23,7 @@ const CARD_TOKENS = fixture('card-tokens');
 const TOKENS = fixture('tokens');
 
 const resolve = (id: string) =>
-  resolveVirtualCSSModule(getVirtualCSSModuleForSourceModule(id)) ?? '';
+  getResolvedVirtualCSSModuleID(getVirtualCSSModuleForSourceModule(id)) ?? '';
 
 const CARD_CSS = resolve(CARD);
 const CARD_TOKENS_CSS = resolve(CARD_TOKENS);
