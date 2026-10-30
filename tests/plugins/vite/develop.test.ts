@@ -7,7 +7,7 @@ import {
 import { assert, describe, it } from 'vitest';
 
 import ruscus from '../../../src/plugins/vite.ts';
-import type { PluginOptions } from '../../../src/plugins/vite/plugin.ts';
+import type { PluginOptions } from '../../../src/plugins/shared.ts';
 import {
   getInternalCSSModuleID,
   getCSSModuleID
