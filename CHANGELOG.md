@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.4] (2026-10-30)
+
+### Features
+
+- Export `css` and the `CSS` type for reusable style fragments ([#10])
+
+### Changes
+
+- Require style modules to use the `.styles.ts` extension ([#13])
+- Remove the `style` export ([#10])
+
+### Fixes
+
+- Improve Vite HMR when style modules or their dependencies change ([#11])
+
+### Development
+
+- Reorganize Vite plugin sources under `src/plugins/` ([#12])
+- Expand README examples ([#9])
+
 ## [0.0.3] (2026-10-26)
 
 ### Changes
@@ -32,6 +52,7 @@ All notable changes to this project will be documented in this file.
 [0.0.1]: https://github.com/justinlocsei/ruscus/releases/tag/v0.0.1
 [0.0.2]: https://github.com/justinlocsei/ruscus/compare/v0.0.1..v0.0.2
 [0.0.3]: https://github.com/justinlocsei/ruscus/compare/v0.0.2..v0.0.3
+[0.0.4]: https://github.com/justinlocsei/ruscus/compare/v0.0.3..v0.0.4
 
 <!-- PRs -->
 
@@ -41,3 +62,8 @@ All notable changes to this project will be documented in this file.
 [#5]: https://github.com/justinlocsei/ruscus/pull/5
 [#6]: https://github.com/justinlocsei/ruscus/pull/6
 [#7]: https://github.com/justinlocsei/ruscus/pull/7
+[#9]: https://github.com/justinlocsei/ruscus/pull/9
+[#10]: https://github.com/justinlocsei/ruscus/pull/10
+[#11]: https://github.com/justinlocsei/ruscus/pull/11
+[#12]: https://github.com/justinlocsei/ruscus/pull/12
+[#13]: https://github.com/justinlocsei/ruscus/pull/13
