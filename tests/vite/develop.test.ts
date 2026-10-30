@@ -11,12 +11,16 @@ import type { PluginOptions } from '../../src/vite/plugin.ts';
 import { cssToLoader, sourceToCSS } from '../../src/vite/transform.ts';
 
 const ROOT = new URL('./fixtures/', import.meta.url);
-const CARD = new URL('./fixtures/card.ts', import.meta.url).pathname;
+
+const fixture = (name: string) =>
+  new URL(`./fixtures/${name}.ts`, import.meta.url).pathname;
+
+const CARD = fixture('card');
+const CARD_TOKENS = fixture('card-tokens');
+const TOKENS = fixture('tokens');
+
 const CARD_CSS = cssToLoader(sourceToCSS(CARD)) ?? '';
-const CARD_TOKENS = new URL('./fixtures/card-tokens.ts', import.meta.url)
-  .pathname;
 const CARD_TOKENS_CSS = cssToLoader(sourceToCSS(CARD_TOKENS)) ?? '';
-const TOKENS = new URL('./fixtures/tokens.ts', import.meta.url).pathname;
 
 type PluginTestAPI = {
   handleHotUpdate: (context: HmrContext) => unknown;
