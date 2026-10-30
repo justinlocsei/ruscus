@@ -3,7 +3,8 @@ import { isRunnableDevEnvironment, runnerImport } from 'vite';
 import type { ModuleRunner } from 'vite/module-runner';
 
 import { extractBuildPlan } from '../../internal.ts';
-import type { NamingScheme, PluginOptions } from '../shared.ts';
+import type { PluginOptions } from '../shared.ts';
+import { resolveConfig } from '../shared.ts';
 import { ComponentRegistry } from './registry.ts';
 import {
   extractSourceModuleID,
@@ -29,11 +30,11 @@ type ModuleValue = {
  */
 export function plugin(options: PluginOptions = {}): Plugin {
   const owners = new ComponentRegistry();
+  const ruscus = resolveConfig(options);
 
   let config: ResolvedConfig;
   let moduleRunner: ModuleRunner | undefined;
   let server: ViteDevServer | undefined;
-  let naming: NamingScheme = options.naming ?? 'compact';
 
   // Infer an appropriate naming scheme after a change if no scheme was provided
   //
@@ -43,7 +44,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
     after();
 
     if (!options.naming) {
-      naming = (server || config?.command === 'serve')
+      ruscus.naming = (server || config?.command === 'serve')
         ? 'verbose'
         : 'compact';
     }
@@ -206,7 +207,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
       // Project the virtual CSS module as concrete CSS text
       return {
-        code: plan.compile({ naming }),
+        code: plan.compile({ naming: ruscus.naming }),
         moduleType: 'css',
         moduleSideEffects: true
       };
