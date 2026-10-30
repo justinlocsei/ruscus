@@ -3,7 +3,7 @@ import { isRunnableDevEnvironment, runnerImport } from 'vite';
 import type { ModuleRunner } from 'vite/module-runner';
 
 import { extractBuildPlan } from '../../internal.ts';
-import type { NamingScheme } from '../../naming.ts';
+import type { NamingScheme, PluginOptions } from '../shared.ts';
 import { ComponentRegistry } from './registry.ts';
 import {
   extractSourceModuleID,
@@ -22,13 +22,6 @@ const STYLE_QUERY = '?ruscus-styles';
  */
 type ModuleValue = {
   default?: unknown;
-};
-
-/**
- * Plugin options
- */
-export type PluginOptions = {
-  naming?: NamingScheme;
 };
 
 /**
