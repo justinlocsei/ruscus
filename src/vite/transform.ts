@@ -23,8 +23,13 @@ export function extractSourceModuleID(source: string): string | undefined {
 /**
  * Get the ID of the virtual CSS module that accompanies a source module
  */
-export function getCSSModuleID(id: string): string {
-  return `${PREFIX}${encodeURIComponent(id)}${SUFFIX}`;
+export function getCSSModuleID(
+  id: string,
+  { resolved = false }: { resolved?: boolean } = {}
+): string {
+  return `${resolved ? RESOLVED : ''}${PREFIX}${
+    encodeURIComponent(id)
+  }${SUFFIX}`;
 }
 
 /**
@@ -45,6 +50,13 @@ export function injectCSSImport(code: string, id: string): string {
   return code.includes(css)
     ? code
     : `${css}\n${code}`;
+}
+
+/**
+ * Report whether a module ID has been resolved to an internal ID
+ */
+export function isResolvedModuleID(id: string): boolean {
+  return id.startsWith(RESOLVED);
 }
 
 /**

@@ -5,6 +5,7 @@ import {
   getCSSModuleID,
   getInternalCSSModuleID,
   injectCSSImport,
+  isResolvedModuleID,
   mightContainStyles,
   RESOLVED
 } from './transform.ts';
@@ -27,6 +28,15 @@ describe('extractSourceModuleID', () => {
 });
 
 describe('getCSSModuleID', () => {
+  it('builds a resolved virtual CSS module ID from a source module ID', () => {
+    const source = '/project/src/card.ts?direct';
+
+    assert.equal(
+      getCSSModuleID(source, { resolved: true }),
+      getInternalCSSModuleID(getCSSModuleID(source))
+    );
+  });
+
   it('builds a virtual CSS module ID from a source module ID', () => {
     const source = '/project/src/card.ts?direct';
 
@@ -84,6 +94,25 @@ describe('injectCSSImport', () => {
 
     assert.match(transformed, /^import "virtual:ruscus\/css\//);
     assert.isTrue(transformed.endsWith(code));
+  });
+});
+
+describe('isResolvedModuleID', () => {
+  it('returns false for non-internal module ids', () => {
+    assert.isFalse(isResolvedModuleID('/project/src/card.ts'));
+    assert.isFalse(isResolvedModuleID(getCSSModuleID('/styles/delta.ts')));
+  });
+
+  it('returns true for resolved virtual CSS module ids', () => {
+    const source = '/styles/charlie.ts';
+
+    assert.isTrue(
+      isResolvedModuleID(getCSSModuleID(source, { resolved: true }))
+    );
+
+    assert.isTrue(
+      isResolvedModuleID(getInternalCSSModuleID(getCSSModuleID(source)) ?? '')
+    );
   });
 });
 
