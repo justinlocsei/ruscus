@@ -6,12 +6,12 @@ import { extractBuildPlan } from '../internal.ts';
 import type { NamingScheme } from '../naming.ts';
 import { ComponentRegistry } from './registry.ts';
 import {
-  cssToLoader,
-  cssToSource,
+  getSourceModuleFromVirtualCSSModule,
+  getVirtualCSSModuleForSourceModule,
   injectCSSImport,
   mightContainStyles,
-  sourceToCSS,
-  VIRTUAL
+  RESOLVED,
+  resolveVirtualCSSModule
 } from './transform.ts';
 
 // A query string used to identify Ruscus style providers
@@ -104,7 +104,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
       const invalidateCSSForSource = (sourceID: string) => {
         const cssModule = graph.getModuleById(
-          `${VIRTUAL}${sourceToCSS(sourceID)}`
+          `${RESOLVED}${getVirtualCSSModuleForSourceModule(sourceID)}`
         );
 
         if (cssModule) {
@@ -114,7 +114,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
       const styleSourceFromModule = (node: ModuleNode): string | undefined => {
         const id = node.id ?? '';
-        const fromCSS = cssToSource(id);
+        const fromCSS = getSourceModuleFromVirtualCSSModule(id);
 
         if (fromCSS !== undefined) {
           return fromCSS;
@@ -162,7 +162,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
     },
 
     async load(id) {
-      const sourceID = cssToSource(id);
+      const sourceID = getSourceModuleFromVirtualCSSModule(id);
 
       if (sourceID === undefined) {
         return null;
@@ -189,13 +189,13 @@ export function plugin(options: PluginOptions = {}): Plugin {
     name: 'ruscus',
 
     resolveId(id) {
-      return cssToLoader(id) ?? null;
+      return resolveVirtualCSSModule(id) ?? null;
     },
 
     transform(code, id) {
       if (
         id.includes(STYLE_QUERY)
-        || id.startsWith(VIRTUAL)
+        || id.startsWith(RESOLVED)
         || !mightContainStyles(code)
       ) {
         return null;

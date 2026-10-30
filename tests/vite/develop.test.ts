@@ -8,7 +8,10 @@ import { assert, describe, it } from 'vitest';
 
 import ruscus from '../../src/vite.ts';
 import type { PluginOptions } from '../../src/vite/plugin.ts';
-import { cssToLoader, sourceToCSS } from '../../src/vite/transform.ts';
+import {
+  resolveVirtualCSSModule,
+  getVirtualCSSModuleForSourceModule
+} from '../../src/vite/transform.ts';
 
 const ROOT = new URL('./fixtures/', import.meta.url);
 
@@ -19,8 +22,11 @@ const CARD = fixture('card');
 const CARD_TOKENS = fixture('card-tokens');
 const TOKENS = fixture('tokens');
 
-const CARD_CSS = cssToLoader(sourceToCSS(CARD)) ?? '';
-const CARD_TOKENS_CSS = cssToLoader(sourceToCSS(CARD_TOKENS)) ?? '';
+const CARD_CSS =
+  resolveVirtualCSSModule(getVirtualCSSModuleForSourceModule(CARD)) ?? '';
+const CARD_TOKENS_CSS =
+  resolveVirtualCSSModule(getVirtualCSSModuleForSourceModule(CARD_TOKENS))
+    ?? '';
 
 type PluginTestAPI = {
   handleHotUpdate: (context: HmrContext) => unknown;

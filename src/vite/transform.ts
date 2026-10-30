@@ -1,5 +1,5 @@
-// A Rollup/Vite prefix for virtual modules
-export const VIRTUAL = '\0';
+// A Rollup/Vite prefix for virtual modules present in the graph
+export const RESOLVED = '\0';
 
 // A prefix for virtual CSS modules
 const PREFIX = 'virtual:ruscus/css/';
@@ -8,23 +8,16 @@ const PREFIX = 'virtual:ruscus/css/';
 const SUFFIX = '.css';
 
 // A prefix for a CSS module that has been resolved by the loader
-const LOADER_PREFIX = `${VIRTUAL}${PREFIX}`;
+const RESOLVED_PREFIX = `${RESOLVED}${PREFIX}`;
 
 /**
- * Wrap a valid CSS module ID with a loader prefix
+ * Extract the ID of the source module associated with a virtual CSS module
  */
-export function cssToLoader(id: string): string | undefined {
-  return (id.startsWith(PREFIX) && cssToSource(id))
-    ? `${VIRTUAL}${id}`
-    : undefined;
-}
-
-/**
- * Extract the source module ID from a CSS module ID
- */
-export function cssToSource(id: string): string | undefined {
-  const prefix = id.startsWith(LOADER_PREFIX)
-    ? LOADER_PREFIX
+export function getSourceModuleFromVirtualCSSModule(
+  id: string
+): string | undefined {
+  const prefix = id.startsWith(RESOLVED_PREFIX)
+    ? RESOLVED_PREFIX
     : PREFIX;
 
   return (id.startsWith(prefix) && id.endsWith(SUFFIX))
@@ -33,10 +26,19 @@ export function cssToSource(id: string): string | undefined {
 }
 
 /**
+ * Get the ID of the virtual CSS module that accompanies a source module
+ */
+export function getVirtualCSSModuleForSourceModule(id: string): string {
+  return `${PREFIX}${encodeURIComponent(id)}${SUFFIX}`;
+}
+
+/**
  * Inject a CSS import into a source module's code
  */
 export function injectCSSImport(code: string, id: string): string {
-  const css = `import ${JSON.stringify(sourceToCSS(id))};`;
+  const css = `import ${
+    JSON.stringify(getVirtualCSSModuleForSourceModule(id))
+  };`;
 
   return code.includes(css)
     ? code
@@ -51,8 +53,10 @@ export function mightContainStyles(code: string): boolean {
 }
 
 /**
- * Generate a CSS module ID from a source module ID
+ * Mark a valid CSS module ID as resolved by the loader
  */
-export function sourceToCSS(id: string): string {
-  return `${PREFIX}${encodeURIComponent(id)}${SUFFIX}`;
+export function resolveVirtualCSSModule(id: string): string | undefined {
+  return (id.startsWith(PREFIX) && getSourceModuleFromVirtualCSSModule(id))
+    ? `${RESOLVED}${id}`
+    : undefined;
 }
