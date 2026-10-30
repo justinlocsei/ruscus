@@ -12,6 +12,7 @@ import {
 describe('getSourceModuleFromVirtualCSSModule', () => {
   it('decodes a resolved virtual CSS module id', () => {
     const source = '/project/src/card.ts?direct';
+
     const resolved =
       resolveVirtualCSSModule(getVirtualCSSModuleForSourceModule(source))
         ?? '';
