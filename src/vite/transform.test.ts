@@ -3,7 +3,7 @@ import { assert, describe, it } from 'vitest';
 import {
   extractSourceModuleID,
   getCSSModuleID,
-  getResolvedCSSModuleID,
+  getInternalCSSModuleID,
   injectCSSImport,
   mightContainStyles,
   RESOLVED
@@ -13,7 +13,7 @@ describe('extractSourceModuleID', () => {
   it('decodes a resolved virtual CSS module id', () => {
     const source = '/project/src/card.ts?direct';
 
-    const resolved = getResolvedCSSModuleID(getCSSModuleID(source))
+    const resolved = getInternalCSSModuleID(getCSSModuleID(source))
       ?? '';
 
     assert.equal(extractSourceModuleID(resolved), source);
@@ -48,12 +48,12 @@ describe('getCSSModuleID', () => {
   });
 });
 
-describe('getResolvedCSSModuleID', () => {
+describe('getInternalCSSModuleID', () => {
   it('returns null for other ids', () => {
-    assert.isNull(getResolvedCSSModuleID('/styles/delta.ts'));
+    assert.isNull(getInternalCSSModuleID('/styles/delta.ts'));
 
     assert.isNull(
-      getResolvedCSSModuleID(
+      getInternalCSSModuleID(
         `${RESOLVED}${getCSSModuleID('/styles/echo.ts')}`
       )
     );
@@ -64,7 +64,7 @@ describe('getResolvedCSSModuleID', () => {
     const publicID = getCSSModuleID(source);
 
     assert.equal(
-      getResolvedCSSModuleID(publicID),
+      getInternalCSSModuleID(publicID),
       `${RESOLVED}${publicID}`
     );
   });

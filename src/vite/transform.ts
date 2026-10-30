@@ -30,7 +30,7 @@ export function getCSSModuleID(id: string): string {
 /**
  * Get the resolved internal ID of a virtual CSS module
  */
-export function getResolvedCSSModuleID(id: string): string | null {
+export function getInternalCSSModuleID(id: string): string | null {
   return isVirtualCSSModuleID(id)
     ? `${RESOLVED}${id}`
     : null;
