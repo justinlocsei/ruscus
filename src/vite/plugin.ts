@@ -8,7 +8,7 @@ import { ComponentRegistry } from './registry.ts';
 import {
   extractSourceModuleID,
   getCSSModuleID,
-  getResolvedCSSModuleID,
+  getInternalCSSModuleID,
   injectCSSImport,
   mightContainStyles,
   RESOLVED
@@ -56,20 +56,20 @@ export function plugin(options: PluginOptions = {}): Plugin {
     }
   }
 
-  // Load a source module
-  async function loadSource(id: string): Promise<ModuleValue> {
+  // Load a module that defines component styles
+  //
+  // This uses Vite APIs to load a module in a way that does not impact the
+  // module graph.  This enables the use of that module as a source for a build
+  // plan to generate CSS.
+  function loadStyleModule(id: string): Promise<ModuleValue> {
     const path = `${id}${STYLE_QUERY}`;
 
-    if (moduleRunner !== undefined) {
-      return moduleRunner.import(path);
-    }
-
-    return (
-      await runnerImport<ModuleValue>(path, {
+    return moduleRunner
+      ? moduleRunner.import(path)
+      : runnerImport<ModuleValue>(path, {
         configFile: false,
         root: config.root
-      })
-    ).module;
+      }).then(m => m.module);
   }
 
   return {
@@ -85,10 +85,10 @@ export function plugin(options: PluginOptions = {}): Plugin {
       refreshNaming(() => {
         server = devServer;
 
-        const environment = devServer.environments.ssr;
+        const { ssr } = devServer.environments;
 
-        if (isRunnableDevEnvironment(environment)) {
-          moduleRunner = environment.runner;
+        if (isRunnableDevEnvironment(ssr)) {
+          moduleRunner = ssr.runner;
         }
       });
     },
@@ -164,23 +164,34 @@ export function plugin(options: PluginOptions = {}): Plugin {
     },
 
     async load(id) {
-      const sourceID = extractSourceModuleID(id);
+      // Extract the ID of the module that defines component styles
+      //
+      // If the current ID is a virtual CSS module ID, this will extract the
+      // ID of the source module to which transform() added the virtual import.
+      const stylesID = extractSourceModuleID(id);
 
-      if (sourceID === undefined) {
+      if (stylesID === undefined) {
         return null;
       }
 
-      this.addWatchFile(sourceID);
+      // Ensure that changes to the source styles impact the virtual CSS module
+      this.addWatchFile(stylesID);
 
-      const module = await loadSource(sourceID);
+      // Load the styles module and extract its build plan
+      const module = await loadStyleModule(stylesID);
       const plan = extractBuildPlan(module.default);
 
       if (plan === undefined) {
-        throw new Error(`${sourceID} must export a valid Ruscus component.`);
+        throw new Error(`${stylesID} must export Ruscus component styles.`);
       }
 
-      owners.claim(plan.component.id, sourceID);
+      // Register the styles module as the owner of the component
+      //
+      // If multiple modules attempt to claim the same component, this will
+      // throw an error.
+      owners.claim(plan.component.id, stylesID);
 
+      // Project the virtual CSS module as concrete CSS text
       return {
         code: plan.compile({ naming }),
         moduleType: 'css',
@@ -191,10 +202,16 @@ export function plugin(options: PluginOptions = {}): Plugin {
     name: 'ruscus',
 
     resolveId(id) {
-      return getResolvedCSSModuleID(id);
+      // Use an internal ID for a virtual CSS module added by transform()
+      return getInternalCSSModuleID(id);
     },
 
     transform(code, id) {
+      // This avoids transforming modules that:
+      //
+      // - are known style modules loaded via load()
+      // - are resolved, internal modules
+      // - lacks style definitions
       if (
         id.includes(STYLE_QUERY)
         || id.startsWith(RESOLVED)
@@ -203,6 +220,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
         return null;
       }
 
+      // Inject a virtual CSS module import into a styles module
       return {
         code: injectCSSImport(code, id),
         map: null
