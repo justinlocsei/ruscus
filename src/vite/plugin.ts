@@ -6,8 +6,8 @@ import { extractBuildPlan } from '../internal.ts';
 import type { NamingScheme } from '../naming.ts';
 import { ComponentRegistry } from './registry.ts';
 import {
+  extractSourceModuleID,
   getResolvedVirtualCSSModuleID,
-  getSourceModuleFromVirtualCSSModule,
   getVirtualCSSModuleForSourceModule,
   injectCSSImport,
   mightContainStyles,
@@ -116,7 +116,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
       const styleSourceFromModule = (node: ModuleNode): string | undefined => {
         const id = node.id ?? '';
-        const fromCSS = getSourceModuleFromVirtualCSSModule(id);
+        const fromCSS = extractSourceModuleID(id);
 
         if (fromCSS !== undefined) {
           return fromCSS;
@@ -164,7 +164,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
     },
 
     async load(id) {
-      const sourceID = getSourceModuleFromVirtualCSSModule(id);
+      const sourceID = extractSourceModuleID(id);
 
       if (sourceID === undefined) {
         return null;

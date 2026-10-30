@@ -7,21 +7,16 @@ const PREFIX = 'virtual:ruscus/css/';
 // The suffix for virtual CSS modules
 const SUFFIX = '.css';
 
-// A prefix for a CSS module that has been resolved by the loader
-const RESOLVED_PREFIX = `${RESOLVED}${PREFIX}`;
-
 /**
  * Extract the ID of the source module associated with a virtual CSS module
  */
-export function getSourceModuleFromVirtualCSSModule(
-  id: string
-): string | undefined {
-  const prefix = id.startsWith(RESOLVED_PREFIX)
-    ? RESOLVED_PREFIX
-    : PREFIX;
+export function extractSourceModuleID(source: string): string | undefined {
+  const id = source.startsWith(RESOLVED)
+    ? source.slice(RESOLVED.length)
+    : source;
 
-  return (id.startsWith(prefix) && id.endsWith(SUFFIX))
-    ? decodeURIComponent(id.slice(prefix.length, SUFFIX.length * -1))
+  return isVirtualCSSModuleID(id)
+    ? decodeURIComponent(id.slice(PREFIX.length, SUFFIX.length * -1))
     : undefined;
 }
 

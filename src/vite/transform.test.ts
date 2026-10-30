@@ -1,8 +1,8 @@
 import { assert, describe, it } from 'vitest';
 
 import {
+  extractSourceModuleID,
   getResolvedVirtualCSSModuleID,
-  getSourceModuleFromVirtualCSSModule,
   getVirtualCSSModuleForSourceModule,
   injectCSSImport,
   mightContainStyles,
@@ -17,12 +17,12 @@ describe('getSourceModuleFromVirtualCSSModule', () => {
       getResolvedVirtualCSSModuleID(getVirtualCSSModuleForSourceModule(source))
         ?? '';
 
-    assert.equal(getSourceModuleFromVirtualCSSModule(resolved), source);
+    assert.equal(extractSourceModuleID(resolved), source);
   });
 
   it('returns undefined for non-virtual CSS module ids', () => {
     assert.isUndefined(
-      getSourceModuleFromVirtualCSSModule('/project/src/card.ts')
+      extractSourceModuleID('/project/src/card.ts')
     );
   });
 });
@@ -41,7 +41,7 @@ describe('getVirtualCSSModuleForSourceModule', () => {
     const source = '/project/src/card.ts?direct';
 
     assert.equal(
-      getSourceModuleFromVirtualCSSModule(
+      extractSourceModuleID(
         getVirtualCSSModuleForSourceModule(source)
       ),
       source
