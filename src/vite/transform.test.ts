@@ -1,48 +1,93 @@
 import { assert, describe, it } from 'vitest';
 
 import {
-  cssToLoader,
-  cssToSource,
+  extractSourceModuleID,
+  getCSSModuleID,
+  getInternalCSSModuleID,
   injectCSSImport,
-  mayContainStyles,
-  sourceToCSS,
-  VIRTUAL
+  isResolvedModuleID,
+  mightContainStyles,
+  RESOLVED
 } from './transform.ts';
 
-describe('cssToLoader', () => {
-  it('wraps valid CSS module IDs', () => {
-    const source = '/styles/charlie.ts';
-    const publicID = sourceToCSS(source);
+describe('extractSourceModuleID', () => {
+  it('decodes a resolved virtual CSS module id', () => {
+    const source = '/project/src/card.ts?direct';
 
-    assert.equal(
-      cssToLoader(publicID),
-      `${VIRTUAL}${publicID}`
-    );
+    const resolved = getInternalCSSModuleID(getCSSModuleID(source))
+      ?? '';
+
+    assert.equal(extractSourceModuleID(resolved), source);
   });
 
-  it('returns undefined for other IDs', () => {
-    assert.isUndefined(cssToLoader('/styles/delta.ts'));
-
+  it('returns undefined for non-virtual CSS module ids', () => {
     assert.isUndefined(
-      cssToLoader(`${VIRTUAL}${sourceToCSS('/styles/echo.ts')}`)
+      extractSourceModuleID('/project/src/card.ts')
     );
   });
 });
 
-describe('cssToSource', () => {
-  it('decodes a loader-prefixed CSS module id', () => {
+describe('getCSSModuleID', () => {
+  it('builds a resolved virtual CSS module ID from a source module ID', () => {
     const source = '/project/src/card.ts?direct';
-    const loader = cssToLoader(sourceToCSS(source)) ?? '';
 
-    assert.equal(cssToSource(loader), source);
+    assert.equal(
+      getCSSModuleID(source, { resolved: true }),
+      getInternalCSSModuleID(getCSSModuleID(source))
+    );
   });
 
-  it('returns undefined for non-wrapped IDs', () => {
-    assert.isUndefined(cssToSource('/project/src/card.ts'));
+  it('builds a virtual CSS module ID from a source module ID', () => {
+    const source = '/project/src/card.ts?direct';
+
+    assert.equal(
+      getCSSModuleID(source),
+      'virtual:ruscus/css/%2Fproject%2Fsrc%2Fcard.ts%3Fdirect.css'
+    );
+  });
+
+  it('round-trips through extractSourceModuleID', () => {
+    const source = '/project/src/card.ts?direct';
+
+    assert.equal(
+      extractSourceModuleID(
+        getCSSModuleID(source)
+      ),
+      source
+    );
+  });
+});
+
+describe('getInternalCSSModuleID', () => {
+  it('returns null for other ids', () => {
+    assert.isNull(getInternalCSSModuleID('/styles/delta.ts'));
+
+    assert.isNull(
+      getInternalCSSModuleID(
+        `${RESOLVED}${getCSSModuleID('/styles/echo.ts')}`
+      )
+    );
+  });
+
+  it('wraps valid virtual CSS module ids', () => {
+    const source = '/styles/charlie.ts';
+    const publicID = getCSSModuleID(source);
+
+    assert.equal(
+      getInternalCSSModuleID(publicID),
+      `${RESOLVED}${publicID}`
+    );
   });
 });
 
 describe('injectCSSImport', () => {
+  it('does not inject the same import twice', () => {
+    const code = 'export default component("card").apply();';
+    const transformed = injectCSSImport(code, '/project/card.ts');
+
+    assert.equal(injectCSSImport(transformed, '/project/card.ts'), transformed);
+  });
+
   it('injects a virtual CSS import', () => {
     const code = 'export default component("card").apply();';
     const transformed = injectCSSImport(code, '/project/card.ts');
@@ -50,42 +95,37 @@ describe('injectCSSImport', () => {
     assert.match(transformed, /^import "virtual:ruscus\/css\//);
     assert.isTrue(transformed.endsWith(code));
   });
+});
 
-  it('does not inject the same import twice', () => {
-    const code = 'export default component("card").apply();';
-    const transformed = injectCSSImport(code, '/project/card.ts');
+describe('isResolvedModuleID', () => {
+  it('returns false for non-internal module ids', () => {
+    assert.isFalse(isResolvedModuleID('/project/src/card.ts'));
+    assert.isFalse(isResolvedModuleID(getCSSModuleID('/styles/delta.ts')));
+  });
 
-    assert.equal(injectCSSImport(transformed, '/project/card.ts'), transformed);
+  it('returns true for resolved virtual CSS module ids', () => {
+    const source = '/styles/charlie.ts';
+
+    assert.isTrue(
+      isResolvedModuleID(getCSSModuleID(source, { resolved: true }))
+    );
+
+    assert.isTrue(
+      isResolvedModuleID(getInternalCSSModuleID(getCSSModuleID(source)) ?? '')
+    );
   });
 });
 
-describe('mayContainStyles', () => {
-  it('returns true when the source calls apply', () => {
-    assert.isTrue(
-      mayContainStyles('export default component("alfa").css({}).apply();')
-    );
-  });
-
+describe('mightContainStyles', () => {
   it('returns false when the source does not call apply', () => {
     assert.isFalse(
-      mayContainStyles('export default { value: "charlie" };')
-    );
-  });
-});
-
-describe('sourceToCSS', () => {
-  it('builds a virtual CSS module ID from a source module ID', () => {
-    const source = '/project/src/card.ts?direct';
-
-    assert.equal(
-      sourceToCSS(source),
-      'virtual:ruscus/css/%2Fproject%2Fsrc%2Fcard.ts%3Fdirect.css'
+      mightContainStyles('export default { value: "charlie" };')
     );
   });
 
-  it('round-trips through cssToSource', () => {
-    const source = '/project/src/card.ts?direct';
-
-    assert.equal(cssToSource(sourceToCSS(source)), source);
+  it('returns true when the source calls apply', () => {
+    assert.isTrue(
+      mightContainStyles('export default component("alfa").css({}).apply();')
+    );
   });
 });

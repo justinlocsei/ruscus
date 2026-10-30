@@ -1,5 +1,5 @@
-// A Rollup/Vite prefix for virtual modules
-export const VIRTUAL = '\0';
+// A Rollup/Vite prefix for virtual modules present in the graph
+export const RESOLVED = '\0';
 
 // A prefix for virtual CSS modules
 const PREFIX = 'virtual:ruscus/css/';
@@ -7,36 +7,45 @@ const PREFIX = 'virtual:ruscus/css/';
 // The suffix for virtual CSS modules
 const SUFFIX = '.css';
 
-// A prefix for a CSS module that has been resolved by the loader
-const LOADER_PREFIX = `${VIRTUAL}${PREFIX}`;
-
 /**
- * Wrap a valid CSS module ID with a loader prefix
+ * Extract the ID of the source module associated with a virtual CSS module
  */
-export function cssToLoader(id: string): string | undefined {
-  return (id.startsWith(PREFIX) && cssToSource(id))
-    ? `${VIRTUAL}${id}`
+export function extractSourceModuleID(source: string): string | undefined {
+  const id = source.startsWith(RESOLVED)
+    ? source.slice(RESOLVED.length)
+    : source;
+
+  return isVirtualCSSModuleID(id)
+    ? decodeURIComponent(id.slice(PREFIX.length, SUFFIX.length * -1))
     : undefined;
 }
 
 /**
- * Extract the source module ID from a CSS module ID
+ * Get the ID of the virtual CSS module that accompanies a source module
  */
-export function cssToSource(id: string): string | undefined {
-  const prefix = id.startsWith(LOADER_PREFIX)
-    ? LOADER_PREFIX
-    : PREFIX;
+export function getCSSModuleID(
+  id: string,
+  { resolved = false }: { resolved?: boolean } = {}
+): string {
+  return `${resolved ? RESOLVED : ''}${PREFIX}${
+    encodeURIComponent(id)
+  }${SUFFIX}`;
+}
 
-  return (id.startsWith(prefix) && id.endsWith(SUFFIX))
-    ? decodeURIComponent(id.slice(prefix.length, SUFFIX.length * -1))
-    : undefined;
+/**
+ * Get the resolved internal ID of a virtual CSS module
+ */
+export function getInternalCSSModuleID(id: string): string | null {
+  return isVirtualCSSModuleID(id)
+    ? `${RESOLVED}${id}`
+    : null;
 }
 
 /**
  * Inject a CSS import into a source module's code
  */
 export function injectCSSImport(code: string, id: string): string {
-  const css = `import ${JSON.stringify(sourceToCSS(id))};`;
+  const css = `import ${JSON.stringify(getCSSModuleID(id))};`;
 
   return code.includes(css)
     ? code
@@ -44,15 +53,22 @@ export function injectCSSImport(code: string, id: string): string {
 }
 
 /**
- * Check whether code is likely to contain component styles
+ * Report whether a module ID has been resolved to an internal ID
  */
-export function mayContainStyles(code: string): boolean {
-  return code.includes('.apply()');
+export function isResolvedModuleID(id: string): boolean {
+  return id.startsWith(RESOLVED);
 }
 
 /**
- * Generate a CSS module ID from a source module ID
+ * Determine whether an ID is for a virtual CSS module
  */
-export function sourceToCSS(id: string): string {
-  return `${PREFIX}${encodeURIComponent(id)}${SUFFIX}`;
+export function isVirtualCSSModuleID(id: string): boolean {
+  return id.startsWith(PREFIX) && id.endsWith(SUFFIX);
+}
+
+/**
+ * Check whether code might define component styles
+ */
+export function mightContainStyles(code: string): boolean {
+  return code.includes('.apply()');
 }
