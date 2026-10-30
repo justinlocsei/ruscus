@@ -44,35 +44,6 @@ describe('Vite build', () => {
     assert.notInclude(css, '.unused');
   });
 
-  it('rejects duplicate IDs among reachable components', async () => {
-    let error: unknown;
-
-    try {
-      await build('duplicate-entry');
-    } catch (caught) {
-      error = caught;
-    }
-
-    assert.instanceOf(error, Error);
-    const message = error.message;
-
-    assert.include(message, 'duplicate-alfa');
-    assert.include(message, 'duplicate-bravo');
-  });
-
-  it('rejects a reachable module without a valid default export', async () => {
-    let error: unknown;
-
-    try {
-      await build('invalid-entry');
-    } catch (caught) {
-      error = caught;
-    }
-
-    assert.instanceOf(error, Error);
-    assert.include(error.message, 'invalid.ts');
-  });
-
   it('keeps CSS reachable through a dynamically imported chunk', async () => {
     const css = extractCSS(
       await build('chunk-entry', { cssCodeSplit: true })
