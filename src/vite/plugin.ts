@@ -74,7 +74,6 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
   return {
     buildStart() {
-      moduleRunner = undefined;
       owners.clear();
     },
 
