@@ -2,8 +2,8 @@ import type { ModuleNode, Plugin, ResolvedConfig, ViteDevServer } from 'vite';
 import { isRunnableDevEnvironment, runnerImport } from 'vite';
 import type { ModuleRunner } from 'vite/module-runner';
 
-import { extractBuildPlan } from '../internal.ts';
-import type { NamingScheme } from '../naming.ts';
+import { extractBuildPlan } from '../../internal.ts';
+import type { NamingScheme } from '../../naming.ts';
 import { ComponentRegistry } from './registry.ts';
 import {
   extractSourceModuleID,
