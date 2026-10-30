@@ -10,8 +10,8 @@ import {
   getCSSModuleID,
   getInternalCSSModuleID,
   injectCSSImport,
-  mightContainStyles,
-  RESOLVED
+  isResolvedModuleID,
+  mightContainStyles
 } from './transform.ts';
 
 // A query string used to identify Ruscus style providers
@@ -87,16 +87,25 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
         const { ssr } = devServer.environments;
 
+        // Track the SSR runner for later use in loading style modules
         if (isRunnableDevEnvironment(ssr)) {
           moduleRunner = ssr.runner;
         }
       });
     },
 
+    // Keep style and CSS modules in sync when a source file changes
+    //
+    // Vite only seeds HMR with modules tied directly to the changed file.
+    // When a helper changes, the styles module that imports it may not
+    // invalidate its virtual CSS module on its own.  This hook walks
+    // the import graph for a module upward and invalidates any discovered
+    // consumers that define component styles.
     handleHotUpdate({ file, modules, server }) {
       owners.release(file);
 
       const updated = new Set<ModuleNode>();
+      const visited = new Set<ModuleNode>();
       const graph = server.moduleGraph;
 
       const invalidate = (node: ModuleNode) => {
@@ -104,9 +113,10 @@ export function plugin(options: PluginOptions = {}): Plugin {
         updated.add(node);
       };
 
+      // Invalidate the virtual CSS module for a source module
       const invalidateCSSForSource = (sourceID: string) => {
         const cssModule = graph.getModuleById(
-          `${RESOLVED}${getCSSModuleID(sourceID)}`
+          getCSSModuleID(sourceID, { resolved: true })
         );
 
         if (cssModule) {
@@ -114,6 +124,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
         }
       };
 
+      // Attempt to extract a styles source module from a node in the graph
       const styleSourceFromModule = (node: ModuleNode): string | undefined => {
         const id = node.id ?? '';
         const fromCSS = extractSourceModuleID(id);
@@ -129,7 +140,13 @@ export function plugin(options: PluginOptions = {}): Plugin {
         return node.file ?? undefined;
       };
 
-      const touchModule = (node: ModuleNode) => {
+      // Walk importers so dependency changes reach styles modules upstream
+      const visitModule = (node: ModuleNode) => {
+        if (visited.has(node)) {
+          return;
+        }
+
+        visited.add(node);
         invalidate(node);
 
         const source = styleSourceFromModule(node);
@@ -137,27 +154,18 @@ export function plugin(options: PluginOptions = {}): Plugin {
         if (source !== undefined) {
           invalidateCSSForSource(source);
         }
-      };
-
-      const visited = new Set<ModuleNode>();
-
-      const visitModule = (node: ModuleNode) => {
-        if (visited.has(node)) {
-          return;
-        }
-
-        visited.add(node);
-        touchModule(node);
 
         for (const importer of node.importers) {
           visitModule(importer);
         }
       };
 
+      // Visit all modules associated with the changed file
       for (const node of modules) {
         visitModule(node);
       }
 
+      // Respond to direct edits to a styles module
       invalidateCSSForSource(file);
 
       return updated.size > 0 ? [...updated] : undefined;
@@ -168,28 +176,28 @@ export function plugin(options: PluginOptions = {}): Plugin {
       //
       // If the current ID is a virtual CSS module ID, this will extract the
       // ID of the source module to which transform() added the virtual import.
-      const stylesID = extractSourceModuleID(id);
+      const sourceID = extractSourceModuleID(id);
 
-      if (stylesID === undefined) {
+      if (sourceID === undefined) {
         return null;
       }
 
       // Ensure that changes to the source styles impact the virtual CSS module
-      this.addWatchFile(stylesID);
+      this.addWatchFile(sourceID);
 
       // Load the styles module and extract its build plan
-      const module = await loadStyleModule(stylesID);
+      const module = await loadStyleModule(sourceID);
       const plan = extractBuildPlan(module.default);
 
       if (plan === undefined) {
-        throw new Error(`${stylesID} must export Ruscus component styles.`);
+        throw new Error(`${sourceID} must export Ruscus component styles.`);
       }
 
       // Register the styles module as the owner of the component
       //
       // If multiple modules attempt to claim the same component, this will
       // throw an error.
-      owners.claim(plan.component.id, stylesID);
+      owners.claim(plan.component.id, sourceID);
 
       // Project the virtual CSS module as concrete CSS text
       return {
@@ -201,8 +209,8 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
     name: 'ruscus',
 
+    // Use an internal ID for a virtual CSS module added by transform()
     resolveId(id) {
-      // Use an internal ID for a virtual CSS module added by transform()
       return getInternalCSSModuleID(id);
     },
 
@@ -214,7 +222,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
       // - lacks style definitions
       if (
         id.includes(STYLE_QUERY)
-        || id.startsWith(RESOLVED)
+        || isResolvedModuleID(id)
         || !mightContainStyles(code)
       ) {
         return null;
