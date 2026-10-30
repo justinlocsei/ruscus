@@ -57,4 +57,45 @@ describe('projectComponent', () => {
     // @ts-expect-error unknown element
     applied.title;
   });
+
+  it('projects component variants from a provider that uses els', () => {
+    const applied = defineComponent('card')
+      .elements(e => ({ body: e() }))
+      .variants((s, { els }) => ({
+        compact: s().nested({
+          [els.body]: s({ display: 'block' })
+        }),
+        large: s()
+      }))
+      .apply();
+
+    T.assert<
+      T.Equivalent<
+        typeof applied.root,
+        VariantProjector<'compact' | 'large'>
+      >
+    >(true);
+  });
+
+  it('projects element variants from a provider that uses els', () => {
+    const applied = defineComponent('Lens')
+      .elements(e => ({
+        section: e()
+          .children({ content: e() })
+          .variants((s, { els }) => ({
+            collapsed: s().nested({
+              [els.content]: s({ display: 'none' })
+            }),
+            expanded: s()
+          }))
+      }))
+      .apply();
+
+    T.assert<
+      T.Equivalent<
+        typeof applied.section.root,
+        VariantProjector<'collapsed' | 'expanded'>
+      >
+    >(true);
+  });
 });
