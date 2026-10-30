@@ -2,20 +2,19 @@ import { assert, describe, it } from 'vitest';
 
 import {
   extractSourceModuleID,
-  getResolvedVirtualCSSModuleID,
-  getVirtualCSSModuleForSourceModule,
+  getCSSModuleID,
+  getResolvedCSSModuleID,
   injectCSSImport,
   mightContainStyles,
   RESOLVED
 } from './transform.ts';
 
-describe('getSourceModuleFromVirtualCSSModule', () => {
+describe('extractSourceModuleID', () => {
   it('decodes a resolved virtual CSS module id', () => {
     const source = '/project/src/card.ts?direct';
 
-    const resolved =
-      getResolvedVirtualCSSModuleID(getVirtualCSSModuleForSourceModule(source))
-        ?? '';
+    const resolved = getResolvedCSSModuleID(getCSSModuleID(source))
+      ?? '';
 
     assert.equal(extractSourceModuleID(resolved), source);
   });
@@ -27,24 +26,46 @@ describe('getSourceModuleFromVirtualCSSModule', () => {
   });
 });
 
-describe('getVirtualCSSModuleForSourceModule', () => {
+describe('getCSSModuleID', () => {
   it('builds a virtual CSS module ID from a source module ID', () => {
     const source = '/project/src/card.ts?direct';
 
     assert.equal(
-      getVirtualCSSModuleForSourceModule(source),
+      getCSSModuleID(source),
       'virtual:ruscus/css/%2Fproject%2Fsrc%2Fcard.ts%3Fdirect.css'
     );
   });
 
-  it('round-trips through getSourceModuleFromVirtualCSSModule', () => {
+  it('round-trips through extractSourceModuleID', () => {
     const source = '/project/src/card.ts?direct';
 
     assert.equal(
       extractSourceModuleID(
-        getVirtualCSSModuleForSourceModule(source)
+        getCSSModuleID(source)
       ),
       source
+    );
+  });
+});
+
+describe('getResolvedCSSModuleID', () => {
+  it('returns null for other ids', () => {
+    assert.isNull(getResolvedCSSModuleID('/styles/delta.ts'));
+
+    assert.isNull(
+      getResolvedCSSModuleID(
+        `${RESOLVED}${getCSSModuleID('/styles/echo.ts')}`
+      )
+    );
+  });
+
+  it('wraps valid virtual CSS module ids', () => {
+    const source = '/styles/charlie.ts';
+    const publicID = getCSSModuleID(source);
+
+    assert.equal(
+      getResolvedCSSModuleID(publicID),
+      `${RESOLVED}${publicID}`
     );
   });
 });
@@ -76,28 +97,6 @@ describe('mightContainStyles', () => {
   it('returns true when the source calls apply', () => {
     assert.isTrue(
       mightContainStyles('export default component("alfa").css({}).apply();')
-    );
-  });
-});
-
-describe('getResolvedVirtualCSSModuleID', () => {
-  it('returns null for other ids', () => {
-    assert.isNull(getResolvedVirtualCSSModuleID('/styles/delta.ts'));
-
-    assert.isNull(
-      getResolvedVirtualCSSModuleID(
-        `${RESOLVED}${getVirtualCSSModuleForSourceModule('/styles/echo.ts')}`
-      )
-    );
-  });
-
-  it('wraps valid virtual CSS module ids', () => {
-    const source = '/styles/charlie.ts';
-    const publicID = getVirtualCSSModuleForSourceModule(source);
-
-    assert.equal(
-      getResolvedVirtualCSSModuleID(publicID),
-      `${RESOLVED}${publicID}`
     );
   });
 });

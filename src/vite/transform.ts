@@ -23,17 +23,24 @@ export function extractSourceModuleID(source: string): string | undefined {
 /**
  * Get the ID of the virtual CSS module that accompanies a source module
  */
-export function getVirtualCSSModuleForSourceModule(id: string): string {
+export function getCSSModuleID(id: string): string {
   return `${PREFIX}${encodeURIComponent(id)}${SUFFIX}`;
+}
+
+/**
+ * Get the resolved internal ID of a virtual CSS module
+ */
+export function getResolvedCSSModuleID(id: string): string | null {
+  return isVirtualCSSModuleID(id)
+    ? `${RESOLVED}${id}`
+    : null;
 }
 
 /**
  * Inject a CSS import into a source module's code
  */
 export function injectCSSImport(code: string, id: string): string {
-  const css = `import ${
-    JSON.stringify(getVirtualCSSModuleForSourceModule(id))
-  };`;
+  const css = `import ${JSON.stringify(getCSSModuleID(id))};`;
 
   return code.includes(css)
     ? code
@@ -52,13 +59,4 @@ export function isVirtualCSSModuleID(id: string): boolean {
  */
 export function mightContainStyles(code: string): boolean {
   return code.includes('.apply()');
-}
-
-/**
- * Get the resolved internal ID of a virtual CSS module
- */
-export function getResolvedVirtualCSSModuleID(id: string): string | null {
-  return isVirtualCSSModuleID(id)
-    ? `${RESOLVED}${id}`
-    : null;
 }

@@ -7,8 +7,8 @@ import type { NamingScheme } from '../naming.ts';
 import { ComponentRegistry } from './registry.ts';
 import {
   extractSourceModuleID,
-  getResolvedVirtualCSSModuleID,
-  getVirtualCSSModuleForSourceModule,
+  getCSSModuleID,
+  getResolvedCSSModuleID,
   injectCSSImport,
   mightContainStyles,
   RESOLVED
@@ -106,7 +106,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
       const invalidateCSSForSource = (sourceID: string) => {
         const cssModule = graph.getModuleById(
-          `${RESOLVED}${getVirtualCSSModuleForSourceModule(sourceID)}`
+          `${RESOLVED}${getCSSModuleID(sourceID)}`
         );
 
         if (cssModule) {
@@ -191,7 +191,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
     name: 'ruscus',
 
     resolveId(id) {
-      return getResolvedVirtualCSSModuleID(id);
+      return getResolvedCSSModuleID(id);
     },
 
     transform(code, id) {
