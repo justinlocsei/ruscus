@@ -37,7 +37,7 @@ function extractCSS(result: Awaited<ReturnType<typeof build>>) {
 
 describe('Vite build', () => {
   it('emits CSS for reachable applied components', async () => {
-    const css = extractCSS(await build('card'));
+    const css = extractCSS(await build('card.styles'));
 
     assert.match(css, /color:\s*red/);
     assert.notMatch(css, /\.card\s*\{/);

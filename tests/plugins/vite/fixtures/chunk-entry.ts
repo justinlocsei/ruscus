@@ -1,1 +1,1 @@
-export const load = () => import('./chunk.ts');
+export const load = () => import('./chunk.styles.ts');

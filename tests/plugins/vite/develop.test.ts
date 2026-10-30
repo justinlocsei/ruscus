@@ -18,8 +18,8 @@ const ROOT = new URL('./fixtures/', import.meta.url);
 const fixture = (name: string) =>
   new URL(`./fixtures/${name}.ts`, import.meta.url).pathname;
 
-const CARD = fixture('card');
-const CARD_TOKENS = fixture('card-tokens');
+const CARD = fixture('card.styles');
+const CARD_TOKENS = fixture('card-tokens.styles');
 const TOKENS = fixture('tokens');
 
 const resolve = (id: string) =>
