@@ -33,10 +33,3 @@ export function stripQuery(id: string): string {
 
   return query === -1 ? id : id.slice(0, query);
 }
-
-/**
- * Report whether a module ID provides styles
- */
-export function isStyleModuleID(id: string, extension: string): boolean {
-  return stripQuery(id).endsWith(extension);
-}
