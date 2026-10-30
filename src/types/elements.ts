@@ -112,6 +112,6 @@ export type VariantProjector<V extends string> = (
 /**
  * Extract variant names from a provider
  */
-export type VariantsFromProvider<P> = P extends DerivedStyles
-  ? keyof ReturnType<P>
-  : never;
+export type VariantsFromProvider<
+  P extends (...args: never) => object
+> = keyof ReturnType<P> & string;
