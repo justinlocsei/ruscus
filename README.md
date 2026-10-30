@@ -40,7 +40,7 @@ npm install ruscus
 
 ## Getting Started
 
-Define component styles in a `card.ts` file:
+Define component styles in a `Card.styles.ts` file:
 
 ```ts
 import { component } from 'ruscus';
@@ -67,10 +67,10 @@ export default component('card')
   .apply();
 ```
 
-Apply the styles to your component in a `card.tsx` file:
+Apply the styles to your component in a `Card.tsx` file:
 
 ```tsx
-import C from './card.ts';
+import C from './Card.styles.ts';
 
 export function Card({ compact }: { compact: boolean }) {
   return (
