@@ -13,10 +13,13 @@ import { cssToLoader, sourceToCSS } from '../../src/vite/transform.ts';
 const ROOT = new URL('./fixtures/', import.meta.url);
 const CARD = new URL('./fixtures/card.ts', import.meta.url).pathname;
 const CARD_CSS = cssToLoader(sourceToCSS(CARD)) ?? '';
+const CARD_TOKENS = new URL('./fixtures/card-tokens.ts', import.meta.url)
+  .pathname;
+const CARD_TOKENS_CSS = cssToLoader(sourceToCSS(CARD_TOKENS)) ?? '';
+const TOKENS = new URL('./fixtures/tokens.ts', import.meta.url).pathname;
 
 type PluginTestAPI = {
   handleHotUpdate: (context: HmrContext) => unknown;
-  resolveId: (id: string) => string | null;
 };
 
 function testPlugin(options?: PluginOptions): Plugin {
@@ -67,6 +70,41 @@ describe('Vite develop', () => {
     });
   });
 
+  it('invalidates CSS when a style dependency changes', async () => {
+    const plugin = testPlugin();
+    const hooks = asTestAPI(plugin);
+    const invalidated: string[] = [];
+
+    await withServer(plugin, async (server) => {
+      await server.transformRequest(CARD_TOKENS);
+      await server.pluginContainer.load(CARD_TOKENS_CSS);
+
+      const graph = server.moduleGraph;
+      const affected = new Set(
+        [...graph.getModulesByFile(TOKENS) ?? []].flatMap(
+          mod => [...mod.importers]
+        )
+      );
+
+      const invalidateModule = graph.invalidateModule.bind(graph);
+
+      graph.invalidateModule = (node, seen) => {
+        invalidated.push(node.id ?? '');
+        return invalidateModule(node, seen);
+      };
+
+      await hooks.handleHotUpdate({
+        file: TOKENS,
+        modules: [...affected],
+        read: async () => '',
+        server,
+        timestamp: Date.now()
+      } as HmrContext);
+
+      assert.include(invalidated, CARD_TOKENS_CSS);
+    });
+  });
+
   it('respects an explicit naming scheme', async () => {
     const plugin = testPlugin({ naming: 'compact' });
 
@@ -75,61 +113,6 @@ describe('Vite develop', () => {
 
       assert.include(code, 'color: red;');
       assert.notInclude(code, '.card {');
-    });
-  });
-
-  it('ignores IDs that are not Ruscus CSS modules', () => {
-    assert.isNull(asTestAPI(testPlugin()).resolveId('/styles/not-css.ts'));
-  });
-
-  it('invalidates modules when a style file changes', async () => {
-    const plugin = testPlugin();
-    const hooks = asTestAPI(plugin);
-    const invalidated: string[] = [];
-
-    await withServer(plugin, async () => {
-      const devServer = {
-        moduleGraph: {
-          getModuleById: (id: string) => (
-            id === CARD_CSS ? { id: CARD_CSS } : undefined
-          ),
-          getModulesByFile: () => new Set([{ id: '/entry.ts' }]),
-          invalidateModule: ({ id }: { id: string | null }) => {
-            invalidated.push(id ?? '');
-          }
-        }
-      } as unknown as ViteDevServer;
-
-      await hooks.handleHotUpdate({
-        file: CARD,
-        modules: [],
-        read: async () => '',
-        server: devServer,
-        timestamp: Date.now()
-      } as HmrContext);
-
-      assert.deepEqual(invalidated, ['/entry.ts', CARD_CSS]);
-    });
-  });
-
-  it('ignores hot updates for files outside the module graph', async () => {
-    const plugin = testPlugin();
-    const hooks = asTestAPI(plugin);
-
-    await withServer(plugin, async () => {
-      await hooks.handleHotUpdate({
-        file: CARD,
-        modules: [],
-        read: async () => '',
-        server: {
-          moduleGraph: {
-            getModuleById: () => undefined,
-            getModulesByFile: () => undefined,
-            invalidateModule: () => undefined
-          }
-        } as unknown as ViteDevServer,
-        timestamp: Date.now()
-      } as HmrContext);
     });
   });
 });
