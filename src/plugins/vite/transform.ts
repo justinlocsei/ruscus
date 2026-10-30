@@ -65,10 +65,3 @@ export function isResolvedModuleID(id: string): boolean {
 export function isVirtualCSSModuleID(id: string): boolean {
   return id.startsWith(PREFIX) && id.endsWith(SUFFIX);
 }
-
-/**
- * Check whether code might define component styles
- */
-export function mightContainStyles(code: string): boolean {
-  return code.includes('.apply()');
-}
