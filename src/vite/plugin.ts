@@ -9,7 +9,7 @@ import {
   cssToLoader,
   cssToSource,
   injectCSSImport,
-  mayContainStyles,
+  mightContainStyles,
   sourceToCSS,
   VIRTUAL
 } from './transform.ts';
@@ -196,7 +196,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
       if (
         id.includes(STYLE_QUERY)
         || id.startsWith(VIRTUAL)
-        || !mayContainStyles(code)
+        || !mightContainStyles(code)
       ) {
         return null;
       }

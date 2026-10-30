@@ -4,7 +4,7 @@ import {
   cssToLoader,
   cssToSource,
   injectCSSImport,
-  mayContainStyles,
+  mightContainStyles,
   sourceToCSS,
   VIRTUAL
 } from './transform.ts';
@@ -59,16 +59,16 @@ describe('injectCSSImport', () => {
   });
 });
 
-describe('mayContainStyles', () => {
+describe('mightContainStyles', () => {
   it('returns true when the source calls apply', () => {
     assert.isTrue(
-      mayContainStyles('export default component("alfa").css({}).apply();')
+      mightContainStyles('export default component("alfa").css({}).apply();')
     );
   });
 
   it('returns false when the source does not call apply', () => {
     assert.isFalse(
-      mayContainStyles('export default { value: "charlie" };')
+      mightContainStyles('export default { value: "charlie" };')
     );
   });
 });

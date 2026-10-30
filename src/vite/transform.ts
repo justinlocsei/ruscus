@@ -44,9 +44,9 @@ export function injectCSSImport(code: string, id: string): string {
 }
 
 /**
- * Check whether code is likely to contain component styles
+ * Check whether code might define component styles
  */
-export function mayContainStyles(code: string): boolean {
+export function mightContainStyles(code: string): boolean {
   return code.includes('.apply()');
 }
 
