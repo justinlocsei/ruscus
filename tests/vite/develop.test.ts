@@ -22,11 +22,11 @@ const CARD = fixture('card');
 const CARD_TOKENS = fixture('card-tokens');
 const TOKENS = fixture('tokens');
 
-const CARD_CSS =
-  resolveVirtualCSSModule(getVirtualCSSModuleForSourceModule(CARD)) ?? '';
-const CARD_TOKENS_CSS =
-  resolveVirtualCSSModule(getVirtualCSSModuleForSourceModule(CARD_TOKENS))
-    ?? '';
+const resolve = (id: string) =>
+  resolveVirtualCSSModule(getVirtualCSSModuleForSourceModule(id)) ?? '';
+
+const CARD_CSS = resolve(CARD);
+const CARD_TOKENS_CSS = resolve(CARD_TOKENS);
 
 type PluginTestAPI = {
   handleHotUpdate: (context: HmrContext) => unknown;
