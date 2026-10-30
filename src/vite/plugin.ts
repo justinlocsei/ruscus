@@ -80,7 +80,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
       refreshNaming(() => server = devServer);
     },
 
-    handleHotUpdate({ file, server }) {
+    handleHotUpdate({ file, modules, server }) {
       owners.release(file);
 
       const updated = new Set<ModuleNode>();
@@ -91,16 +91,61 @@ export function plugin(options: PluginOptions = {}): Plugin {
         updated.add(node);
       };
 
-      for (const module of graph.getModulesByFile(file) ?? []) {
-        invalidate(module);
+      const invalidateCSSForSource = (sourceID: string) => {
+        const cssModule = graph.getModuleById(
+          `${VIRTUAL}${sourceToCSS(sourceID)}`
+        );
+
+        if (cssModule) {
+          invalidate(cssModule);
+        }
+      };
+
+      const styleSourceFromModule = (node: ModuleNode): string | undefined => {
+        const id = node.id ?? '';
+        const fromCSS = cssToSource(id);
+
+        if (fromCSS !== undefined) {
+          return fromCSS;
+        }
+
+        if (id.includes(STYLE_QUERY)) {
+          return id.slice(0, id.indexOf(STYLE_QUERY));
+        }
+
+        return node.file ?? undefined;
+      };
+
+      const touchModule = (node: ModuleNode) => {
+        invalidate(node);
+
+        const source = styleSourceFromModule(node);
+
+        if (source !== undefined) {
+          invalidateCSSForSource(source);
+        }
+      };
+
+      const visited = new Set<ModuleNode>();
+
+      const visitModule = (node: ModuleNode) => {
+        if (visited.has(node)) {
+          return;
+        }
+
+        visited.add(node);
+        touchModule(node);
+
+        for (const importer of node.importers) {
+          visitModule(importer);
+        }
+      };
+
+      for (const node of modules) {
+        visitModule(node);
       }
 
-      const cssID = cssToLoader(sourceToCSS(file));
-      const cssModule = cssID && graph.getModuleById(cssID);
-
-      if (cssModule) {
-        invalidate(cssModule);
-      }
+      invalidateCSSForSource(file);
 
       return updated.size > 0 ? [...updated] : undefined;
     },
