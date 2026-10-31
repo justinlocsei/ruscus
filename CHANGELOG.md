@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.5] (2026-10-31)
+
+### Fixes
+
+- Expand detection of variant types ([#15])
+- Correctly render deeply nested anchor fragments ([#16])
+
 ## [0.0.4] (2026-10-30)
 
 ### Features
@@ -53,6 +60,7 @@ All notable changes to this project will be documented in this file.
 [0.0.2]: https://github.com/justinlocsei/ruscus/compare/v0.0.1..v0.0.2
 [0.0.3]: https://github.com/justinlocsei/ruscus/compare/v0.0.2..v0.0.3
 [0.0.4]: https://github.com/justinlocsei/ruscus/compare/v0.0.3..v0.0.4
+[0.0.5]: https://github.com/justinlocsei/ruscus/compare/v0.0.4..v0.0.5
 
 <!-- PRs -->
 
@@ -67,3 +75,5 @@ All notable changes to this project will be documented in this file.
 [#11]: https://github.com/justinlocsei/ruscus/pull/11
 [#12]: https://github.com/justinlocsei/ruscus/pull/12
 [#13]: https://github.com/justinlocsei/ruscus/pull/13
+[#15]: https://github.com/justinlocsei/ruscus/pull/15
+[#16]: https://github.com/justinlocsei/ruscus/pull/16
