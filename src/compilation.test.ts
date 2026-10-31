@@ -170,6 +170,58 @@ describe('styleComponent', () => {
     );
   });
 
+  it('hoists anchored nested rules on fragments from nested providers', () => {
+    checkOutput(
+      defineComponent('card').elements(e => ({
+        body: e({ display: 'block' })
+          .variants(s => ({
+            compact: s({ padding: '0.5rem' })
+          }))
+          .nested((s, { variants: v }) => ({
+            [v('compact')]: s({ gap: '0.25rem' }).nested({
+              '&:hover': s({ opacity: '0.9' })
+            })
+          }))
+      })),
+      css`
+        .card__body {
+          display: block;
+        }
+
+        .card__body.is-compact {
+          padding: 0.5rem;
+        }
+
+        .card__body.is-compact {
+          gap: 0.25rem;
+        }
+
+        .card__body.is-compact:hover {
+          opacity: 0.9;
+        }
+      `
+    );
+  });
+
+  it('hoists anchored nested rules on global fragments', () => {
+    checkOutput(
+      defineComponent('Page').global(s => ({
+        button: s({ border: 0 }).nested({
+          '&:disabled': s({ cursor: 'default' })
+        })
+      })),
+      css`
+        button {
+          border: 0;
+        }
+
+        button:disabled {
+          cursor: default;
+        }
+      `
+    );
+  });
+
   it('provides identifiers to nested component styles', () => {
     checkOutput(
       defineComponent('card')
