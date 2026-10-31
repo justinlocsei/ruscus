@@ -186,31 +186,47 @@ class ComponentCompiler {
       return this.formatRule(parentSelector, styles);
     }
 
-    const inner: string[] = [];
-    const declarations = this.formatDeclarations(styles);
-
-    if (declarations) {
-      inner.push(declarations);
-    }
+    const hoisted: string[] = [];
+    const nestedRules: string[] = [];
 
     for (const [key, child] of nestedEntries) {
-      const rule = this.formatFragmentRules(
-        key.includes('&')
-          ? this.expandSelectorAnchor(parentSelector, key)
-          : key,
-        child
-      );
+      if (key.includes('&')) {
+        const rule = this.formatFragmentRules(
+          this.expandSelectorAnchor(parentSelector, key),
+          child
+        );
+
+        if (rule) {
+          hoisted.push(rule);
+        }
+
+        continue;
+      }
+
+      const rule = this.formatFragmentRules(key, child);
 
       if (rule) {
-        inner.push(rule);
+        nestedRules.push(rule);
       }
     }
 
-    if (!inner.length) {
-      return null;
-    }
+    const declarations = this.formatDeclarations(styles);
 
-    return this.formatNestedBlock(parentSelector, inner);
+    const nestedBlock = nestedRules.length
+      ? this.formatNestedBlock(
+        parentSelector,
+        [
+          ...(declarations ? [declarations] : []),
+          ...nestedRules
+        ]
+      )
+      : this.formatRule(parentSelector, styles);
+
+    const blocks = [nestedBlock, ...hoisted].filter(b => b !== null);
+
+    return blocks.length
+      ? blocks.join('\n\n')
+      : null;
   }
 
   /**
