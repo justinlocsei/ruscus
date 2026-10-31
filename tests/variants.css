@@ -23,11 +23,11 @@
 }
 
 .card__body.is-compact {
-    gap: 0.25rem;
+  gap: 0.25rem;
+}
 
-  .card__body.is-compact:hover {
-    opacity: 0.9;
-  }
+.card__body.is-compact:hover {
+  opacity: 0.9;
 }
 
 .card__body.is-compact.is-large {
