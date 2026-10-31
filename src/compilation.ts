@@ -190,22 +190,24 @@ class ComponentCompiler {
     const nestedRules: string[] = [];
 
     for (const [key, child] of nestedEntries) {
-      if (key.includes('&')) {
-        const rule = this.formatFragmentRules(
-          this.expandSelectorAnchor(parentSelector, key),
-          child
-        );
+      const hoist = key.includes('&') || !parentSelector.startsWith('@');
 
-        if (rule) {
-          hoisted.push(rule);
-        }
+      const selector = key.includes('&')
+        ? this.expandSelectorAnchor(parentSelector, key)
+        : this.buildNestedSelector(parentSelector, key);
 
+      const rule = this.formatFragmentRules(
+        hoist ? selector : key,
+        child
+      );
+
+      if (!rule) {
         continue;
       }
 
-      const rule = this.formatFragmentRules(key, child);
-
-      if (rule) {
+      if (hoist) {
+        hoisted.push(rule);
+      } else {
         nestedRules.push(rule);
       }
     }
@@ -213,13 +215,7 @@ class ComponentCompiler {
     const declarations = this.formatDeclarations(styles);
 
     const nestedBlock = nestedRules.length
-      ? this.formatNestedBlock(
-        parentSelector,
-        [
-          ...(declarations ? [declarations] : []),
-          ...nestedRules
-        ]
-      )
+      ? this.formatNestedBlock(parentSelector, nestedRules, declarations)
       : this.formatRule(parentSelector, styles);
 
     const blocks = [nestedBlock, ...hoisted].filter(b => b !== null);
@@ -251,17 +247,22 @@ class ComponentCompiler {
   /**
    * Wrap nested rules in a selector block
    */
-  private formatNestedBlock(selector: string, inner: string[]): string {
+  private formatNestedBlock(
+    selector: string,
+    rules: string[],
+    declarations: string | null
+  ): string {
     const { indent } = this;
 
-    const body = inner
-      .map(rule =>
+    const body = [
+      ...(declarations ? [declarations] : []),
+      ...rules.map(rule =>
         rule
           .split('\n')
           .map(line => `${indent}${line}`)
           .join('\n')
       )
-      .join('\n\n');
+    ].join('\n\n');
 
     return `${selector} {\n${body}\n}`;
   }
