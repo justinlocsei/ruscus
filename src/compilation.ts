@@ -186,31 +186,43 @@ class ComponentCompiler {
       return this.formatRule(parentSelector, styles);
     }
 
-    const inner: string[] = [];
-    const declarations = this.formatDeclarations(styles);
-
-    if (declarations) {
-      inner.push(declarations);
-    }
+    const hoisted: string[] = [];
+    const nestedRules: string[] = [];
 
     for (const [key, child] of nestedEntries) {
+      const hoist = key.includes('&') || !parentSelector.startsWith('@');
+
+      const selector = key.includes('&')
+        ? this.expandSelectorAnchor(parentSelector, key)
+        : this.buildNestedSelector(parentSelector, key);
+
       const rule = this.formatFragmentRules(
-        key.includes('&')
-          ? this.expandSelectorAnchor(parentSelector, key)
-          : key,
+        hoist ? selector : key,
         child
       );
 
-      if (rule) {
-        inner.push(rule);
+      if (!rule) {
+        continue;
+      }
+
+      if (hoist) {
+        hoisted.push(rule);
+      } else {
+        nestedRules.push(rule);
       }
     }
 
-    if (!inner.length) {
-      return null;
-    }
+    const declarations = this.formatDeclarations(styles);
 
-    return this.formatNestedBlock(parentSelector, inner);
+    const nestedBlock = nestedRules.length
+      ? this.formatNestedBlock(parentSelector, nestedRules, declarations)
+      : this.formatRule(parentSelector, styles);
+
+    const blocks = [nestedBlock, ...hoisted].filter(b => b !== null);
+
+    return blocks.length
+      ? blocks.join('\n\n')
+      : null;
   }
 
   /**
@@ -235,17 +247,22 @@ class ComponentCompiler {
   /**
    * Wrap nested rules in a selector block
    */
-  private formatNestedBlock(selector: string, inner: string[]): string {
+  private formatNestedBlock(
+    selector: string,
+    rules: string[],
+    declarations: string | null
+  ): string {
     const { indent } = this;
 
-    const body = inner
-      .map(rule =>
+    const body = [
+      ...(declarations ? [declarations] : []),
+      ...rules.map(rule =>
         rule
           .split('\n')
           .map(line => `${indent}${line}`)
           .join('\n')
       )
-      .join('\n\n');
+    ].join('\n\n');
 
     return `${selector} {\n${body}\n}`;
   }
