@@ -135,10 +135,8 @@ describe('styleComponent', () => {
         [els.body]: s({ fontWeight: '700' })
       })),
       css`
-        .card .card__title {
-          a {
-            color: red;
-          }
+        .card .card__title a {
+          color: red;
         }
 
         .card .card__body {
@@ -217,6 +215,99 @@ describe('styleComponent', () => {
 
         button:disabled {
           cursor: default;
+        }
+      `
+    );
+  });
+
+  it('hoists child rules alongside root declarations on a fragment', () => {
+    checkOutput(
+      defineComponent('card').global(s => ({
+        '.card': s({ color: 'black' }).nested({
+          '.card__title': s({ fontWeight: '700' })
+        })
+      })),
+      css`
+        .card {
+          color: black;
+        }
+
+        .card .card__title {
+          font-weight: 700;
+        }
+      `
+    );
+  });
+
+  it('nests child rules inside at-rules via rules', () => {
+    checkOutput(
+      defineComponent('card').global(s => ({
+        '@keyframes fade': s.rules({
+          from: s({ opacity: 0 }),
+          to: s({ opacity: 1 })
+        }),
+        '@media (min-width: 768px)': s.rules({
+          '.card__title': s({ fontSize: '1rem' })
+        })
+      })),
+      css`
+        @keyframes fade {
+          from {
+            opacity: 0;
+          }
+
+          to {
+            opacity: 1;
+          }
+        }
+
+        @media (min-width: 768px) {
+          .card__title {
+            font-size: 1rem;
+          }
+        }
+      `
+    );
+  });
+
+  it('emits declarations on at-rules that allow them', () => {
+    checkOutput(
+      defineComponent('card').global(s => ({
+        '@font-face': s({
+          fontFamily: 'Example',
+          src: 'url(example.woff2)'
+        }),
+        '@page': s({ size: 'A4' }).nested({
+          '@top-center': s({ content: '"Header"' })
+        })
+      })),
+      css`
+        @font-face {
+          font-family: Example;
+          src: url(example.woff2);
+        }
+
+        @page {
+          size: A4;
+
+          @top-center {
+            content: "Header";
+          }
+        }
+      `
+    );
+  });
+
+  it('hoists child rules without root declarations on a fragment', () => {
+    checkOutput(
+      defineComponent('card').global(s => ({
+        '.card': s().nested({
+          '.card__title': s({ fontWeight: '700' })
+        })
+      })),
+      css`
+        .card .card__title {
+          font-weight: 700;
         }
       `
     );
