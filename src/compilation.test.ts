@@ -354,6 +354,26 @@ describe('styleComponent', () => {
     );
   });
 
+  it('omits empty hoisted anchor nested rules', () => {
+    checkOutput(
+      defineComponent('Page').global(s => ({
+        button: s({ border: 0 }).nested({
+          '&:disabled': s(),
+          '&:hover': s({ opacity: '0.5' })
+        })
+      })),
+      css`
+        button {
+          border: 0;
+        }
+
+        button:hover {
+          opacity: 0.5;
+        }
+      `
+    );
+  });
+
   it('omits nested wrappers with no effective rules', () => {
     checkOutput(
       defineComponent('card').nested(s => ({
