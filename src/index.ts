@@ -5,3 +5,4 @@ export { defineStyles as css } from './styles.ts';
 export type { Trait } from './traits.ts';
 export { defineTrait as trait } from './traits.ts';
 export type { Styles as CSS } from './types/css.ts';
+export type { RelativeFragmentFactory as TraitBuilder } from './types/fragments.ts';
