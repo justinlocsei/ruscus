@@ -110,6 +110,11 @@ export type VariantProjector<V extends string> = (
 ) => string;
 
 /**
+ * Extract variant names from a projected root or element
+ */
+export type VariantsFor<T> = T extends VariantProjector<infer V> ? V : never;
+
+/**
  * Extract variant names from a provider
  */
 export type VariantsFromProvider<

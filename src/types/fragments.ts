@@ -62,3 +62,19 @@ export type ScopedFragments<S extends FragmentScope = FragmentScope> = Record<
   string,
   Fragment<S>
 >;
+
+/**
+ * Nested rules keyed by selector
+ */
+export type NestedStyles = ScopedFragments<'relative'>;
+
+/**
+ * A style fragment
+ */
+export type StyleFragment<T extends FragmentScope = 'relative'> = Fragment<T>;
+
+/**
+ * A builder for a style fragment
+ */
+export type StyleFragmentBuilder<T extends FragmentScope = 'relative'> =
+  IsFragmentFactory<T>;
