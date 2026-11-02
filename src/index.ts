@@ -6,4 +6,4 @@ export type { Trait } from './traits.ts';
 export { defineTrait as trait } from './traits.ts';
 export type { Styles as CSS } from './types/css.ts';
 export type { VariantsFor } from './types/elements.ts';
-export type { UserFragment as Fragment } from './types/fragments.ts';
+export type { StyleFragment, StyleFragmentBuilder } from './types/fragments.ts';
