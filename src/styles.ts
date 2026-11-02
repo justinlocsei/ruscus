@@ -4,7 +4,7 @@ import type { Styles } from './types/css.ts';
  * Convert a camel-cased value to kebab case
  */
 export function camelToKebab(camel: string): string {
-  return camel.replace(
+  return camel.startsWith('--') ? camel : camel.replace(
     /[A-Z]/g,
     l => `-${l.toLowerCase()}`
   );

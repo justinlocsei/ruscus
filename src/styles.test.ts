@@ -18,7 +18,8 @@ describe('camelToKebab', () => {
       [
         ['color', 'color'],
         ['backgroundColor', 'background-color'],
-        ['WebkitLineClamp', '-webkit-line-clamp']
+        ['WebkitLineClamp', '-webkit-line-clamp'],
+        ['--Explorer--alfaBravo', '--Explorer--alfaBravo']
       ]
     );
   });
@@ -65,5 +66,10 @@ describe('PropertyProjector', () => {
     assert.equal(projector.project('backgroundColor'), 'background-color');
     assert.equal(projector.project('backgroundColor'), 'background-color');
     assert.equal(projector.project('WebkitLineClamp'), '-webkit-line-clamp');
+
+    assert.equal(
+      projector.project('--Explorer--alfaBravo'),
+      '--Explorer--alfaBravo'
+    );
   });
 });
