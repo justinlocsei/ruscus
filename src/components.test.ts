@@ -12,7 +12,7 @@ import { extractBuildPlan } from './internal.ts';
 import { useNaming } from './naming.ts';
 import { T } from './tests.ts';
 import { defineTrait } from './traits.ts';
-import type { VariantProjector } from './types/elements.ts';
+import type { VariantProjector, VariantsFor } from './types/elements.ts';
 import type { ScopedFragments } from './types/fragments.ts';
 
 describe('Component', () => {
@@ -391,6 +391,36 @@ describe('Component', () => {
   });
 
   describe('variants', () => {
+    it('extracts variant names from applied projections', () => {
+      const applied = component()
+        .elements(e => ({
+          body: e().variants(s => ({
+            compact: s({ padding: '0.5rem' }),
+            large: s({ padding: '2rem' })
+          })),
+          header: e()
+        }))
+        .variants(s => ({
+          active: s({ color: 'red' })
+        }))
+        .apply();
+
+      T.assert<
+        T.Equivalent<VariantsFor<typeof applied.root>, 'active'>
+      >(true);
+
+      T.assert<
+        T.Equivalent<
+          VariantsFor<typeof applied.body>,
+          'compact' | 'large'
+        >
+      >(true);
+
+      T.assert<
+        T.Equivalent<VariantsFor<typeof applied.header>, never>
+      >(true);
+    });
+
     it('register component variants', () => {
       const instance = component().variants(s => ({
         compact: s({ padding: '0.5rem' }),
