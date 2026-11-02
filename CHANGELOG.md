@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.6] (2026-11-01)
+
+### Features
+
+- Expand public types ([#18])
+
 ## [0.0.5] (2026-10-31)
 
 ### Fixes
@@ -61,6 +67,7 @@ All notable changes to this project will be documented in this file.
 [0.0.3]: https://github.com/justinlocsei/ruscus/compare/v0.0.2..v0.0.3
 [0.0.4]: https://github.com/justinlocsei/ruscus/compare/v0.0.3..v0.0.4
 [0.0.5]: https://github.com/justinlocsei/ruscus/compare/v0.0.4..v0.0.5
+[0.0.6]: https://github.com/justinlocsei/ruscus/compare/v0.0.5..v0.0.6
 
 <!-- PRs -->
 
@@ -77,3 +84,4 @@ All notable changes to this project will be documented in this file.
 [#13]: https://github.com/justinlocsei/ruscus/pull/13
 [#15]: https://github.com/justinlocsei/ruscus/pull/15
 [#16]: https://github.com/justinlocsei/ruscus/pull/16
+[#18]: https://github.com/justinlocsei/ruscus/pull/18
