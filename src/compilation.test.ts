@@ -328,6 +328,21 @@ describe('styleComponent', () => {
     );
   });
 
+  it('preserves custom property names when setting identifier variables in nested styles', () => {
+    checkOutput(
+      defineComponent('Explorer')
+        .identifiers({ alfaBravo: 'variable' })
+        .nested((s, { ids }) => ({
+          '&': s({ [ids.alfaBravo]: '1rem' })
+        })),
+      css`
+        .Explorer {
+          --Explorer--alfaBravo: 1rem;
+        }
+      `
+    );
+  });
+
   it('emits nested rules for variant combinations', () => {
     checkOutput(
       defineComponent('card').elements(e => ({
