@@ -27,6 +27,9 @@
 - [Traits](#traits)
 - [Queries](#queries)
 - [CSS](#css)
+- [Types](#types)
+  - [Variant Extraction](#variant-extraction)
+  - [Dynamic Traits](#dynamic-traits)
 - [Integration](#integration)
   - [Vite](#vite)
 - [Why the Name?](#why-the-name)
@@ -408,6 +411,107 @@ function withBorder(styles: CSS): CSS {
 export default component('badge')
   .css(withBorder(padded))
   .elements(e => ({ label: e(padded) }))
+  .apply();
+```
+
+## Types
+
+Ruscus exposes a few types that can make writing reusable styles easier and allow you to extract information from your component definitions.
+
+### Variant Extraction
+
+`VariantsFor` extracts the names of a component or element's variants.  Components and elements with children expose variants via the `'root'` key, while elements without children use the element ID directly.
+
+```ts
+import { component, type VariantsFor } from 'ruscus';
+
+const card = component('card')
+  .elements(e => ({
+    body: e().variants(s => ({
+      compact: s({ padding: '0.5rem' }),
+      large: s({ padding: '2rem' })
+    }))
+  }))
+  .variants(s => ({
+    active: s({ color: 'red' })
+  }))
+  .apply();
+
+// 'active'
+export type RootVariants = VariantsFor<(typeof card)['root']>;
+
+// 'compact' | 'large'
+export type BodyVariants = VariantsFor<(typeof card)['body']>;
+
+export default card;
+```
+
+This can be a useful tool when writing components that accept variant names:
+
+```tsx
+import card, { type BodyVariants, type RootVariants } from './Card.styles.ts';
+
+export function Card({
+  body,
+  children,
+  root
+}: {
+  body?: BodyVariants;
+  children: React.ReactNode;
+  root?: RootVariants;
+}) {
+  return (
+    <article className={card.root(root)}>
+      <div className={card.body(body)}>
+        {children}
+      </div>
+    </article>
+  );
+}
+```
+
+### Dynamic Traits
+
+The `StyleFragmentBuilder` and `NestedStyles` types can help you write functions that produce traits.  `NestedStyles` is the value passed to `s().nested()`, where each key is a selector and each value is a `StyleFragment` built with `s()`.
+
+In the example below, a `focusable` trait factory allows a caller to define nested styles that will be applied to children of the element that has received focus.
+
+```ts
+import {
+  component,
+  trait,
+  type CSS,
+  type NestedStyles,
+  type StyleFragmentBuilder,
+  type Trait
+} from 'ruscus';
+
+export function focusable(
+  styles: CSS,
+  nested?: (s: StyleFragmentBuilder) => NestedStyles
+): Trait {
+  return trait(s => {
+    const focus = s({ outline: 'none', ...styles });
+
+    return s().nested({
+      '&:focus:not(:focus-visible)': s({
+        outline: 'none'
+      }),
+
+      '&:focus-visible': nested ? focus.nested(nested(s)) : focus
+    });
+  });
+}
+
+export default component('link')
+  .elements(e => ({
+    label: e().is(
+      focusable(
+        { color: 'red' },
+        s => ({ a: s({ textDecoration: 'underline' }) })
+      )
+    )
+  }))
   .apply();
 ```
 
