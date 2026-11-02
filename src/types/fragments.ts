@@ -62,3 +62,8 @@ export type ScopedFragments<S extends FragmentScope = FragmentScope> = Record<
   string,
   Fragment<S>
 >;
+
+/**
+ * A style fragment
+ */
+export type UserFragment<T extends FragmentScope = 'relative'> = Fragment<T>;
