@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.7] (2026-11-02)
+
+### Fixes
+
+- Preserve custom properties ([#20])
+
 ## [0.0.6] (2026-11-01)
 
 ### Features
@@ -68,6 +74,7 @@ All notable changes to this project will be documented in this file.
 [0.0.4]: https://github.com/justinlocsei/ruscus/compare/v0.0.3..v0.0.4
 [0.0.5]: https://github.com/justinlocsei/ruscus/compare/v0.0.4..v0.0.5
 [0.0.6]: https://github.com/justinlocsei/ruscus/compare/v0.0.5..v0.0.6
+[0.0.7]: https://github.com/justinlocsei/ruscus/compare/v0.0.6..v0.0.7
 
 <!-- PRs -->
 
@@ -85,3 +92,4 @@ All notable changes to this project will be documented in this file.
 [#15]: https://github.com/justinlocsei/ruscus/pull/15
 [#16]: https://github.com/justinlocsei/ruscus/pull/16
 [#18]: https://github.com/justinlocsei/ruscus/pull/18
+[#20]: https://github.com/justinlocsei/ruscus/pull/20
