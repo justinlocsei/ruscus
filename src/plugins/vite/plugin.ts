@@ -1,4 +1,10 @@
-import type { ModuleNode, Plugin, ResolvedConfig, ViteDevServer } from 'vite';
+import type {
+  ConfigEnv,
+  ModuleNode,
+  Plugin,
+  ResolvedConfig,
+  ViteDevServer
+} from 'vite';
 import { isRunnableDevEnvironment, runnerImport } from 'vite';
 import type { ModuleRunner } from 'vite/module-runner';
 
@@ -42,13 +48,15 @@ export function plugin(options: PluginOptions = {}): Plugin {
   //
   // If the plugin appears to be running in a development environment, this
   // uses verbose naming.  Otherwise, compact naming is used.
+  const inferNaming = (command?: ConfigEnv['command']) =>
+    options.naming ?? (server || command === 'serve' ? 'verbose' : 'compact');
+
+  // Refresh the naming scheme after a meaningful change
   function refreshNaming(after: () => void): void {
     after();
 
     if (!options.naming) {
-      ruscus.naming = (server || config?.command === 'serve')
-        ? 'verbose'
-        : 'compact';
+      ruscus.naming = inferNaming(config?.command);
     }
   }
 
@@ -71,6 +79,20 @@ export function plugin(options: PluginOptions = {}): Plugin {
   return {
     buildStart() {
       owners.clear();
+    },
+
+    // Set an internal variable to sync the naming scheme
+    //
+    // When using Vite in an SSR setup, this specifically ensures that client
+    // code and pre-rendered markup use the same naming scheme, allowing for
+    // compact naming to be correctly applied in production builds.
+    config(userConfig, env) {
+      return {
+        define: {
+          ...userConfig.define,
+          __RUSCUS_NAMING__: JSON.stringify(inferNaming(env.command))
+        }
+      };
     },
 
     configResolved(resolved) {
