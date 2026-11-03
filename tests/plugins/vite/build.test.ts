@@ -35,13 +35,27 @@ function extractCSS(result: Awaited<ReturnType<typeof build>>) {
     .join('\n');
 }
 
+function extractJS(result: Awaited<ReturnType<typeof build>>) {
+  const outputs = Array.isArray(result) ? result : [result];
+
+  return outputs
+    .filter(o => 'output' in o)
+    .flatMap(o => o.output)
+    .filter(i => i.type === 'chunk')
+    .map(i => i.type === 'chunk' ? i.code : '')
+    .join('\n');
+}
+
 describe('Vite build', () => {
   it('emits CSS for reachable applied components', async () => {
-    const css = extractCSS(await build('card.styles'));
+    const result = await build('card.styles');
+    const css = extractCSS(result);
+    const js = extractJS(result);
 
     assert.match(css, /color:\s*red/);
     assert.notMatch(css, /\.card\s*\{/);
     assert.notInclude(css, '.unused');
+    assert.match(js, /\?\? ["']compact["']/);
   });
 
   it('keeps CSS reachable through a dynamically imported chunk', async () => {
