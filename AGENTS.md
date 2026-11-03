@@ -66,7 +66,9 @@ style modules produce no CSS. Component IDs must be unique among reachable
 modules. Plugin options: `extension` (default `.styles.ts`); `naming` defaults
 to verbose during `vite dev` and compact during `vite build`.
 The Vite plugin implementation is under `src/plugins/vite/`, with integration
-tests under `tests/plugins/vite/`.
+tests under `tests/plugins/vite/`. It sets the `__RUSCUS_NAMING__` Vite
+define so `.apply()` and compiled CSS use the same naming scheme; it does
+not rewrite style source modules.
 
 ## Testing
 
