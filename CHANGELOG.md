@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.8] (2026-11-03)
+
+### Fixes
+
+- Sync class names with compiled CSS in Vite builds ([#22])
+
+### Development
+
+- Upgrade dependencies ([#23])
+
 ## [0.0.7] (2026-11-02)
 
 ### Fixes
@@ -75,6 +85,7 @@ All notable changes to this project will be documented in this file.
 [0.0.5]: https://github.com/justinlocsei/ruscus/compare/v0.0.4..v0.0.5
 [0.0.6]: https://github.com/justinlocsei/ruscus/compare/v0.0.5..v0.0.6
 [0.0.7]: https://github.com/justinlocsei/ruscus/compare/v0.0.6..v0.0.7
+[0.0.8]: https://github.com/justinlocsei/ruscus/compare/v0.0.7..v0.0.8
 
 <!-- PRs -->
 
@@ -93,3 +104,5 @@ All notable changes to this project will be documented in this file.
 [#16]: https://github.com/justinlocsei/ruscus/pull/16
 [#18]: https://github.com/justinlocsei/ruscus/pull/18
 [#20]: https://github.com/justinlocsei/ruscus/pull/20
+[#22]: https://github.com/justinlocsei/ruscus/pull/22
+[#23]: https://github.com/justinlocsei/ruscus/pull/23
