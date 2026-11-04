@@ -545,4 +545,4 @@ You can configure the plugin via the following keys on the options object accept
 
 ## Why the Name?
 
-In [floristry](https://www.instagram.com/justinlocsei/), ruscus is a common foliage that provides structure without calling too much attention to itself.
+In [floristry](https://portflor.io), ruscus is a common foliage that provides structure without calling too much attention to itself.
