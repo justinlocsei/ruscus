@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0] (2026-11-04)
+
+### Development
+
+- Link to Portflorio ([#25])
+
 ## [0.0.8] (2026-11-03)
 
 ### Fixes
@@ -86,6 +92,7 @@ All notable changes to this project will be documented in this file.
 [0.0.6]: https://github.com/justinlocsei/ruscus/compare/v0.0.5..v0.0.6
 [0.0.7]: https://github.com/justinlocsei/ruscus/compare/v0.0.6..v0.0.7
 [0.0.8]: https://github.com/justinlocsei/ruscus/compare/v0.0.7..v0.0.8
+[0.1.0]: https://github.com/justinlocsei/ruscus/compare/v0.0.8..v0.1.0
 
 <!-- PRs -->
 
@@ -106,3 +113,4 @@ All notable changes to this project will be documented in this file.
 [#20]: https://github.com/justinlocsei/ruscus/pull/20
 [#22]: https://github.com/justinlocsei/ruscus/pull/22
 [#23]: https://github.com/justinlocsei/ruscus/pull/23
+[#25]: https://github.com/justinlocsei/ruscus/pull/25
