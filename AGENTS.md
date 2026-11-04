@@ -56,6 +56,10 @@ npm run test:coverage
 
 After changing `scripts/generate-css-types.ts` or bumping `@webref/css`, run `npm run generate:types` and commit the updated `src/types/css/properties.ts`.
 
+## Changelog
+
+When adding a release section to `CHANGELOG.md`, use the **verbatim** subject line of each merged PR commit on `main` since the previous tag (for example `Link to Portflorio (#25)`), without rewording. Drop the trailing `(#NN)` from the bullet text and add a `[#NN]` reference link in the footer, following existing entries. Group bullets under Features, Changes, Fixes, or Development as in [RELEASING.md](RELEASING.md).
+
 ## Vite integration
 
 The `ruscus/vite` plugin extracts CSS from graph-reachable style modules whose
