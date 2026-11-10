@@ -1,3 +1,4 @@
+export type { CompileConfig } from './compilation.ts';
 export { styleComponents as compile } from './compilation.ts';
 export { defineComponent as component } from './components.ts';
 export { extractIdentifiers as identifiers } from './internal.ts';
