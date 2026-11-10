@@ -1,11 +1,13 @@
 import { buildComponentContext, buildElementContext } from './contexts.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
+import type { ApplicableComponent, BuildPlan } from './internal.ts';
+import { extractBuildPlan } from './internal.ts';
 import type { NameGenerator, NamingScheme } from './naming.ts';
 import { useNaming } from './naming.ts';
 import { PropertyProjector } from './styles.ts';
-import type { ComponentDefinition } from './types/components.ts';
+import type { ComponentDefinition, ComponentSpec } from './types/components.ts';
 import type { Declarations } from './types/css.ts';
-import type { ElementDefinition } from './types/elements.ts';
+import type { ElementDefinition, ElementSpecs } from './types/elements.ts';
 import type { Fragment, ScopedFragments } from './types/fragments.ts';
 
 /**
@@ -16,6 +18,38 @@ export type CompileConfig = {
   naming?: NamingScheme;
   properties?: PropertyProjector;
 };
+
+/**
+ * An applied component that can be used to generate styles
+ */
+export type AppliedComponent<
+  S extends ComponentSpec = ComponentSpec<ElementSpecs, never, string>
+> = ApplicableComponent<S>;
+
+/**
+ * Generate CSS for a list of applied components
+ */
+export function styleComponents<S extends ComponentSpec>(
+  components: AppliedComponent<S>[],
+  config: CompileConfig = {}
+): string {
+  const plans = components.reduce<BuildPlan[]>((plans, component) => {
+    const plan = extractBuildPlan(component);
+
+    if (plan) {
+      plans.push(plan);
+    } else {
+      throw new Error(`No build plan found for component: ${component}`);
+    }
+
+    return plans;
+  }, []);
+
+  return plans
+    .sort((a, b) => a.component.id.localeCompare(b.component.id))
+    .map(plan => plan.compile(config))
+    .join('\n\n');
+}
 
 /**
  * Generate CSS for a component's styles

@@ -1,7 +1,7 @@
 import { assert, describe, it } from 'vitest';
 
-import type { CompileConfig } from './compilation.ts';
-import { styleComponent } from './compilation.ts';
+import type { AppliedComponent, CompileConfig } from './compilation.ts';
+import { styleComponent, styleComponents } from './compilation.ts';
 import type { AnyComponent } from './components.ts';
 import { defineComponent, defineComponentNamespace } from './components.ts';
 import { css } from './tests.ts';
@@ -577,6 +577,55 @@ describe('styleComponent', () => {
           color: black;
         }
       `
+    );
+  });
+});
+
+describe('styleComponents', () => {
+  it('returns a blank string for an empty list', () => {
+    assert.equal(styleComponents([]), '');
+  });
+
+  it('sorts components by ID when joining styles', () => {
+    assert.equal(
+      styleComponents([
+        defineComponent('bravo').css({ color: 'red' }).apply(),
+        defineComponent('alfa').css({ color: 'blue' }).apply()
+      ]),
+      css`
+        .alfa {
+          color: blue;
+        }
+
+        .bravo {
+          color: red;
+        }
+      `
+    );
+  });
+
+  it('respects custom indentation', () => {
+    assert.equal(
+      styleComponents(
+        [
+          defineComponent('card')
+            .elements(e => ({ body: e({ padding: '1rem' }) }))
+            .apply()
+        ],
+        { indentation: 4 }
+      ),
+      css`
+        .card__body {
+            padding: 1rem;
+        }
+      `
+    );
+  });
+
+  it('rejects invalid components', () => {
+    assert.throws(
+      () => styleComponents([{} as AppliedComponent]),
+      'No build plan found for component'
     );
   });
 });
