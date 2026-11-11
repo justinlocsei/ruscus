@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] (2026-11-11)
+
+### Features
+
+- Support programmatic compilation of component styles ([#28])
+
+### Changes
+
+- Reduce property conversions in the Vite plugin ([#29])
+
+### Development
+
+- Upgrade dependencies (2026-11-10) ([#27])
+
 ## [0.1.0] (2026-11-04)
 
 ### Development
@@ -93,6 +107,7 @@ All notable changes to this project will be documented in this file.
 [0.0.7]: https://github.com/justinlocsei/ruscus/compare/v0.0.6..v0.0.7
 [0.0.8]: https://github.com/justinlocsei/ruscus/compare/v0.0.7..v0.0.8
 [0.1.0]: https://github.com/justinlocsei/ruscus/compare/v0.0.8..v0.1.0
+[0.2.0]: https://github.com/justinlocsei/ruscus/compare/v0.1.0..v0.2.0
 
 <!-- PRs -->
 
@@ -114,3 +129,6 @@ All notable changes to this project will be documented in this file.
 [#22]: https://github.com/justinlocsei/ruscus/pull/22
 [#23]: https://github.com/justinlocsei/ruscus/pull/23
 [#25]: https://github.com/justinlocsei/ruscus/pull/25
+[#27]: https://github.com/justinlocsei/ruscus/pull/27
+[#28]: https://github.com/justinlocsei/ruscus/pull/28
+[#29]: https://github.com/justinlocsei/ruscus/pull/29
