@@ -1,6 +1,10 @@
 import { assert, describe, it } from 'vitest';
 
-import type { AppliedComponent, CompileConfig } from './compilation.ts';
+import type {
+  AppliedComponent,
+  CompileConfig,
+  StyleComponentsConfig
+} from './compilation.ts';
 import { styleComponent, styleComponents } from './compilation.ts';
 import type { AnyComponent } from './components.ts';
 import { defineComponent, defineComponentNamespace } from './components.ts';
@@ -582,8 +586,13 @@ describe('styleComponent', () => {
 });
 
 describe('styleComponents', () => {
+  const config: StyleComponentsConfig = {
+    indentation: 2,
+    naming: 'verbose'
+  };
+
   it('returns a blank string for an empty list', () => {
-    assert.equal(styleComponents([]), '');
+    assert.equal(styleComponents([], config), '');
   });
 
   it('sorts components by ID when joining styles', () => {
@@ -591,7 +600,7 @@ describe('styleComponents', () => {
       styleComponents([
         defineComponent('bravo').css({ color: 'red' }).apply(),
         defineComponent('alfa').css({ color: 'blue' }).apply()
-      ]),
+      ], config),
       css`
         .alfa {
           color: blue;
@@ -604,27 +613,23 @@ describe('styleComponents', () => {
     );
   });
 
-  it('respects custom indentation', () => {
-    assert.equal(
-      styleComponents(
-        [
-          defineComponent('card')
-            .elements(e => ({ body: e({ padding: '1rem' }) }))
-            .apply()
-        ],
-        { indentation: 4 }
-      ),
-      css`
-        .card__body {
-            padding: 1rem;
-        }
-      `
+  it('respects a custom config', () => {
+    const styles = styleComponents(
+      [
+        defineComponent('card')
+          .elements(e => ({ body: e({ padding: '1rem' }) }))
+          .apply()
+      ],
+      { indentation: 4, naming: 'compact' }
     );
+
+    assert.include(styles, '    padding: 1rem;');
+    assert.notInclude(styles, '.card');
   });
 
   it('rejects invalid components', () => {
     assert.throws(
-      () => styleComponents([{} as AppliedComponent]),
+      () => styleComponents([{} as AppliedComponent], config),
       'No build plan found for component'
     );
   });

@@ -33,11 +33,16 @@ export type AppliedComponent<
 > = ApplicableComponent<S>;
 
 /**
+ * The required configuration for compiling component styles
+ */
+export type StyleComponentsConfig = Required<UserCompileConfig>;
+
+/**
  * Generate CSS for a list of applied components
  */
 export function styleComponents<S extends ComponentSpec>(
   components: AppliedComponent<S>[],
-  config: UserCompileConfig = {}
+  config: StyleComponentsConfig
 ): string {
   const plans = components.reduce<BuildPlan[]>((plans, component) => {
     const plan = extractBuildPlan(component);
@@ -52,7 +57,6 @@ export function styleComponents<S extends ComponentSpec>(
   }, []);
 
   const fullConfig: CompileConfig = {
-    naming: 'compact',
     ...config,
     properties: new PropertyProjector()
   };
