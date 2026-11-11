@@ -37,7 +37,7 @@ export type AppliedComponent<
  */
 export function styleComponents<S extends ComponentSpec>(
   components: AppliedComponent<S>[],
-  config: CompileConfig = {}
+  config: UserCompileConfig = {}
 ): string {
   const plans = components.reduce<BuildPlan[]>((plans, component) => {
     const plan = extractBuildPlan(component);
@@ -51,9 +51,14 @@ export function styleComponents<S extends ComponentSpec>(
     return plans;
   }, []);
 
+  const fullConfig: CompileConfig = {
+    ...config,
+    properties: new PropertyProjector()
+  };
+
   return plans
     .sort((a, b) => a.component.id.localeCompare(b.component.id))
-    .map(plan => plan.compile(config))
+    .map(plan => plan.compile(fullConfig))
     .join('\n\n');
 }
 
