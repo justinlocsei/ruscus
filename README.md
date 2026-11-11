@@ -546,7 +546,7 @@ You can configure the plugin via the following keys on the options object accept
 
 ### Programmatic
 
-If you're not using a bundler plugin, you can directly generate CSS to apply component styles using the `compile` function, which returns a string of the CSS for the given components.
+If you're not using a bundler plugin, you can directly generate CSS to apply component styles with the `compile` function, which returns a string of the CSS for the given components.
 
 ```ts
 import { compile } from 'ruscus';
