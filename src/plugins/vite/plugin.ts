@@ -9,6 +9,7 @@ import { isRunnableDevEnvironment, runnerImport } from 'vite';
 import type { ModuleRunner } from 'vite/module-runner';
 
 import { extractBuildPlan } from '../../internal.ts';
+import { PropertyProjector } from '../../styles.ts';
 import type { PluginOptions } from '../shared.ts';
 import { resolveConfig, stripQuery } from '../shared.ts';
 import { ComponentRegistry } from './registry.ts';
@@ -35,6 +36,7 @@ type ModuleValue = {
  */
 export function plugin(options: PluginOptions = {}): Plugin {
   const owners = new ComponentRegistry();
+  const properties = new PropertyProjector();
   const ruscus = resolveConfig(options);
 
   const isStyleModule = (id: string) =>
@@ -220,7 +222,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
       // Project the virtual CSS module as concrete CSS text
       return {
-        code: plan.compile({ naming: ruscus.naming }),
+        code: plan.compile({ naming: ruscus.naming, properties }),
         moduleType: 'css',
         moduleSideEffects: true
       };
