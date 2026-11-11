@@ -89,19 +89,18 @@ class ComponentCompiler {
    */
   constructor(
     component: ComponentDefinition,
-    config: CompileConfig
+    {
+      indentation = 2,
+      naming = 'verbose',
+      properties = new PropertyProjector()
+    }: CompileConfig
   ) {
-    this.config = {
-      indentation: 2,
-      naming: 'verbose',
-      properties: new PropertyProjector(),
-      ...config
-    };
+    this.config = { indentation, naming, properties };
 
     this.blocks = [];
     this.component = component;
-    this.indent = ' '.repeat(this.config.indentation);
-    this.name = useNaming(component, config.naming);
+    this.indent = ' '.repeat(indentation);
+    this.name = useNaming(component, naming);
   }
 
   /**
