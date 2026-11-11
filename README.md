@@ -32,6 +32,7 @@
   - [Variant Extraction](#variant-extraction)
 - [Integration](#integration)
   - [Vite](#vite)
+  - [Programmatic](#programmatic)
 - [Why the Name?](#why-the-name)
 <!-- </toc> -->
 
@@ -542,6 +543,27 @@ You can configure the plugin via the following keys on the options object accept
 
 * `extension`: The extension for style definitions, which defaults to `.styles.ts`
 * `naming`: The naming scheme to use for classes, which defaults to `'compact'` in production and `'verbose'` in development
+
+### Programmatic
+
+If you're not using a bundler plugin, you can directly generate CSS to apply component styles using the `compile` function, which returns a string of the CSS for the given components.
+
+```ts
+import { compile } from 'ruscus';
+
+import card from './card.styles.ts';
+import header from './header.styles.ts';
+
+const css = compile(
+  [card, header],
+  {
+    indentation: 2,
+    naming: 'compact'
+  }
+);
+```
+
+The second argument for `compile` is a required configuration object that describes how the CSS will be generated.  The shape of this configuration is available as the `CompileConfig` type.
 
 ## Why the Name?
 
