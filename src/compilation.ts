@@ -52,6 +52,7 @@ export function styleComponents<S extends ComponentSpec>(
   }, []);
 
   const fullConfig: CompileConfig = {
+    naming: 'compact',
     ...config,
     properties: new PropertyProjector()
   };
