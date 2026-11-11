@@ -1,7 +1,11 @@
 import { assert, describe, it } from 'vitest';
 
-import type { CompileConfig } from './compilation.ts';
-import { styleComponent } from './compilation.ts';
+import type {
+  AppliedComponent,
+  CompileConfig,
+  StyleComponentsConfig
+} from './compilation.ts';
+import { styleComponent, styleComponents } from './compilation.ts';
 import type { AnyComponent } from './components.ts';
 import { defineComponent, defineComponentNamespace } from './components.ts';
 import { css } from './tests.ts';
@@ -577,6 +581,56 @@ describe('styleComponent', () => {
           color: black;
         }
       `
+    );
+  });
+});
+
+describe('styleComponents', () => {
+  const config: StyleComponentsConfig = {
+    indentation: 2,
+    naming: 'verbose'
+  };
+
+  it('returns a blank string for an empty list', () => {
+    assert.equal(styleComponents([], config), '');
+  });
+
+  it('sorts components by ID when joining styles', () => {
+    assert.equal(
+      styleComponents([
+        defineComponent('bravo').css({ color: 'red' }).apply(),
+        defineComponent('alfa').css({ color: 'blue' }).apply()
+      ], config),
+      css`
+        .alfa {
+          color: blue;
+        }
+
+        .bravo {
+          color: red;
+        }
+      `
+    );
+  });
+
+  it('respects a custom config', () => {
+    const styles = styleComponents(
+      [
+        defineComponent('card')
+          .elements(e => ({ body: e({ padding: '1rem' }) }))
+          .apply()
+      ],
+      { indentation: 4, naming: 'compact' }
+    );
+
+    assert.include(styles, '    padding: 1rem;');
+    assert.notInclude(styles, '.card');
+  });
+
+  it('rejects invalid components', () => {
+    assert.throws(
+      () => styleComponents([{} as AppliedComponent], config),
+      'No build plan found for component'
     );
   });
 });
