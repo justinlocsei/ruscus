@@ -11,11 +11,17 @@ import type { ElementDefinition, ElementSpecs } from './types/elements.ts';
 import type { Fragment, ScopedFragments } from './types/fragments.ts';
 
 /**
- * Options for compiling a component's CSS
+ * Compilation options that can be provided by the user
  */
-export type CompileConfig = {
+export type UserCompileConfig = {
   indentation?: number;
   naming?: NamingScheme;
+};
+
+/**
+ * Options for compiling a component's CSS
+ */
+export type CompileConfig = UserCompileConfig & {
   properties?: PropertyProjector;
 };
 
