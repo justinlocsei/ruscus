@@ -1,1 +1,1 @@
-export { component } from '../../../../src/index.ts';
+export { component, css } from '../../../../src/index.ts';

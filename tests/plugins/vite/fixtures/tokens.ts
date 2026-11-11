@@ -1,4 +1,4 @@
-import { css } from '../../../../src/index.ts';
+import { css } from './helpers.ts';
 
 export const alfa = css({
   color: 'red'
