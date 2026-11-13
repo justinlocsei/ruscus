@@ -9,6 +9,7 @@ import { isRunnableDevEnvironment, runnerImport } from 'vite';
 import type { ModuleRunner } from 'vite/module-runner';
 
 import { extractBuildPlan } from '../../internal.ts';
+import type { NamingScheme } from '../../naming.ts';
 import { PropertyProjector } from '../../styles.ts';
 import type { PluginOptions } from '../shared.ts';
 import { resolveConfig, stripQuery } from '../shared.ts';
@@ -37,12 +38,14 @@ type ModuleValue = {
 export function plugin(options: PluginOptions = {}): Plugin {
   const owners = new ComponentRegistry();
   const properties = new PropertyProjector();
+
   const ruscus = resolveConfig(options);
+  const { config = {} } = ruscus;
 
   const isStyleModule = (id: string) =>
     stripQuery(id).endsWith(ruscus.extension);
 
-  let config: ResolvedConfig;
+  let vite: ResolvedConfig;
   let moduleRunner: ModuleRunner | undefined;
   let server: ViteDevServer | undefined;
 
@@ -50,16 +53,13 @@ export function plugin(options: PluginOptions = {}): Plugin {
   //
   // If the plugin appears to be running in a development environment, this
   // uses verbose naming.  Otherwise, compact naming is used.
-  const inferNaming = (command?: ConfigEnv['command']) =>
-    options.naming ?? (server || command === 'serve' ? 'verbose' : 'compact');
+  const inferNaming = (command?: ConfigEnv['command']): NamingScheme =>
+    config.naming ?? (server || command === 'serve' ? 'verbose' : 'compact');
 
   // Refresh the naming scheme after a meaningful change
   function refreshNaming(after: () => void): void {
     after();
-
-    if (!options.naming) {
-      ruscus.naming = inferNaming(config?.command);
-    }
+    config.naming ??= inferNaming(vite?.command);
   }
 
   // Load a module that defines component styles
@@ -74,7 +74,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
       ? moduleRunner.import(path)
       : runnerImport<ModuleValue>(path, {
         configFile: false,
-        root: config.root
+        root: vite.root
       }).then(m => m.module);
   }
 
@@ -98,7 +98,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
     },
 
     configResolved(resolved) {
-      refreshNaming(() => config = resolved);
+      refreshNaming(() => vite = resolved);
     },
 
     configureServer(devServer) {
