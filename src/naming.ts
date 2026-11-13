@@ -1,3 +1,4 @@
+import config from './config.ts';
 import { CompactNaming } from './naming/compact.ts';
 import type { Naming } from './naming/shared.ts';
 import { VerboseNaming } from './naming/verbose.ts';
@@ -25,7 +26,7 @@ export function useNaming(
   /* c8 ignore next 3 -- Vite replaces this build-time constant */
   const naming = scheme ?? (
     typeof __RUSCUS_NAMING__ === 'undefined'
-      ? 'verbose'
+      ? config.get('naming', 'verbose')
       : __RUSCUS_NAMING__
   );
 
