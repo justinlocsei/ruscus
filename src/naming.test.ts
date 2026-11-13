@@ -50,6 +50,20 @@ describe('useNaming', () => {
     assert.match(name.forClass([component.id, 'title']), /_1$/);
   });
 
+  it('prepends a prefix from global configuration', () => {
+    configure({ prefix: 'alfa-' });
+
+    const component = defineComponent('card').elements(e => ({
+      body: e()
+    }));
+
+    const name = useNaming(component.current);
+
+    assert.equal(name.forClass(['card']), 'alfa-card');
+    assert.equal(name.forClass(['card', 'body']), 'alfa-card__body');
+    assert.equal(name.forVariant('compact'), 'alfa-is-compact');
+  });
+
   it('respects the global naming configuration', () => {
     configure({ naming: 'compact' });
 
