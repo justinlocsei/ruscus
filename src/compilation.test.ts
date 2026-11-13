@@ -587,8 +587,7 @@ describe('styleComponent', () => {
 
 describe('styleComponents', () => {
   const config: StyleComponentsConfig = {
-    indentation: 2,
-    naming: 'verbose'
+    indentation: 2
   };
 
   it('returns a blank string for an empty list', () => {
@@ -620,11 +619,10 @@ describe('styleComponents', () => {
           .elements(e => ({ body: e({ padding: '1rem' }) }))
           .apply()
       ],
-      { indentation: 4, naming: 'compact' }
+      { indentation: 4 }
     );
 
     assert.include(styles, '    padding: 1rem;');
-    assert.notInclude(styles, '.card');
   });
 
   it('rejects invalid components', () => {

@@ -2,7 +2,7 @@ import { buildComponentContext, buildElementContext } from './contexts.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 import type { ApplicableComponent, BuildPlan } from './internal.ts';
 import { extractBuildPlan } from './internal.ts';
-import type { NameGenerator, NamingScheme } from './naming.ts';
+import type { NameGenerator } from './naming.ts';
 import { useNaming } from './naming.ts';
 import { PropertyProjector } from './styles.ts';
 import type { ComponentDefinition, ComponentSpec } from './types/components.ts';
@@ -15,7 +15,6 @@ import type { Fragment, ScopedFragments } from './types/fragments.ts';
  */
 export type UserCompileConfig = {
   indentation?: number;
-  naming?: NamingScheme;
 };
 
 /**
@@ -91,16 +90,15 @@ class ComponentCompiler {
     component: ComponentDefinition,
     {
       indentation = 2,
-      naming = 'verbose',
       properties = new PropertyProjector()
     }: CompileConfig
   ) {
-    this.config = { indentation, naming, properties };
+    this.config = { indentation, properties };
 
     this.blocks = [];
     this.component = component;
     this.indent = ' '.repeat(indentation);
-    this.name = useNaming(component, naming);
+    this.name = useNaming(component);
   }
 
   /**

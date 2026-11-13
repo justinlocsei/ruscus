@@ -222,7 +222,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
       // Project the virtual CSS module as concrete CSS text
       return {
-        code: plan.compile({ naming: ruscus.naming, properties }),
+        code: plan.compile({ properties }),
         moduleType: 'css',
         moduleSideEffects: true
       };
