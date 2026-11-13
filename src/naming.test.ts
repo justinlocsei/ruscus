@@ -1,7 +1,12 @@
-import { assert, describe, it } from 'vitest';
+import { afterEach, assert, describe, it } from 'vitest';
 
 import { defineComponent } from './components.ts';
+import config, { configure } from './config.ts';
 import { useNaming } from './naming.ts';
+
+afterEach(() => {
+  config.reset();
+});
 
 describe('useNaming', () => {
   it('uses verbose BEM names by default', () => {
@@ -43,5 +48,17 @@ describe('useNaming', () => {
 
     assert.match(name.forClass([component.id, 'body']), /_0$/);
     assert.match(name.forClass([component.id, 'title']), /_1$/);
+  });
+
+  it('respects the global naming configuration', () => {
+    configure({ naming: 'compact' });
+
+    const component = defineComponent('card').elements(e => ({
+      body: e()
+    }));
+
+    const name = useNaming(component.current);
+
+    assert.match(name.forClass([component.id, 'body']), /_0$/);
   });
 });
