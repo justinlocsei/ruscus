@@ -6,6 +6,20 @@ import { CompactNaming } from './compact.ts';
 
 describe('CompactNaming', () => {
   describe('forClass', () => {
+    it('prepends a configured prefix', () => {
+      const component = defineComponent('card').elements(e => ({
+        body: e()
+      }));
+
+      const naming = new CompactNaming(component.current, 'alfa-');
+
+      assert.match(naming.forClass([component.id]), /^alfa-r/);
+      assert.match(
+        naming.forClass([component.id, 'body']),
+        /^alfa-r[a-z0-9]+_0$/
+      );
+    });
+
     it('returns the hashed prefix for the component root', () => {
       const component = defineComponent('card');
       const naming = new CompactNaming(component.current);
@@ -67,6 +81,15 @@ describe('CompactNaming', () => {
   });
 
   describe('forVariant', () => {
+    it('prepends a configured prefix', () => {
+      const naming = new CompactNaming(
+        defineComponent('card').current,
+        'alfa-'
+      );
+
+      assert.equal(naming.forVariant('compact'), 'alfa-is-compact');
+    });
+
     it('uses the shared variant naming convention', () => {
       const naming = new CompactNaming(defineComponent('card').current);
 

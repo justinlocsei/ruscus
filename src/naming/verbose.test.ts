@@ -14,9 +14,31 @@ describe('VerboseNaming', () => {
         'card__body__text'
       );
     });
+
+    it('prepends a configured prefix', () => {
+      const naming = new VerboseNaming(
+        defineComponent('card').current,
+        'alfa-'
+      );
+
+      assert.equal(naming.forClass(['card']), 'alfa-card');
+      assert.equal(
+        naming.forClass(['card', 'body']),
+        'alfa-card__body'
+      );
+    });
   });
 
   describe('forVariant', () => {
+    it('prepends a configured prefix', () => {
+      const naming = new VerboseNaming(
+        defineComponent('card').current,
+        'alfa-'
+      );
+
+      assert.equal(naming.forVariant('compact'), 'alfa-is-compact');
+    });
+
     it('uses the shared variant naming convention', () => {
       const naming = new VerboseNaming(defineComponent('card').current);
 

@@ -10,16 +10,19 @@ const SEPARATOR = '\0';
 type Suffixes = Map<string, string>;
 
 export class CompactNaming extends Naming {
-  private prefix: string;
+  private root: string;
   private suffixes: Suffixes;
 
   /**
    * Build compact suffixes for all element paths
    */
-  constructor(component: ComponentDefinition) {
-    super(component);
+  constructor(
+    component: ComponentDefinition,
+    prefix = ''
+  ) {
+    super(component, prefix);
 
-    this.prefix = `r${hash(component.id)}`;
+    this.root = `r${hash(component.id)}`;
     this.suffixes = this.buildSuffixes(component.elements);
   }
 
@@ -28,7 +31,7 @@ export class CompactNaming extends Naming {
    */
   forClass(levels: string[]): string {
     if (levels.length <= 1) {
-      return this.prefix;
+      return this.project(this.root);
     }
 
     const suffix = this.suffixes.get(levels.slice(1).join(SEPARATOR));
@@ -39,7 +42,7 @@ export class CompactNaming extends Naming {
       );
     }
 
-    return `${this.prefix}_${suffix}`;
+    return this.project(`${this.root}_${suffix}`);
   }
 
   /**

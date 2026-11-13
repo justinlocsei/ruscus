@@ -30,7 +30,9 @@ export function useNaming(
       : __RUSCUS_NAMING__
   );
 
+  const prefix = config.get('prefix', '');
+
   return naming === 'compact'
-    ? new CompactNaming(component)
-    : new VerboseNaming(component);
+    ? new CompactNaming(component, prefix)
+    : new VerboseNaming(component, prefix);
 }

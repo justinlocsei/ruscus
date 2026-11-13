@@ -2,12 +2,17 @@ import type { ComponentDefinition } from '../types/components.ts';
 
 export abstract class Naming {
   protected component: ComponentDefinition;
+  protected prefix: string;
 
   /**
    * Create a naming strategy for a component
    */
-  constructor(component: ComponentDefinition) {
+  constructor(
+    component: ComponentDefinition,
+    prefix = ''
+  ) {
     this.component = component;
+    this.prefix = prefix;
   }
 
   /**
@@ -19,6 +24,13 @@ export abstract class Naming {
    * Produce the class name for a variant
    */
   forVariant(name: string): string {
-    return `is-${name}`;
+    return this.project(`is-${name}`);
+  }
+
+  /**
+   * Project a class name
+   */
+  protected project(className: string): string {
+    return `${this.prefix}${className}`;
   }
 }

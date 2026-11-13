@@ -5,6 +5,7 @@ import type { NamingScheme } from './naming.ts';
  */
 export type ConfigOptions = {
   naming?: NamingScheme;
+  prefix?: string;
 };
 
 /**
