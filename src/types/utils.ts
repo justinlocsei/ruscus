@@ -11,6 +11,13 @@ export type HasVariants<T extends string> = {
 };
 
 /**
+ * Require a subset of fields in an object
+ */
+export type Require<T extends object, K extends keyof T> =
+  & Omit<T, K>
+  & Required<Pick<T, K>>;
+
+/**
  * An eager value or a function that produces one
  */
 export type Thunkable<T> = T | (() => T);
