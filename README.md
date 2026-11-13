@@ -565,6 +565,16 @@ const css = compile(
 
 The second argument for `compile` is a required configuration object that describes how the CSS will be generated.  The shape of this configuration is available as the `CompileConfig` type.
 
+The value of `naming` must be consistent with the naming used by any UI code that references your `.styles.ts` files, which defaults to `'verbose'`.  To change this value, use the `configure` function in code that is called before your styled components are imported:
+
+```ts
+import { configure } from 'ruscus';
+
+configure({ naming: 'compact' });
+
+import Page from './Page.tsx';
+```
+
 ## Why the Name?
 
 In [floristry](https://portflor.io), ruscus is a common foliage that provides structure without calling too much attention to itself.
