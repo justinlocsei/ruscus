@@ -1,1 +1,1 @@
-export { component, css } from '../../../../src/index.ts';
+export { component, css } from 'ruscus';
