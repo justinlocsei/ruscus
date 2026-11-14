@@ -10,7 +10,7 @@ import {
 } from './transform.ts';
 
 describe('extractSourceModuleID', () => {
-  it('decodes a resolved virtual CSS module id', () => {
+  it('decodes a resolved virtual CSS module ID', () => {
     const source = '/project/src/card.ts?direct';
 
     const resolved = getInternalCSSModuleID(getCSSModuleID(source))
@@ -19,7 +19,7 @@ describe('extractSourceModuleID', () => {
     assert.equal(extractSourceModuleID(resolved), source);
   });
 
-  it('returns undefined for non-virtual CSS module ids', () => {
+  it('returns undefined for non-virtual CSS module IDs', () => {
     assert.isUndefined(
       extractSourceModuleID('/project/src/card.ts')
     );
@@ -58,7 +58,7 @@ describe('getCSSModuleID', () => {
 });
 
 describe('getInternalCSSModuleID', () => {
-  it('returns null for other ids', () => {
+  it('returns null for other IDs', () => {
     assert.isNull(getInternalCSSModuleID('/styles/delta.ts'));
 
     assert.isNull(
@@ -68,7 +68,7 @@ describe('getInternalCSSModuleID', () => {
     );
   });
 
-  it('wraps valid virtual CSS module ids', () => {
+  it('wraps valid virtual CSS module IDs', () => {
     const source = '/styles/charlie.ts';
     const publicID = getCSSModuleID(source);
 
@@ -97,12 +97,12 @@ describe('injectCSSImport', () => {
 });
 
 describe('isResolvedModuleID', () => {
-  it('returns false for non-internal module ids', () => {
+  it('returns false for non-internal module IDs', () => {
     assert.isFalse(isResolvedModuleID('/project/src/card.ts'));
     assert.isFalse(isResolvedModuleID(getCSSModuleID('/styles/delta.ts')));
   });
 
-  it('returns true for resolved virtual CSS module ids', () => {
+  it('returns true for resolved virtual CSS module IDs', () => {
     const source = '/styles/charlie.ts';
 
     assert.isTrue(
