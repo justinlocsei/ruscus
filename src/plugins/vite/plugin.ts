@@ -85,20 +85,6 @@ export function plugin(options: PluginOptions = {}): Plugin {
       owners.clear();
     },
 
-    // Set an internal variable to sync the naming scheme
-    //
-    // When using Vite in an SSR setup, this specifically ensures that client
-    // code and pre-rendered markup use the same naming scheme, allowing for
-    // compact naming to be correctly applied in production builds.
-    config(userConfig, env) {
-      return {
-        define: {
-          ...userConfig.define,
-          __RUSCUS_CONFIG__: `(${JSON.stringify(refreshConfig(env.command))})`
-        }
-      };
-    },
-
     configResolved(resolved) {
       refreshAfter(() => vite = resolved);
     },
