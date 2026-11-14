@@ -87,13 +87,21 @@ describe('CompactNaming', () => {
         'alfa-'
       );
 
-      assert.equal(naming.forVariant('compact'), 'alfa-is-compact');
+      assert.match(naming.forVariant('compact'), /^alfa-v[a-z0-9]{6}$/);
     });
 
-    it('uses the shared variant naming convention', () => {
+    it('hashes variant names', () => {
       const naming = new CompactNaming(defineComponent('card').current);
 
-      assert.equal(naming.forVariant('compact'), 'is-compact');
+      assert.match(naming.forVariant('compact'), /^v[a-z0-9]{6}$/);
+    });
+
+    it('produces stable variant names', () => {
+      const naming = new CompactNaming(defineComponent('card').current);
+      const compact = naming.forVariant('compact');
+
+      assert.equal(naming.forVariant('compact'), compact);
+      assert.notEqual(naming.forVariant('featured'), compact);
     });
   });
 });

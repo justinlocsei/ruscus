@@ -12,6 +12,7 @@ type Suffixes = Map<string, string>;
 export class CompactNaming extends Naming {
   private root: string;
   private suffixes: Suffixes;
+  private variants: Map<string, string>;
 
   /**
    * Build compact suffixes for all element paths
@@ -24,6 +25,7 @@ export class CompactNaming extends Naming {
 
     this.root = `r${hash(component.id)}`;
     this.suffixes = this.buildSuffixes(component.elements);
+    this.variants = new Map();
   }
 
   /**
@@ -43,6 +45,20 @@ export class CompactNaming extends Naming {
     }
 
     return this.project(`${this.root}_${suffix}`);
+  }
+
+  /**
+   * Produce a compact variant name
+   */
+  override forVariant(name: string): string {
+    let variant = this.variants.get(name);
+
+    if (variant === undefined) {
+      variant = `v${hash(name)}`;
+      this.variants.set(name, variant);
+    }
+
+    return this.project(variant);
   }
 
   /**
