@@ -7,16 +7,26 @@ const ROOT = new URL('./fixtures/', import.meta.url);
 
 function build(
   entry: string,
-  { cssCodeSplit }: { cssCodeSplit?: boolean } = {}
+  {
+    cssCodeSplit,
+    outDir,
+    write = false
+  }: {
+    cssCodeSplit?: boolean;
+    outDir?: string;
+    write?: boolean;
+  } = {}
 ) {
   return viteBuild({
     build: {
       cssCodeSplit,
       lib: {
         entry: new URL(`./${entry}.ts`, ROOT).pathname,
+        fileName: 'bundle',
         formats: ['es']
       },
-      write: false
+      outDir,
+      write
     },
     logLevel: 'silent',
     plugins: [ruscus()],
