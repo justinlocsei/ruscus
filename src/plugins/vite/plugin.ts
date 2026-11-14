@@ -9,6 +9,7 @@ import { isRunnableDevEnvironment, runnerImport } from 'vite';
 import type { ModuleRunner } from 'vite/module-runner';
 
 import type { ConfigOptions } from '../../config.ts';
+import { Configuration } from '../../config.ts';
 import { extractBuildPlan } from '../../internal.ts';
 import { PropertyProjector } from '../../styles.ts';
 import type { PluginOptions } from '../shared.ts';
@@ -235,7 +236,10 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
       // Project the virtual CSS module as concrete CSS text
       return {
-        code: plan.compile({ properties }),
+        code: plan.compile({
+          configuration: new Configuration(refreshConfig(vite?.command)),
+          properties
+        }),
         moduleType: 'css',
         moduleSideEffects: true
       };
