@@ -21,8 +21,15 @@ type Option = keyof ConfigOptions;
  */
 type ValueFor<O extends Option> = NonNullable<ConfigOptions[O]>;
 
-class Configuration {
-  private values: ConfigOptions = {};
+export class Configuration {
+  private values: ConfigOptions;
+
+  /**
+   * Create a configuration
+   */
+  constructor(options: Partial<ConfigOptions> = {}) {
+    this.values = { ...options };
+  }
 
   /**
    * Read a configuration value
