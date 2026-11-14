@@ -8,8 +8,8 @@ import type {
 import { isRunnableDevEnvironment, runnerImport } from 'vite';
 import type { ModuleRunner } from 'vite/module-runner';
 
+import type { ConfigOptions } from '../../config.ts';
 import { extractBuildPlan } from '../../internal.ts';
-import type { NamingScheme } from '../../naming.ts';
 import { PropertyProjector } from '../../styles.ts';
 import type { PluginOptions } from '../shared.ts';
 import { resolveConfig, stripQuery } from '../shared.ts';
@@ -49,17 +49,19 @@ export function plugin(options: PluginOptions = {}): Plugin {
   let moduleRunner: ModuleRunner | undefined;
   let server: ViteDevServer | undefined;
 
-  // Infer an appropriate naming scheme after a change if no scheme was provided
+  // Refresh the config based on an optional current command
   //
   // If the plugin appears to be running in a development environment, this
   // uses verbose naming.  Otherwise, compact naming is used.
-  const inferNaming = (command?: ConfigEnv['command']): NamingScheme =>
-    config.naming ?? (server || command === 'serve' ? 'verbose' : 'compact');
+  const refreshConfig = (command?: ConfigEnv['command']): ConfigOptions => {
+    config.naming ??= server || command === 'serve' ? 'verbose' : 'compact';
+    return config;
+  };
 
   // Refresh the naming scheme after a meaningful change
-  function refreshNaming(after: () => void): void {
-    after();
-    config.naming ??= inferNaming(vite?.command);
+  function refreshAfter(action: () => void): void {
+    action();
+    refreshConfig(vite?.command);
   }
 
   // Load a module that defines component styles
@@ -92,17 +94,17 @@ export function plugin(options: PluginOptions = {}): Plugin {
       return {
         define: {
           ...userConfig.define,
-          __RUSCUS_NAMING__: JSON.stringify(inferNaming(env.command))
+          __RUSCUS_CONFIG__: `(${JSON.stringify(refreshConfig(env.command))})`
         }
       };
     },
 
     configResolved(resolved) {
-      refreshNaming(() => vite = resolved);
+      refreshAfter(() => vite = resolved);
     },
 
     configureServer(devServer) {
-      refreshNaming(() => {
+      refreshAfter(() => {
         server = devServer;
 
         const { ssr } = devServer.environments;
