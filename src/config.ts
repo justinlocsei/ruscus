@@ -1,4 +1,9 @@
-import type { NamingScheme } from './naming.ts';
+declare const __RUSCUS_CONFIG__: ConfigOptions | undefined;
+
+/**
+ * An available naming scheme for classes
+ */
+export type NamingScheme = 'compact' | 'verbose';
 
 /**
  * Ruscus configuration options
@@ -19,7 +24,18 @@ type Option = keyof ConfigOptions;
 type ValueFor<O extends Option> = NonNullable<ConfigOptions[O]>;
 
 class Configuration {
-  private values: Partial<ConfigOptions> = {};
+  private injected: ConfigOptions;
+  private values: ConfigOptions = {};
+
+  /**
+   * Create a configuration manager
+   */
+  constructor() {
+    /* c8 ignore next -- Build plugins replace this constant */
+    this.injected = typeof __RUSCUS_CONFIG__ === 'undefined'
+      ? {}
+      : __RUSCUS_CONFIG__;
+  }
 
   /**
    * Read a configuration value
@@ -28,7 +44,7 @@ class Configuration {
     key: O,
     fallback: ValueFor<O>
   ): ValueFor<O> {
-    return this.values[key] ?? fallback;
+    return this.injected[key] ?? this.values[key] ?? fallback;
   }
 
   /**
