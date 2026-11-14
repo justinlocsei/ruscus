@@ -538,10 +538,12 @@ export default defineConfig({
 });
 ```
 
-You can configure the plugin via the following keys on the options object accepted by the `ruscus()` function:
+You can configure the plugin via the following keys on the options object accepted by the `ruscus` function:
 
+* `config`: A configuration object used to customize class names
+* `config.naming`: The naming scheme to use for classes, which defaults to `'compact'` in production and `'verbose'` in development
+* `config.prefix`: A prefix used before every generated class name
 * `extension`: The extension for style definitions, which defaults to `.styles.ts`
-* `naming`: The naming scheme to use for classes, which defaults to `'compact'` in production and `'verbose'` in development
 
 ## Why the Name?
 
