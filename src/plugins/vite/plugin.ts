@@ -20,8 +20,9 @@ import {
   getCSSModuleID,
   getInternalConfigModuleID,
   getInternalCSSModuleID,
-  injectCSSImport,
-  isResolvedModuleID
+  injectStyleImports,
+  isResolvedModuleID,
+  isVirtualConfigModuleID
 } from './transform.ts';
 
 // A query string used to identify Ruscus style providers
@@ -228,22 +229,21 @@ export function plugin(options: PluginOptions = {}): Plugin {
     },
 
     transform(code, id) {
-      // This avoids transforming modules that:
-      //
-      // - are known style modules loaded via load()
-      // - are resolved, internal modules
-      // - do not use the configured styles extension
+      // Avoid transforming helper modules used by the plugin
       if (
-        id.includes(STYLE_QUERY)
-        || isResolvedModuleID(id)
+        isResolvedModuleID(id) || isVirtualConfigModuleID(id)
         || !isStyleModule(id)
       ) {
         return null;
       }
 
-      // Inject a virtual CSS module import into a styles module
+      // Inject helper modules into the code
+      code = injectStyleImports(code, stripQuery(id), {
+        css: !id.includes(STYLE_QUERY)
+      });
+
       return {
-        code: injectCSSImport(code, id),
+        code,
         map: null
       };
     }
