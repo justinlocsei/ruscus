@@ -24,8 +24,11 @@ describe('useNaming', () => {
   it('uses a hashed prefix for compact root names', () => {
     const component = defineComponent('very-long-name');
 
-    const verbose = useNaming(component.current, 'verbose');
-    const compact = useNaming(component.current, 'compact');
+    config.set({ naming: 'verbose' });
+    const verbose = useNaming(component.current);
+
+    config.set({ naming: 'compact' });
+    const compact = useNaming(component.current);
 
     assert.isAbove(
       verbose.forClass([component.id]).length,
@@ -44,7 +47,8 @@ describe('useNaming', () => {
       body: e()
     }));
 
-    const name = useNaming(component.current, 'compact');
+    config.set({ naming: 'compact' });
+    const name = useNaming(component.current);
 
     assert.match(name.forClass([component.id, 'body']), /_0$/);
     assert.match(name.forClass([component.id, 'title']), /_1$/);
