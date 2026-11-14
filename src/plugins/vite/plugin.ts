@@ -62,10 +62,26 @@ export function plugin(options: PluginOptions = {}): Plugin {
     return config;
   };
 
-  // Refresh the naming scheme after a meaningful change
+  // Invalidate the virtual configure module
+  const invalidateConfigureModule = (): void => {
+    const graph = server?.moduleGraph;
+
+    if (!graph) {
+      return;
+    }
+
+    const configure = graph.getModuleById(getInternalConfigModuleID());
+
+    if (configure) {
+      graph.invalidateModule(configure);
+    }
+  };
+
+  // Refresh the config after a change that may alter it
   function refreshAfter(action: () => void): void {
     action();
     refreshConfig(vite?.command);
+    invalidateConfigureModule();
   }
 
   // Load a module that defines component styles
