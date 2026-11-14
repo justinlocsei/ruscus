@@ -1,7 +1,7 @@
 import { afterEach, assert, describe, it } from 'vitest';
 
 import { defineComponent } from './components.ts';
-import config, { configure } from './config.ts';
+import config, { Configuration, configure } from './config.ts';
 import { useNaming } from './naming.ts';
 
 afterEach(() => {
@@ -78,5 +78,20 @@ describe('useNaming', () => {
     const name = useNaming(component.current);
 
     assert.match(name.forClass([component.id, 'body']), /_0$/);
+  });
+
+  it('can use an explicit configuration', () => {
+    configure({ naming: 'verbose' });
+
+    const component = defineComponent('card');
+    const compact = new Configuration({ naming: 'compact' });
+    const name = useNaming(component.current, compact);
+
+    assert.notEqual(name.forClass(['card']), 'card');
+
+    assert.equal(
+      name.forClass(['card']),
+      useNaming(component.current, compact).forClass(['card'])
+    );
   });
 });
