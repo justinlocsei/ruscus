@@ -1,6 +1,9 @@
 // A Rollup/Vite prefix for virtual modules present in the graph
 export const RESOLVED = '\0';
 
+// The public ID of the virtual configuration module
+export const CONFIG_MODULE_ID = 'virtual:ruscus/config';
+
 // A prefix for virtual CSS modules
 const PREFIX = 'virtual:ruscus/css/';
 
