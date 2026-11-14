@@ -1,3 +1,5 @@
+import type { ConfigOptions } from '../../config.ts';
+
 // A Rollup/Vite prefix for virtual modules present in the graph
 export const RESOLVED = '\0';
 
@@ -9,6 +11,17 @@ const PREFIX = 'virtual:ruscus/css/';
 
 // The suffix for virtual CSS modules
 const SUFFIX = '.css';
+
+/**
+ * Produce source for the virtual configure module
+ */
+export function createConfigureModuleCode(
+  options: Partial<ConfigOptions>
+): string {
+  return `import { configure } from 'ruscus';\nconfigure(${
+    JSON.stringify(options)
+  });\n`;
+}
 
 /**
  * Extract the ID of the source module associated with a virtual CSS module

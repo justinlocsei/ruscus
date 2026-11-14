@@ -1,6 +1,7 @@
 import { assert, describe, it } from 'vitest';
 
 import {
+  createConfigureModuleCode,
   extractSourceModuleID,
   getCSSModuleID,
   getInternalCSSModuleID,
@@ -8,6 +9,17 @@ import {
   isResolvedModuleID,
   RESOLVED
 } from './transform.ts';
+
+describe('createConfigureModuleCode', () => {
+  it('emits a configure import and call', () => {
+    const code = createConfigureModuleCode({ naming: 'compact' });
+
+    assert.equal(
+      code,
+      `import { configure } from 'ruscus';\nconfigure({"naming":"compact"});\n`
+    );
+  });
+});
 
 describe('extractSourceModuleID', () => {
   it('decodes a resolved virtual CSS module ID', () => {
