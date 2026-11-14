@@ -16,6 +16,7 @@ import { resolveConfig, stripQuery } from '../shared.ts';
 import { ComponentRegistry } from './registry.ts';
 import {
   CONFIG_MODULE_ID,
+  createConfigureModuleCode,
   extractSourceModuleID,
   getCSSModuleID,
   getInternalConfigModuleID,
@@ -184,6 +185,11 @@ export function plugin(options: PluginOptions = {}): Plugin {
     },
 
     async load(id) {
+      // Generate code to populate a generated virtual configure module
+      if (isVirtualConfigModuleID(id)) {
+        return createConfigureModuleCode(refreshConfig(vite?.command));
+      }
+
       // Extract the ID of the module that defines component styles
       //
       // If the current ID is a virtual CSS module ID, this will extract the
