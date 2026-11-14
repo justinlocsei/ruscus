@@ -1,7 +1,12 @@
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
+
 import { build as viteBuild } from 'vite';
 import { assert, describe, it } from 'vitest';
 
 import ruscus from '../../../src/plugins/vite.ts';
+import { withTempDir } from '../../../src/tests.ts';
 
 const ROOT = new URL('./fixtures/', import.meta.url);
 
@@ -75,5 +80,22 @@ describe('Vite build', () => {
 
     assert.match(css, /color:\s*green/);
     assert.notInclude(css, '.lazy {');
+  });
+
+  it('aligns class naming across emitted JS and CSS files', async () => {
+    await withTempDir(async outDir => {
+      await build('bundle-entry', { outDir, write: true });
+
+      const bundleURL = pathToFileURL(join(outDir, 'bundle.js')).href;
+      const { Card } = await import(bundleURL);
+
+      assert.isString(Card.root);
+      assert.notEqual(Card.root, 'card');
+
+      const css = await readFile(join(outDir, 'bundle.css'), 'utf8');
+
+      assert.include(css, `.${Card.root}`);
+      assert.notInclude(css, '.card {');
+    });
   });
 });
