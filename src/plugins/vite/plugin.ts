@@ -15,8 +15,10 @@ import type { PluginOptions } from '../shared.ts';
 import { resolveConfig, stripQuery } from '../shared.ts';
 import { ComponentRegistry } from './registry.ts';
 import {
+  CONFIG_MODULE_ID,
   extractSourceModuleID,
   getCSSModuleID,
+  getInternalConfigModuleID,
   getInternalCSSModuleID,
   injectCSSImport,
   isResolvedModuleID
@@ -220,7 +222,9 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
     // Use an internal ID for a virtual CSS module added by transform()
     resolveId(id) {
-      return getInternalCSSModuleID(id);
+      return id === CONFIG_MODULE_ID
+        ? getInternalConfigModuleID()
+        : getInternalCSSModuleID(id);
     },
 
     transform(code, id) {
