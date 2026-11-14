@@ -40,6 +40,7 @@
   "scripts": {
     "build": "tsdown",
     "check": "npm run check:code && npm run check:formatting && npm run check:types",
+    "check:ci": "npm run build && npm run check",
     "check:code": "biome lint . --error-on-warnings",
     "check:formatting": "biome ci --linter-enabled=false . && dprint check",
     "check:types": "tsc --noEmit",
