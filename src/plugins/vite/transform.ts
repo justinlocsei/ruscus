@@ -49,6 +49,13 @@ export function getCSSModuleID(
 }
 
 /**
+ * Get the resolved internal ID of the virtual configure module
+ */
+export function getInternalConfigModuleID(): string {
+  return `${RESOLVED}${CONFIG_MODULE_ID}`;
+}
+
+/**
  * Get the resolved internal ID of a virtual CSS module
  */
 export function getInternalCSSModuleID(id: string): string | null {
@@ -58,14 +65,52 @@ export function getInternalCSSModuleID(id: string): string | null {
 }
 
 /**
+ * Inject an import into a source module's code
+ */
+function injectImport(code: string, source: string): string {
+  const line = `import ${JSON.stringify(source)};`;
+
+  return code.includes(line)
+    ? code
+    : `${line}\n${code}`;
+}
+
+/**
  * Inject a CSS import into a source module's code
  */
-export function injectCSSImport(code: string, id: string): string {
-  const css = `import ${JSON.stringify(getCSSModuleID(id))};`;
+function injectCSSImport(code: string, id: string): string {
+  return injectImport(code, getCSSModuleID(id));
+}
 
-  return code.includes(css)
-    ? code
-    : `${css}\n${code}`;
+/**
+ * Inject an import of the virtual configure module
+ */
+function injectConfigImport(code: string): string {
+  return injectImport(code, CONFIG_MODULE_ID);
+}
+
+/**
+ * Inject configure and optional CSS imports into a styles module
+ */
+export function injectStyleImports(
+  code: string,
+  sourceID: string,
+  { css = true }: { css?: boolean } = {}
+): string {
+  const next = css ? injectCSSImport(code, sourceID) : code;
+
+  return injectConfigImport(next);
+}
+
+/**
+ * Determine whether an ID is for the virtual configure module
+ */
+export function isVirtualConfigModuleID(id: string): boolean {
+  const bare = id.startsWith(RESOLVED)
+    ? id.slice(RESOLVED.length)
+    : id;
+
+  return bare === CONFIG_MODULE_ID;
 }
 
 /**

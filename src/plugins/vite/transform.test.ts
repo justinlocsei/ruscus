@@ -1,12 +1,15 @@
 import { assert, describe, it } from 'vitest';
 
 import {
+  CONFIG_MODULE_ID,
   createConfigureModuleCode,
   extractSourceModuleID,
   getCSSModuleID,
+  getInternalConfigModuleID,
   getInternalCSSModuleID,
-  injectCSSImport,
+  injectStyleImports,
   isResolvedModuleID,
+  isVirtualConfigModuleID,
   RESOLVED
 } from './transform.ts';
 
@@ -34,6 +37,15 @@ describe('extractSourceModuleID', () => {
   it('returns undefined for non-virtual CSS module IDs', () => {
     assert.isUndefined(
       extractSourceModuleID('/project/src/card.ts')
+    );
+  });
+});
+
+describe('getInternalConfigModuleID', () => {
+  it('returns the resolved configure module ID', () => {
+    assert.equal(
+      getInternalConfigModuleID(),
+      `${RESOLVED}${CONFIG_MODULE_ID}`
     );
   });
 });
@@ -91,20 +103,23 @@ describe('getInternalCSSModuleID', () => {
   });
 });
 
-describe('injectCSSImport', () => {
-  it('does not inject the same import twice', () => {
+describe('injectStyleImports', () => {
+  it('injects configure and css by default', () => {
     const code = 'export default component("card").apply();';
-    const transformed = injectCSSImport(code, '/project/card.ts');
+    const transformed = injectStyleImports(code, '/project/card.ts');
 
-    assert.equal(injectCSSImport(transformed, '/project/card.ts'), transformed);
+    assert.match(transformed, /^import "virtual:ruscus\/config";\n/);
+    assert.match(transformed, /^import "virtual:ruscus\/css\//m);
   });
 
-  it('injects a virtual CSS import', () => {
+  it('omits css when disabled', () => {
     const code = 'export default component("card").apply();';
-    const transformed = injectCSSImport(code, '/project/card.ts');
+    const transformed = injectStyleImports(code, '/project/card.ts', {
+      css: false
+    });
 
-    assert.match(transformed, /^import "virtual:ruscus\/css\//);
-    assert.isTrue(transformed.endsWith(code));
+    assert.match(transformed, /^import "virtual:ruscus\/config";\n/);
+    assert.notMatch(transformed, /virtual:ruscus\/css\//);
   });
 });
 
@@ -123,6 +138,20 @@ describe('isResolvedModuleID', () => {
 
     assert.isTrue(
       isResolvedModuleID(getInternalCSSModuleID(getCSSModuleID(source)) ?? '')
+    );
+  });
+});
+
+describe('isVirtualConfigModuleID', () => {
+  it('recognizes public and resolved configure module IDs', () => {
+    assert.isTrue(isVirtualConfigModuleID(CONFIG_MODULE_ID));
+    assert.isTrue(isVirtualConfigModuleID(getInternalConfigModuleID()));
+  });
+
+  it('returns false for other IDs', () => {
+    assert.isFalse(isVirtualConfigModuleID('/project/card.ts'));
+    assert.isFalse(
+      isVirtualConfigModuleID(getCSSModuleID('/styles/delta.ts'))
     );
   });
 });
