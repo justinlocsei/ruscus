@@ -1,3 +1,4 @@
+import type { Configuration } from './config.ts';
 import { buildComponentContext, buildElementContext } from './contexts.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 import type { ApplicableComponent, BuildPlan } from './internal.ts';
@@ -9,11 +10,12 @@ import type { ComponentDefinition, ComponentSpec } from './types/components.ts';
 import type { Declarations } from './types/css.ts';
 import type { ElementDefinition, ElementSpecs } from './types/elements.ts';
 import type { Fragment, ScopedFragments } from './types/fragments.ts';
+import type { Require } from './types/utils.ts';
 
 /**
  * Compilation options that can be provided by the user
  */
-export type UserCompileConfig = {
+type UserCompileConfig = {
   indentation?: number;
 };
 
@@ -21,6 +23,7 @@ export type UserCompileConfig = {
  * Options for compiling a component's CSS
  */
 export type CompileConfig = UserCompileConfig & {
+  configuration?: Configuration;
   properties?: PropertyProjector;
 };
 
@@ -79,7 +82,7 @@ export function styleComponent(
 class ComponentCompiler {
   private blocks: (string | null)[];
   private component: ComponentDefinition;
-  private config: Required<CompileConfig>;
+  private config: Require<CompileConfig, 'indentation' | 'properties'>;
   private indent: string;
   private name: NameGenerator;
 
@@ -88,17 +91,20 @@ class ComponentCompiler {
    */
   constructor(
     component: ComponentDefinition,
-    {
+    compileConfig: CompileConfig = {}
+  ) {
+    const {
+      configuration,
       indentation = 2,
       properties = new PropertyProjector()
-    }: CompileConfig
-  ) {
+    } = compileConfig;
+
     this.config = { indentation, properties };
 
     this.blocks = [];
     this.component = component;
     this.indent = ' '.repeat(indentation);
-    this.name = useNaming(component);
+    this.name = useNaming(component, configuration);
   }
 
   /**
