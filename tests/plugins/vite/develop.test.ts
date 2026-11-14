@@ -114,7 +114,7 @@ describe('Vite develop', () => {
   });
 
   it('respects an explicit naming scheme', async () => {
-    const plugin = testPlugin({ naming: 'compact' });
+    const plugin = testPlugin({ config: { naming: 'compact' } });
 
     await withServer(plugin, async (server) => {
       const code = loadCode(await server.pluginContainer.load(CARD_CSS));

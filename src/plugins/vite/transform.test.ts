@@ -1,16 +1,31 @@
 import { assert, describe, it } from 'vitest';
 
 import {
+  CONFIG_MODULE_ID,
+  createConfigureModuleCode,
   extractSourceModuleID,
   getCSSModuleID,
+  getInternalConfigModuleID,
   getInternalCSSModuleID,
-  injectCSSImport,
+  injectStyleImports,
   isResolvedModuleID,
+  isVirtualConfigModuleID,
   RESOLVED
 } from './transform.ts';
 
+describe('createConfigureModuleCode', () => {
+  it('emits a configure import and call', () => {
+    const code = createConfigureModuleCode({ naming: 'compact' });
+
+    assert.equal(
+      code,
+      `import { configure } from 'ruscus';\nconfigure({"naming":"compact"});\n`
+    );
+  });
+});
+
 describe('extractSourceModuleID', () => {
-  it('decodes a resolved virtual CSS module id', () => {
+  it('decodes a resolved virtual CSS module ID', () => {
     const source = '/project/src/card.ts?direct';
 
     const resolved = getInternalCSSModuleID(getCSSModuleID(source))
@@ -19,9 +34,18 @@ describe('extractSourceModuleID', () => {
     assert.equal(extractSourceModuleID(resolved), source);
   });
 
-  it('returns undefined for non-virtual CSS module ids', () => {
+  it('returns undefined for non-virtual CSS module IDs', () => {
     assert.isUndefined(
       extractSourceModuleID('/project/src/card.ts')
+    );
+  });
+});
+
+describe('getInternalConfigModuleID', () => {
+  it('returns the resolved configure module ID', () => {
+    assert.equal(
+      getInternalConfigModuleID(),
+      `${RESOLVED}${CONFIG_MODULE_ID}`
     );
   });
 });
@@ -58,7 +82,7 @@ describe('getCSSModuleID', () => {
 });
 
 describe('getInternalCSSModuleID', () => {
-  it('returns null for other ids', () => {
+  it('returns null for other IDs', () => {
     assert.isNull(getInternalCSSModuleID('/styles/delta.ts'));
 
     assert.isNull(
@@ -68,7 +92,7 @@ describe('getInternalCSSModuleID', () => {
     );
   });
 
-  it('wraps valid virtual CSS module ids', () => {
+  it('wraps valid virtual CSS module IDs', () => {
     const source = '/styles/charlie.ts';
     const publicID = getCSSModuleID(source);
 
@@ -79,30 +103,33 @@ describe('getInternalCSSModuleID', () => {
   });
 });
 
-describe('injectCSSImport', () => {
-  it('does not inject the same import twice', () => {
+describe('injectStyleImports', () => {
+  it('injects configure and css by default', () => {
     const code = 'export default component("card").apply();';
-    const transformed = injectCSSImport(code, '/project/card.ts');
+    const transformed = injectStyleImports(code, '/project/card.ts');
 
-    assert.equal(injectCSSImport(transformed, '/project/card.ts'), transformed);
+    assert.match(transformed, /^import "virtual:ruscus\/config";\n/);
+    assert.match(transformed, /^import "virtual:ruscus\/css\//m);
   });
 
-  it('injects a virtual CSS import', () => {
+  it('omits css when disabled', () => {
     const code = 'export default component("card").apply();';
-    const transformed = injectCSSImport(code, '/project/card.ts');
+    const transformed = injectStyleImports(code, '/project/card.ts', {
+      css: false
+    });
 
-    assert.match(transformed, /^import "virtual:ruscus\/css\//);
-    assert.isTrue(transformed.endsWith(code));
+    assert.match(transformed, /^import "virtual:ruscus\/config";\n/);
+    assert.notMatch(transformed, /virtual:ruscus\/css\//);
   });
 });
 
 describe('isResolvedModuleID', () => {
-  it('returns false for non-internal module ids', () => {
+  it('returns false for non-internal module IDs', () => {
     assert.isFalse(isResolvedModuleID('/project/src/card.ts'));
     assert.isFalse(isResolvedModuleID(getCSSModuleID('/styles/delta.ts')));
   });
 
-  it('returns true for resolved virtual CSS module ids', () => {
+  it('returns true for resolved virtual CSS module IDs', () => {
     const source = '/styles/charlie.ts';
 
     assert.isTrue(
@@ -111,6 +138,20 @@ describe('isResolvedModuleID', () => {
 
     assert.isTrue(
       isResolvedModuleID(getInternalCSSModuleID(getCSSModuleID(source)) ?? '')
+    );
+  });
+});
+
+describe('isVirtualConfigModuleID', () => {
+  it('recognizes public and resolved configure module IDs', () => {
+    assert.isTrue(isVirtualConfigModuleID(CONFIG_MODULE_ID));
+    assert.isTrue(isVirtualConfigModuleID(getInternalConfigModuleID()));
+  });
+
+  it('returns false for other IDs', () => {
+    assert.isFalse(isVirtualConfigModuleID('/project/card.ts'));
+    assert.isFalse(
+      isVirtualConfigModuleID(getCSSModuleID('/styles/delta.ts'))
     );
   });
 });

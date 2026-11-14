@@ -1,7 +1,7 @@
 import { afterEach, assert, describe, it } from 'vitest';
 
 import { defineComponent } from './components.ts';
-import config, { configure } from './config.ts';
+import config, { Configuration, configure } from './config.ts';
 import { useNaming } from './naming.ts';
 
 afterEach(() => {
@@ -24,8 +24,11 @@ describe('useNaming', () => {
   it('uses a hashed prefix for compact root names', () => {
     const component = defineComponent('very-long-name');
 
-    const verbose = useNaming(component.current, 'verbose');
-    const compact = useNaming(component.current, 'compact');
+    config.set({ naming: 'verbose' });
+    const verbose = useNaming(component.current);
+
+    config.set({ naming: 'compact' });
+    const compact = useNaming(component.current);
 
     assert.isAbove(
       verbose.forClass([component.id]).length,
@@ -44,7 +47,8 @@ describe('useNaming', () => {
       body: e()
     }));
 
-    const name = useNaming(component.current, 'compact');
+    config.set({ naming: 'compact' });
+    const name = useNaming(component.current);
 
     assert.match(name.forClass([component.id, 'body']), /_0$/);
     assert.match(name.forClass([component.id, 'title']), /_1$/);
@@ -74,5 +78,20 @@ describe('useNaming', () => {
     const name = useNaming(component.current);
 
     assert.match(name.forClass([component.id, 'body']), /_0$/);
+  });
+
+  it('can use an explicit configuration', () => {
+    configure({ naming: 'verbose' });
+
+    const component = defineComponent('card');
+    const compact = new Configuration({ naming: 'compact' });
+    const name = useNaming(component.current, compact);
+
+    assert.notEqual(name.forClass(['card']), 'card');
+
+    assert.equal(
+      name.forClass(['card']),
+      useNaming(component.current, compact).forClass(['card'])
+    );
   });
 });

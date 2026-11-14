@@ -32,7 +32,6 @@
   - [Variant Extraction](#variant-extraction)
 - [Integration](#integration)
   - [Vite](#vite)
-  - [Programmatic](#programmatic)
 - [Why the Name?](#why-the-name)
 <!-- </toc> -->
 
@@ -539,41 +538,12 @@ export default defineConfig({
 });
 ```
 
-You can configure the plugin via the following keys on the options object accepted by the `ruscus()` function:
+You can configure the plugin via the following keys on the options object accepted by the `ruscus` function:
 
+* `config`: A configuration object used to customize class names
+* `config.naming`: The naming scheme to use for classes, which defaults to `'compact'` in production and `'verbose'` in development
+* `config.prefix`: A prefix used before every generated class name
 * `extension`: The extension for style definitions, which defaults to `.styles.ts`
-* `naming`: The naming scheme to use for classes, which defaults to `'compact'` in production and `'verbose'` in development
-
-### Programmatic
-
-If you're not using a bundler plugin, you can directly generate CSS to apply component styles with the `compile` function, which returns a string of the CSS for the given components.
-
-```ts
-import { compile } from 'ruscus';
-
-import card from './card.styles.ts';
-import header from './header.styles.ts';
-
-const css = compile(
-  [card, header],
-  {
-    indentation: 2,
-    naming: 'compact'
-  }
-);
-```
-
-The second argument for `compile` is a required configuration object that describes how the CSS will be generated.  The shape of this configuration is available as the `CompileConfig` type.
-
-The value of `naming` must be consistent with the naming used by any UI code that references your `.styles.ts` files, which defaults to `'verbose'`.  To change this value, use the `configure` function in code that is called before your styled components are imported:
-
-```ts
-import { configure } from 'ruscus';
-
-configure({ naming: 'compact' });
-
-import Page from './Page.tsx';
-```
 
 ## Why the Name?
 

@@ -1,3 +1,7 @@
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
 export { css } from './tests/css.ts';
 export * as T from './tests/types.ts';
 
@@ -24,4 +28,19 @@ export function checkConversion<I, O>(
  */
 export function inspect(value: unknown): string {
   return JSON.stringify(value, null, 2);
+}
+
+/**
+ * Run a function inside a temporary directory
+ */
+export async function withTempDir(
+  use: (directory: string) => Promise<void>
+): Promise<void> {
+  const directory = await mkdtemp(join(tmpdir(), 'ruscus-'));
+
+  try {
+    await use(directory);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 }

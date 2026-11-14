@@ -1,13 +1,20 @@
 import { afterEach, assert, describe, it } from 'vitest';
 
 import type { ConfigOptions } from './config.ts';
-import config, { configure } from './config.ts';
+import config, { Configuration, configure } from './config.ts';
 
 afterEach(() => {
   config.reset();
 });
 
 describe('Configuration', () => {
+  it('applies initial options from the constructor', () => {
+    const options = new Configuration({ naming: 'compact', prefix: 'alfa-' });
+
+    assert.equal(options.get('naming', 'verbose'), 'compact');
+    assert.equal(options.get('prefix', ''), 'alfa-');
+  });
+
   it('returns a fallback when no value is set', () => {
     assert.equal(config.get('naming', 'verbose'), 'verbose');
   });

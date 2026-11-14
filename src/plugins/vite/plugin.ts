@@ -8,17 +8,23 @@ import type {
 import { isRunnableDevEnvironment, runnerImport } from 'vite';
 import type { ModuleRunner } from 'vite/module-runner';
 
+import type { ConfigOptions } from '../../config.ts';
+import { Configuration } from '../../config.ts';
 import { extractBuildPlan } from '../../internal.ts';
 import { PropertyProjector } from '../../styles.ts';
 import type { PluginOptions } from '../shared.ts';
 import { resolveConfig, stripQuery } from '../shared.ts';
 import { ComponentRegistry } from './registry.ts';
 import {
+  CONFIG_MODULE_ID,
+  createConfigureModuleCode,
   extractSourceModuleID,
   getCSSModuleID,
+  getInternalConfigModuleID,
   getInternalCSSModuleID,
-  injectCSSImport,
-  isResolvedModuleID
+  injectStyleImports,
+  isResolvedModuleID,
+  isVirtualConfigModuleID
 } from './transform.ts';
 
 // A query string used to identify Ruscus style providers
@@ -37,29 +43,46 @@ type ModuleValue = {
 export function plugin(options: PluginOptions = {}): Plugin {
   const owners = new ComponentRegistry();
   const properties = new PropertyProjector();
+
   const ruscus = resolveConfig(options);
+  const { config = {} } = ruscus;
 
   const isStyleModule = (id: string) =>
     stripQuery(id).endsWith(ruscus.extension);
 
-  let config: ResolvedConfig;
+  let vite: ResolvedConfig;
   let moduleRunner: ModuleRunner | undefined;
   let server: ViteDevServer | undefined;
 
-  // Infer an appropriate naming scheme after a change if no scheme was provided
+  // Refresh the config based on an optional current command
   //
   // If the plugin appears to be running in a development environment, this
   // uses verbose naming.  Otherwise, compact naming is used.
-  const inferNaming = (command?: ConfigEnv['command']) =>
-    options.naming ?? (server || command === 'serve' ? 'verbose' : 'compact');
+  const refreshConfig = (command?: ConfigEnv['command']): ConfigOptions => {
+    config.naming ??= server || command === 'serve' ? 'verbose' : 'compact';
+    return config;
+  };
 
-  // Refresh the naming scheme after a meaningful change
-  function refreshNaming(after: () => void): void {
-    after();
+  // Invalidate the virtual configure module
+  const invalidateConfigureModule = (): void => {
+    const graph = server?.moduleGraph;
 
-    if (!options.naming) {
-      ruscus.naming = inferNaming(config?.command);
+    if (!graph) {
+      return;
     }
+
+    const configure = graph.getModuleById(getInternalConfigModuleID());
+
+    if (configure) {
+      graph.invalidateModule(configure);
+    }
+  };
+
+  // Refresh the config after a change that may alter it
+  function refreshAfter(action: () => void): void {
+    action();
+    refreshConfig(vite?.command);
+    invalidateConfigureModule();
   }
 
   // Load a module that defines component styles
@@ -74,7 +97,7 @@ export function plugin(options: PluginOptions = {}): Plugin {
       ? moduleRunner.import(path)
       : runnerImport<ModuleValue>(path, {
         configFile: false,
-        root: config.root
+        root: vite.root
       }).then(m => m.module);
   }
 
@@ -83,26 +106,12 @@ export function plugin(options: PluginOptions = {}): Plugin {
       owners.clear();
     },
 
-    // Set an internal variable to sync the naming scheme
-    //
-    // When using Vite in an SSR setup, this specifically ensures that client
-    // code and pre-rendered markup use the same naming scheme, allowing for
-    // compact naming to be correctly applied in production builds.
-    config(userConfig, env) {
-      return {
-        define: {
-          ...userConfig.define,
-          __RUSCUS_NAMING__: JSON.stringify(inferNaming(env.command))
-        }
-      };
-    },
-
     configResolved(resolved) {
-      refreshNaming(() => config = resolved);
+      refreshAfter(() => vite = resolved);
     },
 
     configureServer(devServer) {
-      refreshNaming(() => {
+      refreshAfter(() => {
         server = devServer;
 
         const { ssr } = devServer.environments;
@@ -193,6 +202,11 @@ export function plugin(options: PluginOptions = {}): Plugin {
     },
 
     async load(id) {
+      // Generate code to populate a generated virtual configure module
+      if (isVirtualConfigModuleID(id)) {
+        return createConfigureModuleCode(refreshConfig(vite?.command));
+      }
+
       // Extract the ID of the module that defines component styles
       //
       // If the current ID is a virtual CSS module ID, this will extract the
@@ -222,7 +236,10 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
       // Project the virtual CSS module as concrete CSS text
       return {
-        code: plan.compile({ naming: ruscus.naming, properties }),
+        code: plan.compile({
+          configuration: new Configuration(refreshConfig(vite?.command)),
+          properties
+        }),
         moduleType: 'css',
         moduleSideEffects: true
       };
@@ -232,26 +249,27 @@ export function plugin(options: PluginOptions = {}): Plugin {
 
     // Use an internal ID for a virtual CSS module added by transform()
     resolveId(id) {
-      return getInternalCSSModuleID(id);
+      return id === CONFIG_MODULE_ID
+        ? getInternalConfigModuleID()
+        : getInternalCSSModuleID(id);
     },
 
     transform(code, id) {
-      // This avoids transforming modules that:
-      //
-      // - are known style modules loaded via load()
-      // - are resolved, internal modules
-      // - do not use the configured styles extension
+      // Avoid transforming helper modules used by the plugin
       if (
-        id.includes(STYLE_QUERY)
-        || isResolvedModuleID(id)
+        isResolvedModuleID(id) || isVirtualConfigModuleID(id)
         || !isStyleModule(id)
       ) {
         return null;
       }
 
-      // Inject a virtual CSS module import into a styles module
+      // Inject helper modules into the code
+      code = injectStyleImports(code, stripQuery(id), {
+        css: !id.includes(STYLE_QUERY)
+      });
+
       return {
-        code: injectCSSImport(code, id),
+        code,
         map: null
       };
     }

@@ -1,10 +1,9 @@
-import config from './config.ts';
+import type { Configuration } from './config.ts';
+import globalConfig from './config.ts';
 import { CompactNaming } from './naming/compact.ts';
 import type { Naming } from './naming/shared.ts';
 import { VerboseNaming } from './naming/verbose.ts';
 import type { ComponentDefinition } from './types/components.ts';
-
-declare const __RUSCUS_NAMING__: NamingScheme | undefined;
 
 /**
  * A generator for class and variant names
@@ -12,24 +11,13 @@ declare const __RUSCUS_NAMING__: NamingScheme | undefined;
 export type NameGenerator = Naming;
 
 /**
- * An available naming scheme for classes
- */
-export type NamingScheme = 'compact' | 'verbose';
-
-/**
  * Create a name generator for a component
  */
 export function useNaming(
   component: ComponentDefinition,
-  scheme?: NamingScheme
+  config: Configuration = globalConfig
 ): NameGenerator {
-  /* c8 ignore next 3 -- Vite replaces this build-time constant */
-  const naming = scheme ?? (
-    typeof __RUSCUS_NAMING__ === 'undefined'
-      ? config.get('naming', 'verbose')
-      : __RUSCUS_NAMING__
-  );
-
+  const naming = config.get('naming', 'verbose');
   const prefix = config.get('prefix', '');
 
   return naming === 'compact'

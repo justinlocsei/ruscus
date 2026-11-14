@@ -20,7 +20,7 @@ describe('Component', () => {
 
   const styleContext = (instance: AnyComponent) =>
     buildComponentContext(instance.current, {
-      name: useNaming(instance.current, 'verbose')
+      name: useNaming(instance.current)
     });
 
   it('starts with an empty state', () => {
