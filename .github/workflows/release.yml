@@ -23,7 +23,7 @@ jobs:
           node-version: 24
 
       - name: Check code
-        run: npm run check
+        run: npm run check:ci
 
       - name: Test
         run: npm run test
