@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.1] (2026-11-14)
+
+### Fixes
+
+- Use the `check:ci` task for releases ([#36])
+
 ## [0.3.0] (2026-11-14)
 
 ### Features
@@ -148,3 +154,4 @@ All notable changes to this project will be documented in this file.
 [#32]: https://github.com/justinlocsei/ruscus/pull/32
 [#33]: https://github.com/justinlocsei/ruscus/pull/33
 [#34]: https://github.com/justinlocsei/ruscus/pull/34
+[#36]: https://github.com/justinlocsei/ruscus/pull/36
