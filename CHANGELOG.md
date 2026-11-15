@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] (2026-11-14)
+
+### Features
+
+- Support global naming configuration ([#31])
+- Support a prefix for generated class names ([#32])
+
+### Changes
+
+- Exclusively use the configuration singleton ([#33])
+- Use hashed variants ([#34])
+
 ## [0.2.0] (2026-11-11)
 
 ### Features
@@ -132,3 +144,7 @@ All notable changes to this project will be documented in this file.
 [#27]: https://github.com/justinlocsei/ruscus/pull/27
 [#28]: https://github.com/justinlocsei/ruscus/pull/28
 [#29]: https://github.com/justinlocsei/ruscus/pull/29
+[#31]: https://github.com/justinlocsei/ruscus/pull/31
+[#32]: https://github.com/justinlocsei/ruscus/pull/32
+[#33]: https://github.com/justinlocsei/ruscus/pull/33
+[#34]: https://github.com/justinlocsei/ruscus/pull/34
