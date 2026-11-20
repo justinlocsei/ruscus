@@ -1,4 +1,7 @@
-import type { KnownProperties } from './css/properties.ts';
+import type {
+  KnownProperties,
+  PropertyName as Property
+} from './css/properties.ts';
 import type { Value } from './css/values.ts';
 
 /**
@@ -12,3 +15,13 @@ export type Declarations = {
  * A mapping of CSS properties to values
  */
 export type Styles = KnownProperties & Record<string, Value | undefined>;
+
+/**
+ * A known CSS property usable as a key in style definitions
+ */
+export type KnownProperty = keyof KnownProperties;
+
+/**
+ * A CSS property name
+ */
+export type PropertyName = Property;
