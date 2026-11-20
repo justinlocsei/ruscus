@@ -42,6 +42,7 @@ type AliasGroup = {
  */
 type Property = {
   aliases?: string[];
+  kebab: string;
   name: string;
   values: string[];
 };
@@ -258,6 +259,7 @@ async function renderTypes(): Promise<string> {
   const { properties, types = {} } = await css.index();
 
   const props: Property[] = Object.values(properties).map(p => ({
+    kebab: p.name,
     name: kebabToCamel(p.name),
     values: extractKeywords(p.syntax, types).filter(k =>
       !(SHARED as readonly string[]).includes(k)
@@ -290,6 +292,15 @@ ${aliases.map(a => a.source).join('\n')}
 export type KnownProperties = {
 ${declarations.join('\n')}
 };
+
+export type PropertyName =
+${
+    props
+      .map(p => p.kebab)
+      .sort((l, r) => l.localeCompare(r))
+      .map(kebab => `  | '${kebab}'`)
+      .join('\n')
+  };
 `;
 }
 
