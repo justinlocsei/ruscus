@@ -8,7 +8,11 @@ export { defineQueries as queries } from './queries.ts';
 export { defineStyles as css } from './styles.ts';
 export type { Trait } from './traits.ts';
 export { defineTrait as trait } from './traits.ts';
-export type { Styles as CSS } from './types/css.ts';
+export type {
+  KnownProperty,
+  PropertyName,
+  Styles as CSS
+} from './types/css.ts';
 export type { VariantsFor } from './types/elements.ts';
 export type {
   NestedStyles,
