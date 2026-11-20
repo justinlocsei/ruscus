@@ -11,6 +11,14 @@ export type HasVariants<T extends string> = {
 };
 
 /**
+ * Convert a string to kebab case
+ */
+export type ToKebabCase<T extends string, A extends string = ''> = T extends
+  `${infer F}${infer R}`
+  ? ToKebabCase<R, `${A}${F extends Lowercase<F> ? '' : '-'}${Lowercase<F>}`>
+  : A;
+
+/**
  * Require a subset of fields in an object
  */
 export type Require<T extends object, K extends keyof T> =
