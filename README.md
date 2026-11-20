@@ -414,6 +414,15 @@ export default component('badge')
   .apply();
 ```
 
+You can also use the `KnownProperty` and `PropertyName` types to constrain values to properties as they appear in Ruscus or the CSS spec, respectively:
+
+```ts
+import type { KnownProperty, PropertyName } from 'ruscus';
+
+const asProp: KnownProperty = 'backgroundColor';
+const asName: PropertyName = 'background-color';
+```
+
 ## Types
 
 Ruscus exposes a few types that can make writing reusable styles easier and allow you to extract information from your component definitions.
