@@ -4,9 +4,9 @@ import type { AuthorValue } from './values.ts';
 
 type Value = AuthorValue | 'inherit' | 'initial' | 'revert' | 'revert-layer' | 'unset';
 
-type AlignContent = 'baseline' | 'center' | 'end' | 'first' | 'flex-end' | 'flex-start' | 'last' | 'normal' | 'safe' | 'start' | 'stretch' | 'unsafe' | Value;
+type AlignContent = 'baseline' | 'center' | 'end' | 'first' | 'flex-end' | 'flex-start' | 'flow-end' | 'flow-start' | 'last' | 'normal' | 'safe' | 'start' | 'stretch' | 'unsafe' | Value;
 type AlignContent2 = 'space-around' | 'space-between' | 'space-evenly' | Value;
-type AlignSelf = 'baseline' | 'center' | 'end' | 'first' | 'flex-end' | 'flex-start' | 'last' | 'normal' | 'safe' | 'self-end' | 'self-start' | 'start' | 'stretch' | 'unsafe' | Value;
+type AlignSelf = 'baseline' | 'center' | 'end' | 'first' | 'flex-end' | 'flex-start' | 'flow-end' | 'flow-start' | 'last' | 'normal' | 'safe' | 'self-end' | 'self-start' | 'start' | 'stretch' | 'unsafe' | Value;
 type AnchorScope = 'all' | 'none' | Value;
 type Animation = 'alternate' | 'alternate-reverse' | 'auto' | 'backwards' | 'both' | 'ease' | 'ease-in' | 'ease-in-out' | 'ease-out' | 'forwards' | 'infinite' | 'linear' | 'none' | 'normal' | 'paused' | 'reverse' | 'running' | 'step-end' | 'step-start' | Value;
 type AnimationDirection = 'alternate' | 'alternate-reverse' | 'normal' | 'reverse' | Value;
@@ -33,6 +33,7 @@ type Color = 'AccentColor' | 'AccentColorText' | 'ActiveBorder' | 'ActiveCaption
 type ColorInterpolation = 'auto' | 'linearRGB' | 'sRGB' | Value;
 type ColorScheme = 'dark' | 'light' | 'normal' | Value;
 type ColumnSpan = 'all' | 'auto' | 'none' | Value;
+type Content = 'circle' | 'close-quote' | 'contents' | 'disc' | 'disclosure-closed' | 'disclosure-open' | 'no-close-quote' | 'no-open-quote' | 'open-quote' | 'square' | Value;
 type CopyInto = 'content' | 'element' | 'none' | Value;
 type CornerEndEndShape = 'bevel' | 'notch' | 'round' | 'scoop' | 'square' | 'squircle' | Value;
 type D = 'none' | Value;
@@ -52,7 +53,7 @@ type FontWidth = 'condensed' | 'expanded' | 'extra-condensed' | 'extra-expanded'
 type GridAutoRows = 'auto' | 'max-content' | 'min-content' | Value;
 type GridRow = 'auto' | 'span' | Value;
 type GridTemplateRows = 'auto' | 'auto-fill' | 'auto-fit' | 'max-content' | 'min-content' | 'none' | 'subgrid' | Value;
-type JustifyContent = 'center' | 'end' | 'flex-end' | 'flex-start' | 'normal' | 'safe' | 'space-around' | 'space-between' | 'space-evenly' | 'start' | 'stretch' | 'unsafe' | Value;
+type JustifyContent = 'center' | 'end' | 'flex-end' | 'flex-start' | 'flow-end' | 'flow-start' | 'normal' | 'safe' | 'space-around' | 'space-between' | 'space-evenly' | 'start' | 'stretch' | 'unsafe' | Value;
 type JustifyContent2 = 'left' | 'right' | Value;
 type LineFitEdge = 'alphabetic' | 'cap' | 'ex' | 'ideographic' | 'ideographic-ink' | 'text' | Value;
 type Mask = 'add' | 'alpha' | 'auto' | 'block-end' | 'block-start' | 'border-box' | 'bottom' | 'center' | 'contain' | 'content-box' | 'cover' | 'end' | 'exclude' | 'fill-box' | 'half-border-box' | 'inline-end' | 'inline-start' | 'intersect' | 'left' | 'luminance' | 'margin-box' | 'match-source' | 'no-clip' | 'no-repeat' | 'none' | 'padding-box' | 'repeat' | 'repeat-block' | 'repeat-inline' | 'repeat-x' | 'repeat-y' | 'right' | 'round' | 'space' | 'start' | 'stroke-box' | 'subtract' | 'top' | 'view-box' | 'x-end' | 'x-start' | 'y-end' | 'y-start' | Value;
@@ -225,7 +226,7 @@ export type KnownProperties = {
   blockStepInsert?: 'content-box' | 'margin-box' | 'padding-box' | Value;
   blockStepRound?: 'down' | 'nearest' | 'up' | Value;
   blockStepSize?: D;
-  bookmarkLabel?: 'close-quote' | 'contents' | 'no-close-quote' | 'no-open-quote' | 'open-quote' | Value;
+  bookmarkLabel?: Content;
   bookmarkLevel?: D;
   bookmarkState?: 'closed' | 'open' | Value;
   border?: Color | Border;
@@ -370,7 +371,7 @@ export type KnownProperties = {
   container?: Value;
   containerName?: D;
   containerType?: 'inline-size' | 'normal' | 'scroll-state' | 'size' | Value;
-  content?: 'close-quote' | 'contents' | 'no-close-quote' | 'no-open-quote' | 'none' | 'normal' | 'open-quote' | Value;
+  content?: Content | 'none' | 'normal';
   contentVisibility?: 'auto' | 'hidden' | 'visible' | Value;
   continue?: '-webkit-legacy' | 'collapse' | 'discard' | 'fragments' | 'normal' | 'overflow' | 'paginate' | Value;
   copyInto?: CopyInto | 'text';
@@ -668,7 +669,7 @@ export type KnownProperties = {
   pageBreakBefore?: PageBreakAfter;
   pageBreakInside?: WrapInside;
   paintOrder?: 'fill' | 'markers' | 'normal' | 'stroke' | Value;
-  pathLength?: '0' | 'none' | Value;
+  pathLength?: D;
   pause?: Value;
   pauseAfter?: RestAfter;
   pauseBefore?: RestAfter;
