@@ -2,7 +2,37 @@
 
 Zero-runtime TypeScript library for orchestrating component styles: a component's elements and variants are defined as a typed tree that projects into class names, while the CSS itself is bring-your-own. Library source is `src/`.
 
-Public API: `src/index.ts` (component factory, compile entry, queries).
+Published entrypoints: **`ruscus`** (`src/index.ts`) for authoring and view-layer projection, and **`ruscus/vite`** (`src/plugins/vite.ts`) for bundler integration. Programmatic `compile` / `styleComponents` is **not** part of the public package API — CSS emission for apps goes through the Vite plugin and the build plan attached at `.apply()`.
+
+## Public API (`src/index.ts`)
+
+Author-facing symbols are documented in [README.md](README.md). Do not treat these as removable unless the README and changelog are updated together.
+
+| Export | Role |
+| --- | --- |
+| `component` | Component builder → `.apply()` class-name tree |
+| `configure` | Global naming/config singleton (Vite injects matching config in dev/build via `virtual:ruscus/config`) |
+| `identifiers` | **`identifiers(appliedComponent)`** — projected values for `.identifiers()` types (string IDs and CSS custom property names) for use in JSX; see README **Identifiers** |
+| `queries` | Labeled at-rules for `.global` providers |
+| `css` | Ergonomic `Styles` object helper |
+| `trait` | Reusable relative fragments; `Trait` type |
+| `CSS`, `KnownProperty`, `PropertyName` | Author and string-level CSS typing |
+| `VariantsFor` | Extract variant name unions from applied specs |
+| `NestedStyles`, `StyleFragment`, `StyleFragmentBuilder` | Types for dynamic trait/helpers |
+
+`identifiers` is implemented in `src/internal.ts` (`extractIdentifiers`) but is **intentionally public** — not an internal-only helper.
+
+## Traits and fragments
+
+| Mechanism | Where | Behavior |
+| --- | --- | --- |
+| `trait()` / `defineTrait` | `src/traits.ts` | Builds a `Trait` (`Fragment<'relative'>`) |
+| `component().is()` / `element().is()` | `src/components.ts`, `src/elements.ts` | `mergeTraits` merges roots onto base styles; trait **nested** maps become **nested providers** on the definition |
+| `s().is()` on fragments | `src/fragments.ts` | Eager merge via `mergeTraitStyles` + `mergeFragmentStyles`; used in `.variants`, `.nested`, `.global` providers |
+| Nested collision | `mergeFragmentStyles` in `src/fragments.ts` | Same selector key merges **recursively** (roots via `mergeStyles`, nested maps walked); later wins on duplicate properties at each level |
+| Module graph | `traits.ts` → `fragments.ts` → `types/fragments.ts` | No import cycle; fragment `Fragment.is` is typed with `Fragment<'relative'>[]`, not `Trait` in `types/fragments.ts` |
+
+Integration coverage: `tests/traits.test.ts` (golden `traits.css`); unit tests in `src/fragments.test.ts`, `src/traits.test.ts`.
 
 ## Type architecture
 
@@ -40,9 +70,11 @@ Public API: `src/index.ts` (component factory, compile entry, queries).
 
 ## Exports
 
-Be conservative about what gets exported. Only export a type or function when another module in this repo genuinely needs it, or when explicitly requested as part of the public API in `src/index.ts`. Do not preemptively export helpers, types, or utilities “just in case” — keep symbols module-local until there is a concrete internal consumer or an intentional API decision.
+**Package contract:** only symbols exported from `src/index.ts` and `src/plugins/vite.ts` (built to `dist/*.mjs` / `*.d.mts`) are public. The Vite plugin is the supported app integration path.
 
-When that consumer appears, **export the existing type** from its home module (often `src/types/`) instead of copying an equivalent alias elsewhere. Prefer widening visibility of one shared definition over duplicating constraints like `NamedElements` under a new name in runtime modules.
+**Within the repo**, keep helpers module-local until another `src/` module or the public index needs them. Do not add preemptive `index.ts` exports. When a symbol already belongs in `src/index.ts`, **export the existing definition** from its home module (often `src/types/`) instead of duplicating types.
+
+`src/compilation.ts`, `mergeFragmentStyles`, `extractBuildPlan`, and most of `src/internal.ts` are **internal** — except `identifiers`, which is re-exported from `internal.ts` as part of the public API.
 
 ## Dev commands
 
