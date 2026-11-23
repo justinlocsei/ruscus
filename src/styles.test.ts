@@ -4,7 +4,8 @@ import {
   camelToKebab,
   defineStyles,
   mergeStyles,
-  PropertyProjector
+  PropertyProjector,
+  splitSelector
 } from './styles.ts';
 import { checkConversion } from './tests.ts';
 import type { Styles } from './types/css.ts';
@@ -70,6 +71,36 @@ describe('PropertyProjector', () => {
     assert.equal(
       projector.project('--Explorer--alfaBravo'),
       '--Explorer--alfaBravo'
+    );
+  });
+});
+
+describe('splitSelector', () => {
+  it('returns a single segment when there is no list', () => {
+    assert.deepEqual(splitSelector('textarea'), ['textarea']);
+  });
+
+  it('splits a comma-separated selector list', () => {
+    assert.deepEqual(splitSelector('button, input'), ['button', ' input']);
+  });
+
+  it('preserves whitespace in segments', () => {
+    assert.deepEqual(splitSelector(' button ,  input '), [
+      ' button ',
+      '  input '
+    ]);
+  });
+  it('ignores commas inside brackets', () => {
+    assert.deepEqual(
+      splitSelector('[title="a, b"], textarea'),
+      ['[title="a, b"]', ' textarea']
+    );
+  });
+
+  it('ignores commas inside parentheses', () => {
+    assert.deepEqual(
+      splitSelector(':is(button, input)'),
+      [':is(button, input)']
     );
   });
 });

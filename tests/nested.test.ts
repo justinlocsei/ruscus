@@ -26,4 +26,13 @@ compareStyles('nested', c =>
       [els.body.text]: s({ marginTop: '0.5rem' }),
       [els.header.root]: s({ borderBottom: '1px solid #ccc' }),
       [els.header.title]: s({ fontSize: '1.25rem' })
+    }))
+    .global(s => ({
+      'a[href]': s({ textDecoration: 'underline' }),
+      textarea: s({ resize: 'vertical' }).nested({
+        '&:focus-visible': s({ outline: '2px solid navy' })
+      }),
+      'button, input': s({ font: 'inherit' }).nested({
+        '&:focus-visible': s({ outline: '2px solid navy' })
+      })
     })));

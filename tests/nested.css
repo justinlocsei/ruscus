@@ -45,3 +45,23 @@
 .card .card__header__title {
   font-size: 1.25rem;
 }
+
+a[href] {
+  text-decoration: underline;
+}
+
+textarea {
+  resize: vertical;
+}
+
+textarea:focus-visible {
+  outline: 2px solid navy;
+}
+
+button, input {
+  font: inherit;
+}
+
+button:focus-visible, input:focus-visible {
+  outline: 2px solid navy;
+}

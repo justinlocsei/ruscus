@@ -30,6 +30,41 @@ export function mergeStyles(base: Styles, ...others: Styles[]): Styles {
   return merged;
 }
 
+/**
+ * Split a selector into its individual segments
+ */
+export function splitSelector(selector: string): string[] {
+  if (!selector.includes(',')) {
+    return [selector];
+  }
+
+  const parts: string[] = [];
+  let bracket = 0;
+  let paren = 0;
+  let start = 0;
+
+  for (let index = 0; index < selector.length; index++) {
+    const char = selector[index];
+
+    if (char === '(') {
+      paren++;
+    } else if (char === ')') {
+      paren--;
+    } else if (char === '[') {
+      bracket++;
+    } else if (char === ']') {
+      bracket--;
+    } else if (char === ',' && bracket === 0 && paren === 0) {
+      parts.push(selector.slice(start, index));
+      start = index + 1;
+    }
+  }
+
+  parts.push(selector.slice(start));
+
+  return parts.filter(Boolean);
+}
+
 export class PropertyProjector {
   private names: Map<string, string>;
 
