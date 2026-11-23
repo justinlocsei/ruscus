@@ -1,4 +1,11 @@
+import { defineTrait } from '../src/traits.ts';
 import { compareStyles } from './helpers.ts';
+
+const interactive = defineTrait(s =>
+  s({ cursor: 'pointer' }).nested({
+    '&:hover': s({ opacity: '0.8' })
+  })
+);
 
 compareStyles('variants', c =>
   c('card')
@@ -20,7 +27,7 @@ compareStyles('variants', c =>
       }))
     }))
     .variants(s => ({
-      compact: s({ padding: '0.5rem' }),
+      compact: s({ padding: '0.5rem' }).is(interactive),
       large: s({ padding: '2rem' })
     }))
     .nested((s, { els, variants: v }) => ({

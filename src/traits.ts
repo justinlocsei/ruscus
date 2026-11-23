@@ -1,5 +1,4 @@
-import { defineRelativeFragment } from './fragments.ts';
-import { mergeStyles } from './styles.ts';
+import { defineRelativeFragment, mergeFragmentStyles } from './fragments.ts';
 import type {
   Fragment,
   FragmentStyles,
@@ -16,12 +15,7 @@ export type Trait = Fragment<'relative'>;
  */
 export function mergeTraits(...traits: Trait[]): FragmentStyles {
   return traits.reduce<FragmentStyles>(
-    (previous, { styles }) => {
-      previous.root = mergeStyles(previous.root, styles.root);
-      Object.assign(previous.nested, styles.nested);
-
-      return previous;
-    },
+    (previous, { styles }) => mergeFragmentStyles(previous, styles),
     { nested: {}, root: {} }
   );
 }

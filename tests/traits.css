@@ -1,0 +1,45 @@
+.control {
+  display: inline-flex;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.control__label {
+  font-size: 1rem;
+  color: crimson;
+}
+
+.control__label.is-emphasized {
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.control__label.is-emphasized:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.control__label.is-ghost {
+  padding: 0.5rem;
+  color: crimson;
+}
+
+.control__label.is-ghost:hover {
+  opacity: 0.6;
+}
+
+.control__label:focus-visible {
+  outline: 2px solid blue;
+}
+
+.control__label.is-emphasized {
+  letter-spacing: 0.02em;
+}
+
+.control__label.is-emphasized:hover {
+  font-style: italic;
+}
+
+.control:hover {
+  opacity: 0.8;
+}

@@ -346,6 +346,50 @@ export default component('link')
   .apply();
 ```
 
+Traits can also be applied to the style fragments built via `s()` in methods like `.nested` and `.variants`:
+
+```ts
+import { component, trait } from 'ruscus';
+
+const button = (color: string) =>
+  trait(s => s({
+    backgroundColor: color
+  }).nested({
+    '&:hover': s({
+      outline: `2px solid ${color}`
+    })
+  }));
+
+export default component('button')
+  .variants(s => ({
+    primary: s({ padding: '0.5rem' }).is(button('red')),
+    secondary: s().is(button('blue'))
+  }))
+  .apply();
+```
+
+A trait's nested selectors are merged recursively with its target, allowing a trait to extend, rather than replace, styles for states like focus or hover:
+
+```ts
+import { component, trait } from 'ruscus';
+
+const interactive = trait(s =>
+  s({ cursor: 'pointer' }).nested({
+    '&:hover': s({ opacity: '0.8' })
+  })
+);
+
+export default component('link')
+  .variants(s => ({
+    emphasized: s({ fontWeight: '700' })
+      .is(interactive)
+      .nested({
+        '&:hover': s({ textDecoration: 'underline' })
+      })
+  }))
+  .apply();
+```
+
 ## Queries
 
 The `queries` function maps internal labels to CSS at-rule queries:
