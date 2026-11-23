@@ -207,9 +207,10 @@ class ComponentCompiler {
     const nestedRules: string[] = [];
 
     for (const [key, child] of nestedEntries) {
-      const hoist = key.includes('&') || !parentSelector.startsWith('@');
+      const isNested = key.includes('&');
+      const hoist = isNested || !parentSelector.startsWith('@');
 
-      const selector = key.includes('&')
+      const selector = isNested
         ? this.expandSelectorAnchor(parentSelector, key)
         : this.buildNestedSelector(parentSelector, key);
 
