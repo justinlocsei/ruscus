@@ -20,6 +20,7 @@ export type DerivedStyles<
  * A styled fragment
  */
 export type Fragment<S extends FragmentScope = FragmentScope> = {
+  is: (...traits: Fragment<'relative'>[]) => Fragment<S>;
   nested: (definitions: ScopedFragments) => Fragment<S>;
   scope: S;
   styles: FragmentStyles;
