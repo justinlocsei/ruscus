@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] (2026-11-23)
+
+### Fixes
+
+- Apply nested styles to all parent selectors ([#42])
+
 ## [0.4.0] (2026-11-23)
 
 ### Features
@@ -140,6 +146,7 @@ All notable changes to this project will be documented in this file.
 [0.3.0]: https://github.com/justinlocsei/ruscus/compare/v0.2.0..v0.3.0
 [0.3.1]: https://github.com/justinlocsei/ruscus/compare/v0.3.0..v0.3.1
 [0.4.0]: https://github.com/justinlocsei/ruscus/compare/v0.3.1..v0.4.0
+[0.4.1]: https://github.com/justinlocsei/ruscus/compare/v0.4.0..v0.4.1
 
 <!-- PRs -->
 
@@ -172,3 +179,4 @@ All notable changes to this project will be documented in this file.
 [#38]: https://github.com/justinlocsei/ruscus/pull/38
 [#39]: https://github.com/justinlocsei/ruscus/pull/39
 [#40]: https://github.com/justinlocsei/ruscus/pull/40
+[#42]: https://github.com/justinlocsei/ruscus/pull/42
