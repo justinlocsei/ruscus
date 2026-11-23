@@ -51,6 +51,26 @@ describe('mergeTraits', () => {
     );
   });
 
+  it('deeply merges nested styles with matching selectors', () => {
+    const styles = mergeTraits(
+      defineTrait(s =>
+        s().nested({
+          '&:hover': s({ opacity: '0.5' })
+        })
+      ),
+      defineTrait(s =>
+        s().nested({
+          '&:hover': s({ textDecoration: 'underline' })
+        })
+      )
+    );
+
+    assert.deepEqual(styles.nested['&:hover']?.styles.root, {
+      opacity: '0.5',
+      textDecoration: 'underline'
+    });
+  });
+
   it('returns empty styles when given no traits', () => {
     const empty = mergeTraits();
 
