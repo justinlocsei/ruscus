@@ -220,6 +220,44 @@ describe('styleComponent', () => {
     );
   });
 
+  it('expands & for each selector in a comma-separated global anchor', () => {
+    checkOutput(
+      defineComponent('Page').global(s => ({
+        'button, input': s({ font: 'inherit' }).nested({
+          '&:focus-visible': s({ outline: '2px solid navy' })
+        })
+      })),
+      css`
+        button, input {
+          font: inherit;
+        }
+
+        button:focus-visible, input:focus-visible {
+          outline: 2px solid navy;
+        }
+      `
+    );
+  });
+
+  it('expands & against a single anchor with internal commas', () => {
+    checkOutput(
+      defineComponent('Page').global(s => ({
+        ':is(button, input)': s({ font: 'inherit' }).nested({
+          '&:focus-visible': s({ outline: '2px solid navy' })
+        })
+      })),
+      css`
+        :is(button, input) {
+          font: inherit;
+        }
+
+        :is(button, input):focus-visible {
+          outline: 2px solid navy;
+        }
+      `
+    );
+  });
+
   it('hoists child rules alongside root declarations on a fragment', () => {
     checkOutput(
       defineComponent('card').global(s => ({
