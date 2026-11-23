@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] (2026-11-23)
+
+### Features
+
+- Expose types for CSS properties ([#38])
+- Expand trait support ([#39])
+
+### Changes
+
+- Simplify the compilation API ([#40])
+
 ## [0.3.1] (2026-11-14)
 
 ### Fixes
@@ -126,6 +137,9 @@ All notable changes to this project will be documented in this file.
 [0.0.8]: https://github.com/justinlocsei/ruscus/compare/v0.0.7..v0.0.8
 [0.1.0]: https://github.com/justinlocsei/ruscus/compare/v0.0.8..v0.1.0
 [0.2.0]: https://github.com/justinlocsei/ruscus/compare/v0.1.0..v0.2.0
+[0.3.0]: https://github.com/justinlocsei/ruscus/compare/v0.2.0..v0.3.0
+[0.3.1]: https://github.com/justinlocsei/ruscus/compare/v0.3.0..v0.3.1
+[0.4.0]: https://github.com/justinlocsei/ruscus/compare/v0.3.1..v0.4.0
 
 <!-- PRs -->
 
@@ -155,3 +169,6 @@ All notable changes to this project will be documented in this file.
 [#33]: https://github.com/justinlocsei/ruscus/pull/33
 [#34]: https://github.com/justinlocsei/ruscus/pull/34
 [#36]: https://github.com/justinlocsei/ruscus/pull/36
+[#38]: https://github.com/justinlocsei/ruscus/pull/38
+[#39]: https://github.com/justinlocsei/ruscus/pull/39
+[#40]: https://github.com/justinlocsei/ruscus/pull/40
