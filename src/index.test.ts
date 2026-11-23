@@ -3,7 +3,6 @@ import { assert, it } from 'vitest';
 import * as ruscus from './index.ts';
 
 it('exposes a functional public API', () => {
-  assert.equal(typeof ruscus.compile, 'function');
   assert.equal(typeof ruscus.configure, 'function');
   assert.equal(typeof ruscus.component, 'function');
   assert.equal(typeof ruscus.css, 'function');

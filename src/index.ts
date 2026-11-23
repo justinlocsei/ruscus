@@ -1,5 +1,3 @@
-export type { StyleComponentsConfig as CompileConfig } from './compilation.ts';
-export { styleComponents as compile } from './compilation.ts';
 export { defineComponent as component } from './components.ts';
 export type { ConfigOptions } from './config.ts';
 export { configure } from './config.ts';
