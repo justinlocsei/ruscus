@@ -4,6 +4,11 @@
 
 .card.is-compact {
   padding: 0.5rem;
+  cursor: pointer;
+}
+
+.card.is-compact:hover {
+  opacity: 0.8;
 }
 
 .card.is-large {
