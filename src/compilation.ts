@@ -1,8 +1,7 @@
 import type { Configuration } from './config.ts';
 import { buildComponentContext, buildElementContext } from './contexts.ts';
 import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
-import type { ApplicableComponent, BuildPlan } from './internal.ts';
-import { extractBuildPlan } from './internal.ts';
+import type { ApplicableComponent } from './internal.ts';
 import type { NameGenerator } from './naming.ts';
 import { useNaming } from './naming.ts';
 import { PropertyProjector } from './styles.ts';
@@ -33,41 +32,6 @@ export type CompileConfig = UserCompileConfig & {
 export type AppliedComponent<
   S extends ComponentSpec = ComponentSpec<ElementSpecs, never, string>
 > = ApplicableComponent<S>;
-
-/**
- * The required configuration for compiling component styles
- */
-export type StyleComponentsConfig = Required<UserCompileConfig>;
-
-/**
- * Generate CSS for a list of applied components
- */
-export function styleComponents<S extends ComponentSpec>(
-  components: AppliedComponent<S>[],
-  config: StyleComponentsConfig
-): string {
-  const plans = components.reduce<BuildPlan[]>((plans, component) => {
-    const plan = extractBuildPlan(component);
-
-    if (plan) {
-      plans.push(plan);
-    } else {
-      throw new Error(`No build plan found for component: ${component}`);
-    }
-
-    return plans;
-  }, []);
-
-  const fullConfig: CompileConfig = {
-    ...config,
-    properties: new PropertyProjector()
-  };
-
-  return plans
-    .sort((a, b) => a.component.id.localeCompare(b.component.id))
-    .map(plan => plan.compile(fullConfig))
-    .join('\n\n');
-}
 
 /**
  * Generate CSS for a component's styles
