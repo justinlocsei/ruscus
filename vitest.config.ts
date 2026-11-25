@@ -25,6 +25,7 @@ export default defineConfig({
     projects: [
       {
         test: {
+          exclude: ['src/**/*.prop.test.ts'],
           include: ['src/**/*.test.ts'],
           name: 'unit'
         }
@@ -33,6 +34,14 @@ export default defineConfig({
         test: {
           include: ['tests/**/*.test.ts'],
           name: 'integration'
+        }
+      },
+      {
+        test: {
+          include: ['src/**/*.prop.test.ts', 'tests/**/*.prop.test.ts'],
+          name: 'properties',
+          setupFiles: ['./test/setup/properties.ts'],
+          testTimeout: 30_000
         }
       }
     ]
