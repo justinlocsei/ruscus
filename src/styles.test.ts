@@ -3,6 +3,7 @@ import { assert, describe, it } from 'vitest';
 import {
   camelToKebab,
   defineStyles,
+  expandSelectorAnchor,
   mergeStyles,
   PropertyProjector,
   splitSelector
@@ -101,6 +102,15 @@ describe('splitSelector', () => {
     assert.deepEqual(
       splitSelector(':is(button, input)'),
       [':is(button, input)']
+    );
+  });
+});
+
+describe('expandSelectorAnchor', () => {
+  it('expands each selector in a comma-separated anchor', () => {
+    assert.equal(
+      expandSelectorAnchor(' .card, .panel ', '&:hover'),
+      '.card:hover, .panel:hover'
     );
   });
 });

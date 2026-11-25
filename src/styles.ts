@@ -65,6 +65,15 @@ export function splitSelector(selector: string): string[] {
   return parts.filter(Boolean);
 }
 
+/**
+ * Replace every & in a nested key with the anchor selector
+ */
+export function expandSelectorAnchor(anchor: string, key: string): string {
+  return splitSelector(anchor)
+    .map(part => key.replaceAll('&', part.trim()))
+    .join(', ');
+}
+
 export class PropertyProjector {
   private names: Map<string, string>;
 
