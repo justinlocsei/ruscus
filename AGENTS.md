@@ -110,6 +110,8 @@ same global config; it does not rewrite style source beyond added imports.
 
 Unit tests live beside source as `src/**/*.test.ts`. Integration tests live under `tests/` (golden CSS via `compareStyles` in `tests/helpers.ts`). After editing a source file, run its matching test file when one exists. Coverage: `npm run test:coverage` (100% thresholds on core `src/`; see `vitest.config.ts`; excludes `src/plugins/**`, `src/tests.ts`, and `src/tests/**`).
 
+Property tests use `*.prop.test.ts` with `fast-check` for randomized invariants in the style, fragment, naming, and compilation core. Set `RUSCUS_PROP_TEST_RUNS` or `RUSCUS_PROP_TEST_SEED` to reproduce or expand a run; these tests complement rather than replace example and golden tests.
+
 Use **NATO phonetic** names for sequential test data (`alfa`, `bravo`, `charlie`, …) instead of `foo` / `test1` / `a`, `b`.
 
 ## Code style
