@@ -30,7 +30,6 @@ type ClipPath = 'border-box' | 'content-box' | 'fill-box' | 'none' | 'padding-bo
 type ClipPath2 = 'half-border-box' | 'margin-box' | Value;
 type ClipRule = 'evenodd' | 'nonzero' | Value;
 type Color = 'AccentColor' | 'AccentColorText' | 'ActiveBorder' | 'ActiveCaption' | 'ActiveText' | 'AppWorkspace' | 'Background' | 'ButtonBorder' | 'ButtonFace' | 'ButtonHighlight' | 'ButtonShadow' | 'ButtonText' | 'Canvas' | 'CanvasText' | 'CaptionText' | 'Field' | 'FieldText' | 'GrayText' | 'Highlight' | 'HighlightText' | 'InactiveBorder' | 'InactiveCaption' | 'InactiveCaptionText' | 'InfoBackground' | 'InfoText' | 'LinkText' | 'Mark' | 'MarkText' | 'Menu' | 'MenuText' | 'Scrollbar' | 'SelectedItem' | 'SelectedItemText' | 'ThreeDDarkShadow' | 'ThreeDFace' | 'ThreeDHighlight' | 'ThreeDLightShadow' | 'ThreeDShadow' | 'VisitedText' | 'Window' | 'WindowFrame' | 'WindowText' | 'aliceblue' | 'antiquewhite' | 'aqua' | 'aquamarine' | 'azure' | 'beige' | 'bisque' | 'black' | 'blanchedalmond' | 'blue' | 'blueviolet' | 'brown' | 'burlywood' | 'cadetblue' | 'chartreuse' | 'chocolate' | 'coral' | 'cornflowerblue' | 'cornsilk' | 'crimson' | 'currentColor' | 'cyan' | 'darkblue' | 'darkcyan' | 'darkgoldenrod' | 'darkgray' | 'darkgreen' | 'darkgrey' | 'darkkhaki' | 'darkmagenta' | 'darkolivegreen' | 'darkorange' | 'darkorchid' | 'darkred' | 'darksalmon' | 'darkseagreen' | 'darkslateblue' | 'darkslategray' | 'darkslategrey' | 'darkturquoise' | 'darkviolet' | 'deeppink' | 'deepskyblue' | 'dimgray' | 'dimgrey' | 'dodgerblue' | 'firebrick' | 'floralwhite' | 'forestgreen' | 'fuchsia' | 'gainsboro' | 'ghostwhite' | 'gold' | 'goldenrod' | 'gray' | 'green' | 'greenyellow' | 'grey' | 'honeydew' | 'hotpink' | 'indianred' | 'indigo' | 'ivory' | 'khaki' | 'lavender' | 'lavenderblush' | 'lawngreen' | 'lemonchiffon' | 'lightblue' | 'lightcoral' | 'lightcyan' | 'lightgoldenrodyellow' | 'lightgray' | 'lightgreen' | 'lightgrey' | 'lightpink' | 'lightsalmon' | 'lightseagreen' | 'lightskyblue' | 'lightslategray' | 'lightslategrey' | 'lightsteelblue' | 'lightyellow' | 'lime' | 'limegreen' | 'linen' | 'magenta' | 'maroon' | 'mediumaquamarine' | 'mediumblue' | 'mediumorchid' | 'mediumpurple' | 'mediumseagreen' | 'mediumslateblue' | 'mediumspringgreen' | 'mediumturquoise' | 'mediumvioletred' | 'midnightblue' | 'mintcream' | 'mistyrose' | 'moccasin' | 'navajowhite' | 'navy' | 'oldlace' | 'olive' | 'olivedrab' | 'orange' | 'orangered' | 'orchid' | 'palegoldenrod' | 'palegreen' | 'paleturquoise' | 'palevioletred' | 'papayawhip' | 'peachpuff' | 'peru' | 'pink' | 'plum' | 'powderblue' | 'purple' | 'rebeccapurple' | 'red' | 'rosybrown' | 'royalblue' | 'saddlebrown' | 'salmon' | 'sandybrown' | 'seagreen' | 'seashell' | 'sienna' | 'silver' | 'skyblue' | 'slateblue' | 'slategray' | 'slategrey' | 'snow' | 'springgreen' | 'steelblue' | 'tan' | 'teal' | 'thistle' | 'tomato' | 'transparent' | 'turquoise' | 'violet' | 'wheat' | 'white' | 'whitesmoke' | 'yellow' | 'yellowgreen' | Value;
-type ColorInterpolation = 'auto' | 'linearRGB' | 'sRGB' | Value;
 type ColorScheme = 'dark' | 'light' | 'normal' | Value;
 type ColumnSpan = 'all' | 'auto' | 'none' | Value;
 type Content = 'circle' | 'close-quote' | 'contents' | 'disc' | 'disclosure-closed' | 'disclosure-open' | 'no-close-quote' | 'no-open-quote' | 'open-quote' | 'square' | Value;
@@ -336,8 +335,8 @@ export type KnownProperties = {
   clipRule?: ClipRule;
   color?: Color;
   colorAdjust?: Value;
-  colorInterpolation?: ColorInterpolation;
-  colorInterpolationFilters?: ColorInterpolation;
+  colorInterpolation?: 'a98-rgb' | 'auto' | 'decreasing' | 'display-p3' | 'display-p3-linear' | 'hsl' | 'hue' | 'hwb' | 'in' | 'increasing' | 'lab' | 'lch' | 'linearRGB' | 'longer' | 'oklab' | 'oklch' | 'prophoto-rgb' | 'rec2020' | 'sRGB' | 'shorter' | 'srgb' | 'srgb-linear' | 'xyz' | 'xyz-d50' | 'xyz-d65' | Value;
+  colorInterpolationFilters?: 'auto' | 'linearRGB' | 'sRGB' | Value;
   colorScheme?: ColorScheme | 'only';
   columnCount?: Rx;
   columnFill?: 'auto' | 'balance' | 'balance-all' | Value;
@@ -545,7 +544,7 @@ export type KnownProperties = {
   letterSpacing?: TextBox;
   lightingColor?: Color;
   lineBreak?: 'anywhere' | 'auto' | 'loose' | 'normal' | 'strict' | Value;
-  lineClamp?: '-webkit-legacy' | 'none' | Value;
+  lineClamp?: '-webkit-legacy' | 'auto' | 'none' | Value;
   lineFitEdge?: LineFitEdge | 'leading';
   lineGrid?: 'create' | 'match-parent' | Value;
   lineHeight?: TextBox;
@@ -626,7 +625,7 @@ export type KnownProperties = {
   orphans?: Value;
   outline?: Value;
   outlineColor?: Rx;
-  outlineOffset?: Value;
+  outlineOffset?: 'inset' | Value;
   outlineStyle?: OutlineStyle | Width2;
   outlineWidth?: RowGap;
   overflow?: Value;
@@ -845,8 +844,8 @@ export type KnownProperties = {
   textRendering?: TextRendering | 'optimizeLegibility';
   textShadow?: Color | 'inset' | 'none';
   textSizeAdjust?: Overlay;
-  textSpacing?: 'auto' | 'ideograph-alpha' | 'ideograph-numeric' | 'insert' | 'no-autospace' | 'none' | 'normal' | 'punctuation' | 'replace' | 'space-all' | 'space-first' | 'trim-all' | 'trim-both' | 'trim-start' | Value;
-  textSpacingTrim?: 'auto' | 'normal' | 'space-all' | 'space-first' | 'trim-all' | 'trim-both' | 'trim-start' | Value;
+  textSpacing?: 'allow-end' | 'auto' | 'ideograph-alpha' | 'ideograph-numeric' | 'insert' | 'no-autospace' | 'none' | 'punctuation' | 'replace' | 'space-adjacent' | 'space-all' | 'space-end' | 'space-first' | 'space-start' | 'trim-adjacent' | 'trim-all' | 'trim-both' | 'trim-end' | 'trim-start' | Value;
+  textSpacingTrim?: 'allow-end' | 'auto' | 'space-adjacent' | 'space-all' | 'space-end' | 'space-first' | 'space-start' | 'trim-adjacent' | 'trim-all' | 'trim-both' | 'trim-end' | 'trim-start' | Value;
   textTransform?: 'capitalize' | 'full-size-kana' | 'full-width' | 'lowercase' | 'math-auto' | 'none' | 'uppercase' | Value;
   textUnderlineOffset?: Rx;
   textUnderlinePosition?: 'auto' | 'from-font' | 'left' | 'right' | 'under' | Value;
