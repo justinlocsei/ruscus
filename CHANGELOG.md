@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0] (2026-11-25)
+
+### Development
+
+- Run Node.js v26 in development ([#44])
+- Add property tests ([#45])
+- Upgrade dependencies (2026-11-25) ([#46])
+
 ## [0.4.1] (2026-11-23)
 
 ### Fixes
@@ -133,6 +141,7 @@ All notable changes to this project will be documented in this file.
 
 <!-- Versions -->
 
+[1.0.0]: https://github.com/justinlocsei/ruscus/compare/v0.4.1..v1.0.0
 [0.0.1]: https://github.com/justinlocsei/ruscus/releases/tag/v0.0.1
 [0.0.2]: https://github.com/justinlocsei/ruscus/compare/v0.0.1..v0.0.2
 [0.0.3]: https://github.com/justinlocsei/ruscus/compare/v0.0.2..v0.0.3
@@ -180,3 +189,6 @@ All notable changes to this project will be documented in this file.
 [#39]: https://github.com/justinlocsei/ruscus/pull/39
 [#40]: https://github.com/justinlocsei/ruscus/pull/40
 [#42]: https://github.com/justinlocsei/ruscus/pull/42
+[#44]: https://github.com/justinlocsei/ruscus/pull/44
+[#45]: https://github.com/justinlocsei/ruscus/pull/45
+[#46]: https://github.com/justinlocsei/ruscus/pull/46
