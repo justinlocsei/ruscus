@@ -295,12 +295,12 @@ ${declarations.join('\n')}
 
 export type PropertyName =
 ${
-    props
-      .map(p => p.kebab)
-      .sort((l, r) => l.localeCompare(r))
-      .map(kebab => `  | '${kebab}'`)
-      .join('\n')
-  };
+  props
+    .map(p => p.kebab)
+    .sort((l, r) => l.localeCompare(r))
+    .map(kebab => `  | '${kebab}'`)
+    .join('\n')
+};
 `;
 }
 
