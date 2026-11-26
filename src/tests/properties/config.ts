@@ -1,7 +1,7 @@
 // Environment variables to control test runs
 const VARIABLES = {
   runs: 'RUSCUS_PROP_TEST_RUNS',
-  seed: 'RUSCUS_PROP_TEST_S1ED'
+  seed: 'RUSCUS_PROP_TEST_SEED'
 };
 
 /**
