@@ -4,7 +4,7 @@ import { defineAbsoluteFragment, defineRelativeFragment } from './fragments.ts';
 import type { ApplicableComponent } from './internal.ts';
 import type { NameGenerator } from './naming.ts';
 import { useNaming } from './naming.ts';
-import { PropertyProjector, splitSelector } from './styles.ts';
+import { expandSelectorAnchor, PropertyProjector } from './styles.ts';
 import type { ComponentDefinition, ComponentSpec } from './types/components.ts';
 import type { Declarations } from './types/css.ts';
 import type { ElementDefinition, ElementSpecs } from './types/elements.ts';
@@ -211,7 +211,7 @@ class ComponentCompiler {
       const hoist = isNested || !parentSelector.startsWith('@');
 
       const selector = isNested
-        ? this.expandSelectorAnchor(parentSelector, key)
+        ? expandSelectorAnchor(parentSelector, key)
         : this.buildNestedSelector(parentSelector, key);
 
       const rule = this.formatFragmentRules(
@@ -286,20 +286,11 @@ class ComponentCompiler {
   }
 
   /**
-   * Replace every & in a nested key with the anchor selector
-   */
-  private expandSelectorAnchor(anchor: string, key: string): string {
-    return splitSelector(anchor)
-      .map(part => key.replaceAll('&', part.trim()))
-      .join(', ');
-  }
-
-  /**
    * Build a selector for a nested rule key
    */
   private buildNestedSelector(anchor: string, key: string): string {
     if (key.includes('&')) {
-      return this.expandSelectorAnchor(anchor, key);
+      return expandSelectorAnchor(anchor, key);
     } else if (key === anchor) {
       return anchor;
     } else {
